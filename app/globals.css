@@ -1,26 +1,140 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary-blue: #60a5fa;
+  --color-primary-purple: #ad2bee;
+  --color-brand-bg: #000000;
+  --color-cream: #fbfbf4;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary-blue: #60a5fa;
+  --primary-purple: #ad2bee;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #000000;
+  color: #fbfbf4;
+  cursor: none;
+}
+
+/* Hero background — slow Ken Burns drift */
+@keyframes heroBgScale {
+  0%   { transform: scale(1.0) translate(0, 0); }
+  100% { transform: scale(1.07) translate(-1%, -0.5%); }
+}
+
+@keyframes heroBlob1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(4vw, -5vw) scale(1.15); }
+}
+@keyframes heroBlob2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-3vw, 4vw) scale(0.88); }
+}
+@keyframes heroBlob3 {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(2vw, 3vw) scale(1.1); }
+}
+
+/* Sonar pulse rings behind the W */
+@keyframes pulseRing {
+  0%   { transform: translate(-50%, -50%) scale(0.6); opacity: 0.55; }
+  100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+}
+
+/* W glow breathe */
+@keyframes wGlow {
+  0%, 100% { filter: drop-shadow(0 0 40px rgba(139,111,247,0.35)) drop-shadow(0 0 80px rgba(96,165,250,0.2)); }
+  50%       { filter: drop-shadow(0 0 70px rgba(173,43,238,0.5))  drop-shadow(0 0 120px rgba(96,165,250,0.3)); }
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #60a5fa, #ad2bee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cursor-none,
+.cursor-none * {
+  cursor: none !important;
+}
+
+/* ── FAQ toggle — Estrela ( + ) style ───────────────────── */
+.faq-bracket {
+  display: inline-block;
+  line-height: 1;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s;
+}
+
+.faq-item:hover .faq-bracket-left  { transform: translateX(-0.6rem); color: rgba(251,251,244,0.7); }
+.faq-item:hover .faq-bracket-right { transform: translateX(0.6rem);  color: rgba(251,251,244,0.7); }
+.faq-item:hover .faq-toggle-abs    { color: rgba(251,251,244,0.7); }
+
+/* ── Contact form — floating labels ─────────────────────── */
+.contact-field {
+  position: relative;
+  padding-top: 1.25rem;
+}
+
+.contact-field input,
+.contact-field textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(251,251,244,0.15);
+  padding: 0.5rem 0 0.625rem;
+  color: #fbfbf4;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  resize: none;
+  transition: border-color 0.25s;
+}
+
+.contact-field input:focus,
+.contact-field textarea:focus {
+  border-bottom-color: #60a5fa;
+}
+
+/* Kill browser autofill white/blue background */
+.contact-field input:-webkit-autofill,
+.contact-field input:-webkit-autofill:hover,
+.contact-field input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #080808 inset !important;
+  -webkit-text-fill-color: #fbfbf4 !important;
+  transition: background-color 9999s ease-in-out 0s;
+  caret-color: #fbfbf4;
+}
+
+.contact-field label {
+  position: absolute;
+  left: 0;
+  top: 1.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(251,251,244,0.35);
+  pointer-events: none;
+  transition: top 0.2s, font-size 0.2s, color 0.2s;
+}
+
+.contact-field input:focus ~ label,
+.contact-field input:not(:placeholder-shown) ~ label,
+.contact-field textarea:focus ~ label,
+.contact-field textarea:not(:placeholder-shown) ~ label {
+  top: 0;
+  font-size: 0.65rem;
+  color: #60a5fa;
 }
