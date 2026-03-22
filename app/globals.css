@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
 @theme {
   --color-primary-blue: #60a5fa;
   --color-primary-purple: #ad2bee;
@@ -102,9 +106,25 @@ body {
   transition: border-color 0.25s;
 }
 
+.contact-field::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 0; height: 1.5px;
+  background: linear-gradient(90deg, #60a5fa, #8b6ff7, #ad2bee);
+  transition: width 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+}
+
+.contact-field:focus-within::after {
+  width: 100%;
+}
+
 .contact-field input:focus,
 .contact-field textarea:focus {
-  border-bottom-color: #60a5fa;
+  border-bottom-color: rgba(139,111,247,0.25);
+  box-shadow: 0 6px 24px -6px rgba(139,111,247,0.18);
+  outline: none;
 }
 
 /* Kill browser autofill white/blue background */
@@ -136,5 +156,23 @@ body {
 .contact-field textarea:not(:placeholder-shown) ~ label {
   top: 0;
   font-size: 0.65rem;
-  color: #60a5fa;
+  color: #8b6ff7;
+}
+
+/* ── Contact submit button — shimmer loader ──────────────── */
+@keyframes btn-shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+.btn-shimmer {
+  background: linear-gradient(
+    90deg,
+    #60a5fa 0%,
+    #8b6ff7 25%,
+    #ffffff55 50%,
+    #8b6ff7 75%,
+    #ad2bee 100%
+  ) !important;
+  background-size: 300% auto !important;
+  animation: btn-shimmer 1.4s linear infinite !important;
 }

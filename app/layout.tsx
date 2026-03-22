@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "Websight — People-first Digital Agency",
   description:
     "Websight is a people-first digital agency crafting brand identities, web experiences, and digital products that matter.",
+  icons: { icon: "/favicon.svg" },
 };
 
 export default function RootLayout({

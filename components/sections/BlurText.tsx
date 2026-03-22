@@ -11,9 +11,12 @@ interface TextLine {
 interface BlurTextProps {
   lines: TextLine[];
   className?: string;
+  noBorderTop?: boolean;
 }
 
-export default function BlurText({ lines, className = "" }: BlurTextProps) {
+export default function BlurText({ lines, className = "", noBorderTop = false }: BlurTextProps) {
+  const wrapperRef   = useRef<HTMLDivElement>(null);  // tall scroll-driver
+  const stickyRef    = useRef<HTMLElement>(null);      // sticky viewport-height section
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,48 +26,81 @@ export default function BlurText({ lines, className = "" }: BlurTextProps) {
 
       gsap.fromTo(
         words,
+        { autoAlpha: 0, filter: "blur(1.8rem)", y: 32 },
         {
-          filter: "blur(20px)",
-          opacity: 0.15,
-          y: 30,
-        },
-        {
-          filter: "blur(0px)",
-          opacity: 1,
+          autoAlpha: 1,
+          filter: "blur(0rem)",
           y: 0,
-          stagger: 0.06,
-          ease: "power2.out",
+          ease: "none",
+          stagger: 0.1,
           scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top 80%",
-            end: "top 20%",
-            scrub: 1.2,
+            trigger: wrapperRef.current,
+            start: "top 40%",
+            end: "bottom 85%",
+            scrub: 1.5,
           },
         }
       );
-    }, containerRef);
+    }, wrapperRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section className={`py-32 px-8 md:px-16 lg:px-24 ${className}`}>
-      <div ref={containerRef} className="max-w-5xl mx-auto">
-        <p className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.15] text-cream">
-          {lines.map((line, lineIdx) =>
-            line.text.split(" ").map((word, wordIdx) => (
-              <span
-                key={`${lineIdx}-${wordIdx}`}
-                data-word
-                className={`inline-block mr-[0.3em] ${line.colored ? "gradient-text" : ""}`}
-                style={{ willChange: "filter, opacity, transform" }}
-              >
-                {word}
-              </span>
-            ))
-          )}
-        </p>
-      </div>
-    </section>
+    /* Tall wrapper — provides scroll distance without GSAP pin */
+    <div ref={wrapperRef} style={{ height: "190vh" }}>
+      <section
+        ref={stickyRef}
+        className={className}
+        style={{
+          position: "sticky",
+          top: 0,
+          height: "100vh",
+          background: "#000",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          borderTop: noBorderTop ? "none" : "1px solid rgba(251,251,244,0.06)",
+        }}
+      >
+        <div ref={containerRef} style={{ maxWidth: "1000px", width: "100%", padding: "0 clamp(2rem, 8vw, 8rem)", position: "relative", zIndex: 1 }}>
+          <p
+            style={{
+              fontSize: "clamp(2.8rem, 6vw, 5.8rem)",
+              fontWeight: 700,
+              lineHeight: 1.18,
+              letterSpacing: "-0.035em",
+              color: "#fbfbf4",
+              textAlign: "center",
+            }}
+          >
+            {lines.map((line, lineIdx) =>
+              line.text.split(" ").map((word, wordIdx) => (
+                <span
+                  key={`${lineIdx}-${wordIdx}`}
+                  data-word
+                  style={{
+                    display: "inline-block",
+                    marginRight: "0.28em",
+                    willChange: "filter, opacity, transform",
+                    ...(line.colored
+                      ? {
+                          background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                          backgroundClip: "text",
+                        }
+                      : {}),
+                  }}
+                >
+                  {word}
+                </span>
+              ))
+            )}
+          </p>
+        </div>
+      </section>
+    </div>
   );
 }

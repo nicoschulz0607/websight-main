@@ -22,38 +22,10 @@ export const PROJECTS = [
 export const TESTIMONIALS = [
   {
     quote:
-      "Websight hat unsere Marke von Grund auf neu gestaltet. Die Liebe zum Detail und die kreative Vision, die sie in unser Projekt eingebracht haben, war einzigartig.",
-    name: "Sarah Mitchell",
-    role: "CEO",
-    company: "NovaTech",
-  },
-  {
-    quote:
-      "Die Zusammenarbeit mit Websight war ein echter Wendepunkt für uns. Sie haben ein digitales Erlebnis geliefert, das unsere Kunden lieben – und die Ergebnisse sprechen für sich.",
-    name: "James Reinhardt",
-    role: "Gründer",
-    company: "Pulse Studio",
-  },
-  {
-    quote:
-      "Das Team von Websight hat unsere Vision wirklich verstanden und in etwas Außergewöhnliches umgesetzt. Jedes Detail wurde bedacht und perfekt ausgeführt.",
-    name: "Lena Hoffmann",
-    role: "Head of Marketing",
-    company: "Forma Labs",
-  },
-  {
-    quote:
-      "Unsere Conversion-Rate ist nach dem Redesign um 40 % gestiegen. Websight macht Dinge nicht nur schön – sie lässt sie auch performen.",
-    name: "Carlos Vega",
-    role: "Product Director",
-    company: "Launchpad Co.",
-  },
-  {
-    quote:
-      "Schnell, kommunikativ und unglaublich talentiert. Websight hat weit über unsere Erwartungen hinaus geliefert. Wir werden noch jahrelang mit ihnen zusammenarbeiten.",
-    name: "Amara Osei",
-    role: "Creative Director",
-    company: "Arco Collective",
+      "Seit dem Launch haben wir deutlich mehr Anfragen über die Website – und die Qualität der Kontakte ist eine andere. Kunden kommen bereits mit Vertrauen auf uns zu, bevor wir das erste Gespräch geführt haben.",
+    name: "DEIN KOLLEGE",
+    role: "POSITION",
+    company: "FIRMENNAME",
   },
 ];
 
@@ -92,28 +64,56 @@ export const FAQ_ITEMS = [
 
 export const SERVICES = [
   {
-    title: "Markenstrategie & Identität",
-    accentColor: "#ad2bee",
-    description:
-      "Wir entwickeln Markenidentitäten, die wirken. Von Positionierung und Naming bis hin zu visuellen Systemen – wir bauen Marken, die herausstechen und Bestand haben. Jeder Touchpoint ist durchdacht, jedes Element bewusst gesetzt.",
-  },
-  {
-    title: "Web & App Design",
+    title: "Webdesign & Entwicklung",
     accentColor: "#60a5fa",
     description:
-      "Schöne, funktionale Interfaces, die konvertieren. Wir gestalten Websites und Anwendungen, die ästhetische Präzision mit intuitiver Bedienbarkeit verbinden – Erlebnisse, zu denen Nutzer immer wieder zurückkehren.",
+      "Ästhetik verschmilzt mit funktionaler Exzellenz. Jeder Pixel kalkuliert, um Vertrauen zu schaffen und Handlung auszulösen. React & Next.js – blitzschnell, rechtssicher, voller Leben.",
+    details: [
+      "Individuelles Design – kein Template, alles maßgeschneidert",
+      "React & Next.js mit GSAP-Animationen und Scroll-Effekten",
+      "Mobile-first, barrierefrei, Core Web Vitals optimiert",
+      "Hosting auf Vercel – weltweit schnell, immer online",
+    ],
+    forWho: "Handwerker, Praxen, Dienstleister, lokale Shops",
   },
   {
-    title: "Digitale Erlebnisse",
+    title: "SEO & Sichtbarkeit",
     accentColor: "#ad2bee",
     description:
-      "End-to-End digitale Erlebnisse, die eure Geschichte erzählen. Wir verbinden Strategie, Design und Motion zu immersiven digitalen Umgebungen, die einen bleibenden Eindruck hinterlassen.",
+      "Wir sichern dir die Pole-Position in den Suchergebnissen – durch technische Tiefe, nicht durch Tricks. Mehr Sichtbarkeit bedeutet mehr Anfragen, ohne bezahlte Werbung.",
+    details: [
+      "Technische SEO: Core Web Vitals, Ladezeit, Struktur",
+      "Keyword-Strategie & lokale Suchmaschinenoptimierung",
+      "Google Business Profil & Karten-Sichtbarkeit",
+      "Monatliches Reporting & kontinuierliche Optimierung",
+    ],
+    forWho: "Lokale Unternehmen, Handwerker, Praxen, Friseure",
   },
   {
-    title: "Motion & Interaktion",
+    title: "Automatisierung & Wachstum",
     accentColor: "#60a5fa",
     description:
-      "Animations- und Interaktionsdesign, das euer Produkt zum Leben erweckt. Von Micro-Interactions bis zu kompletten Scroll-Erlebnissen – wir fügen die Detailschicht hinzu, die Gut von Außergewöhnlich trennt.",
+      "Eliminiere repetitive Aufgaben und maximiere deinen Erfolg. Workflows die im Schlaf arbeiten, kombiniert mit datenbasierter Conversion-Optimierung – mehr Kunden, weniger Aufwand.",
+    details: [
+      "Automatische Anfragen, E-Mail-Workflows & Terminbuchung (24/7)",
+      "CRM-Integration & automatische Lead-Erfassung",
+      "Conversion-Rate-Optimierung (CRO) & Funnel-Analyse",
+      "Psychologische Trigger & messbare Abschlussraten",
+    ],
+    forWho: "Friseure, Praxen, Handwerker, Berater, Coaches",
+  },
+  {
+    title: "Marke & Vertrauen",
+    accentColor: "#ad2bee",
+    description:
+      "Vertrauen ist messbar. Wir entwickeln Markenidentitäten, die überzeugen, und integrieren Social Proof strategisch – dort wo er Kaufentscheidungen wirklich beeinflusst.",
+    details: [
+      "Logo, Farb- & Typografiesystem, Brand Guidelines",
+      "Google-Bewertungen & Testimonials strategisch platziert",
+      "Trust-Signale an den entscheidenden Conversion-Punkten",
+      "Einheitliches Auftreten auf allen Kanälen",
+    ],
+    forWho: "Praxen, Anwälte, Handwerker, Coaches, Neugründungen",
   },
 ];
 
@@ -136,9 +136,18 @@ export const BLUR_TEXT_2_LINES = [
   { text: "durchdacht.", colored: false },
 ];
 
+export const BLUR_TEXT_3_LINES = [
+  { text: "Vom ersten", colored: false },
+  { text: "Gespräch", colored: true },
+  { text: "bis zum", colored: false },
+  { text: "Launch —", colored: false },
+  { text: "wir begleiten", colored: false },
+  { text: "jeden Schritt.", colored: true },
+];
+
 export const NAV_LINKS = [
   { label: "Arbeiten", href: "#work" },
   { label: "Leistungen", href: "#services" },
-  { label: "Über uns", href: "#about" },
-  { label: "Kontakt", href: "#contact" },
+  { label: "FAQ", href: "#faq" },
+  { label: "Kontakt", href: "#kontakt" },
 ];

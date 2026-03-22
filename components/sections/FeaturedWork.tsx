@@ -10,10 +10,10 @@ const DEFAULT_W = 100 / TOTAL;
 const EXPANDED_W = 44;
 const COLLAPSED_W = (100 - EXPANDED_W) / (TOTAL - 1);
 
-// Free Pexels images — dark/moody design agency aesthetic
+// Placeholder images — replace with real project screenshots
 const PROJECT_IMAGES = [
   "https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg?auto=compress&cs=tinysrgb&w=1200&h=900&dpr=1",
-  "https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg?auto=compress&cs=tinysrgb&w=1200&h=900&dpr=1",
+  "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1200&h=900&dpr=1",
 ];
 
 export default function FeaturedWork() {
@@ -36,9 +36,25 @@ export default function FeaturedWork() {
 
   return (
     <section id="work">
+      {/* Section heading */}
+      <div style={{
+        padding: "4rem clamp(2rem, 8vw, 8rem) 2rem",
+        background: "#000",
+        display: "flex",
+        alignItems: "center",
+        gap: "1.25rem",
+      }}>
+        <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, rgba(251,251,244,0.06), transparent)" }} />
+        <span style={{
+          fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.3em",
+          textTransform: "uppercase", color: "rgba(251,251,244,0.25)",
+        }}>Ausgewählte Arbeiten</span>
+        <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, transparent, rgba(251,251,244,0.06))" }} />
+      </div>
+
       <div
         className="flex w-full overflow-hidden"
-        style={{ height: "70vh" }}
+        style={{ height: "80vh" }}
         onMouseLeave={() => { setCursorMode("default"); setHoveredIndex(null); }}
       >
         {/* ── Tile 0: Info panel ───────────────────────────── */}
@@ -63,34 +79,31 @@ export default function FeaturedWork() {
           <div className="absolute inset-0 flex flex-col justify-between p-8 md:p-10">
             {/* Top */}
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "2rem" }}>
                 <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#60a5fa", display: "inline-block" }} />
                 <span style={{ fontSize: "0.62rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(251,251,244,0.35)" }}>
                   Ausgewählte Arbeiten
                 </span>
               </div>
-              <h2 style={{ fontSize: "clamp(1.5rem, 2.5vw, 2.6rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.03em", color: "#fbfbf4" }}>
-                Unsere{" "}
+              <h2 style={{ fontSize: "clamp(1.8rem, 3vw, 3.2rem)", fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.04em", color: "#fbfbf4" }}>
+                Unsere<br />
                 <span style={{
                   background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-                }}>Projekte</span>
+                }}>Projekte.</span>
               </h2>
-              <p style={{ marginTop: "0.875rem", fontSize: "clamp(0.78rem, 0.9vw, 0.9rem)", color: "rgba(251,251,244,0.38)", lineHeight: 1.7, maxWidth: "230px" }}>
-                Design ohne Kompromisse. Jedes Projekt eine neue Geschichte — durchdacht, präzise, wirkungsvoll.
+              <p style={{ marginTop: "1.25rem", fontSize: "clamp(0.78rem, 0.9vw, 0.875rem)", color: "rgba(251,251,244,0.32)", lineHeight: 1.75, maxWidth: "210px" }}>
+                Design ohne Kompromisse — durchdacht, präzise, wirkungsvoll.
               </p>
             </div>
 
-            {/* Stats row */}
-            <div style={{ display: "flex", gap: "1.5rem" }}>
-              {[["02", "Projekte"], ["100%", "Hingabe"]].map(([num, label]) => (
-                <div key={label}>
-                  <div style={{ fontSize: "clamp(1.2rem, 2vw, 1.8rem)", fontWeight: 800, letterSpacing: "-0.03em",
-                    background: "linear-gradient(135deg, #fbfbf4, rgba(251,251,244,0.5))",
-                    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-                  }}>{num}</div>
-                  <div style={{ fontSize: "0.65rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(251,251,244,0.25)", marginTop: "0.1rem" }}>{label}</div>
-                </div>
+            {/* Year / discipline tags */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {["Webdesign", "Entwicklung", "SEO", "Strategie"].map((tag) => (
+                <span key={tag} style={{
+                  fontSize: "0.62rem", letterSpacing: "0.15em", textTransform: "uppercase",
+                  color: "rgba(251,251,244,0.18)", fontFamily: "monospace",
+                }}>— {tag}</span>
               ))}
             </div>
 
@@ -163,8 +176,21 @@ export default function FeaturedWork() {
                 opacity: isHovered ? 1 : 0, transition: "opacity 0.4s ease",
               }} />
 
+              {/* Large decorative number — editorial background */}
+              <div style={{
+                position: "absolute", bottom: "-0.15em", right: "-0.05em",
+                fontSize: "clamp(10rem, 18vw, 16rem)", fontWeight: 900,
+                lineHeight: 1, letterSpacing: "-0.06em",
+                color: "transparent",
+                WebkitTextStroke: "1px rgba(251,251,244,0.07)",
+                userSelect: "none", pointerEvents: "none", zIndex: 1,
+                fontVariantNumeric: "tabular-nums",
+              }}>
+                {project.number}
+              </div>
+
               {/* Number top-left */}
-              <div className="absolute top-7 left-7">
+              <div className="absolute top-7 left-7" style={{ zIndex: 2 }}>
                 <span style={{ fontSize: "0.62rem", fontFamily: "monospace", letterSpacing: "0.2em",
                   color: "rgba(251,251,244,0.5)", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
                   {project.number}
@@ -172,13 +198,13 @@ export default function FeaturedWork() {
               </div>
 
               {/* Arrow top-right */}
-              <div className="absolute top-7 right-7" style={{
+              <div className="absolute top-7 right-7" style={{ zIndex: 2,
                 opacity: isHovered ? 1 : 0, transition: "opacity 0.3s ease",
                 fontSize: "1rem", color: "#fbfbf4", textShadow: "0 1px 4px rgba(0,0,0,0.8)",
               }}>↗</div>
 
               {/* Bottom overlay content */}
-              <div className="absolute bottom-0 left-0 right-0 p-7 md:p-8">
+              <div className="absolute bottom-0 left-0 right-0 p-7 md:p-8" style={{ zIndex: 2 }}>
                 {/* Tags — slide up on hover */}
                 <div style={{
                   display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "0.75rem",

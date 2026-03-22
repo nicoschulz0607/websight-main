@@ -25,28 +25,49 @@ export default function Navbar() {
         }}
       >
         {/* Logo */}
-        <a href="#" className="text-cream font-bold text-xl tracking-tight">
+        <a
+          href="#"
+          className="font-bold text-xl tracking-tight"
+          style={{
+            background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}
+        >
           Websight
         </a>
 
         {/* Desktop nav */}
         <ul className="hidden md:flex items-center gap-8">
-          {NAV_LINKS.map((link) => (
-            <li key={link.label}>
-              <a
-                href={link.href}
-                className="text-cream/60 hover:text-cream text-sm tracking-wide transition-colors duration-200"
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
+          {NAV_LINKS.map((link, i) => {
+            const total = NAV_LINKS.length - 1;
+            const t = total === 0 ? 0 : i / total;
+            // interpolate #60a5fa → #8b6ff7 → #ad2bee
+            const r = Math.round(96  + (173 - 96)  * t);
+            const g = Math.round(165 + (43  - 165) * t);
+            const b = Math.round(250 + (238 - 250) * t);
+            const color = `rgb(${r},${g},${b})`;
+            return (
+              <li key={link.label}>
+                <a
+                  href={link.href}
+                  className="text-sm tracking-wide"
+                  style={{ color: "rgba(251,251,244,0.6)", transition: "color 0.2s ease" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = color; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "rgba(251,251,244,0.6)"; }}
+                >
+                  {link.label}
+                </a>
+              </li>
+            );
+          })}
         </ul>
 
         {/* CTA */}
         <a
           href="#contact"
-          className="hidden md:flex items-center gap-2 text-sm text-cream/60 hover:text-cream transition-colors duration-200 border border-cream/20 hover:border-cream/50 rounded-full px-5 py-2"
+          className="hidden md:flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-white transition-colors duration-200 border border-cream/25 hover:border-cream/60 rounded-full px-5 py-2"
         >
           Gespräch starten
         </a>

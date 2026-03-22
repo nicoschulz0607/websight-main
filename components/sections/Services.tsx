@@ -3,306 +3,321 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { SERVICES } from "@/lib/constants";
+import ServiceModal from "@/components/ServiceModal";
+
+// Thematisch passende Pexels-Bilder (dunkel, professionell)
+const BG_IMAGES = [
+  "https://images.pexels.com/photos/574077/pexels-photo-574077.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1",  // Code/Laptop – Webdesign
+  "https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1",  // Analytics-Dashboard – SEO
+  "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1", // Keyboard/Tech – Automatisierung
+  "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1", // Team/Creative – Marke
+];
+
+const TRUST_TAGS = [
+  ["Blitzschnell", "Rechtssicher", "Mobile-First", "React & Next.js"],
+  ["Messbar", "Lokal optimiert", "Nachhaltig", "Google-zertifiziert"],
+  ["24/7 aktiv", "Vollautomatisch", "ROI-optimiert", "CRM-Ready"],
+  ["Einzigartig", "Vertrauensstark", "Markenkonform", "Strategisch"],
+];
+
+const EXPANDED_H  = 50;
+const COLLAPSED_H = (100 - EXPANDED_H) / (SERVICES.length - 1);
+const OVERLAP_PX  = 20; // px each card overlaps the previous
 
 export default function Services() {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const descRefs = useRef<(HTMLParagraphElement | null)[]>([]);
-  const imgRefs  = useRef<(HTMLDivElement | null)[]>([]);
-  const tweens   = useRef<gsap.core.Tween[]>([]);
+  const [hoveredIndex,  setHoveredIndex]  = useState<number | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    // Initial state: all images slightly zoomed (collapsed look)
-    gsap.set(imgRefs.current.filter(Boolean), { scale: 1.08 });
-  }, []);
+  const cardRefs    = useRef<(HTMLDivElement | null)[]>([]);
+  const imgRefs     = useRef<(HTMLDivElement | null)[]>([]);
+  const titleRefs   = useRef<(HTMLHeadingElement | null)[]>([]);
+  const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const numRefs     = useRef<(HTMLSpanElement | null)[]>([]);
+  const tweens      = useRef<gsap.core.Tween[]>([]);
 
   useEffect(() => {
     tweens.current.forEach((t) => t.kill());
     tweens.current = [];
 
-    const total = SERVICES.length; // 4
-
     if (hoveredIndex === null) {
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
         tweens.current.push(
-          gsap.to(card, { height: `${100 / total}%`, duration: 0.65, ease: "power2.out" })
+          gsap.to(card, { height: `${100 / SERVICES.length}%`, duration: 0.7, ease: "power3.out" })
         );
         tweens.current.push(
-          gsap.to(descRefs.current[i], { autoAlpha: 0, duration: 0.2 })
+          gsap.to(imgRefs.current[i], { scale: 1.05, duration: 0.7, ease: "power3.out" })
         );
         tweens.current.push(
-          gsap.to(imgRefs.current[i], { scale: 1.08, duration: 0.65, ease: "power2.out" })
-        );
-      });
-    } else {
-      const expandedH  = 55;
-      const collapsedH = (100 - expandedH) / (total - 1);
-
-      cardRefs.current.forEach((card, i) => {
-        if (!card) return;
-        const isActive = i === hoveredIndex;
-        tweens.current.push(
-          gsap.to(card, {
-            height: `${isActive ? expandedH : collapsedH}%`,
-            duration: 0.65,
-            ease: "power2.out",
+          gsap.to(titleRefs.current[i], {
+            fontSize: "clamp(1.4rem, 2.2vw, 2rem)", y: 0,
+            duration: 0.5, ease: "power2.out",
           })
         );
         tweens.current.push(
-          gsap.to(descRefs.current[i], {
-            autoAlpha: isActive ? 1 : 0,
-            duration: isActive ? 0.35 : 0.2,
+          gsap.to(contentRefs.current[i], { autoAlpha: 0, y: 12, duration: 0.25 })
+        );
+        tweens.current.push(
+          gsap.to(numRefs.current[i], { opacity: 0.35, duration: 0.3 })
+        );
+      });
+    } else {
+      cardRefs.current.forEach((card, i) => {
+        if (!card) return;
+        const isActive = i === hoveredIndex;
+
+        tweens.current.push(
+          gsap.to(card, {
+            height: `${isActive ? EXPANDED_H : COLLAPSED_H}%`,
+            duration: 0.7, ease: "power3.out",
           })
         );
         tweens.current.push(
           gsap.to(imgRefs.current[i], {
-            scale: isActive ? 1 : 1.08,
-            duration: 0.65,
-            ease: "power2.out",
+            scale: isActive ? 1.0 : 1.08,
+            duration: 0.7, ease: "power3.out",
+          })
+        );
+        tweens.current.push(
+          gsap.to(titleRefs.current[i], {
+            fontSize: isActive ? "clamp(3rem, 6vw, 5.5rem)" : "clamp(0.9rem, 1.4vw, 1.2rem)",
+            y: isActive ? 0 : 0,
+            duration: 0.6, ease: "power3.out",
+          })
+        );
+        tweens.current.push(
+          gsap.to(contentRefs.current[i], {
+            autoAlpha: isActive ? 1 : 0,
+            y: isActive ? 0 : 10,
+            duration: isActive ? 0.45 : 0.2,
+            delay: isActive ? 0.18 : 0,
+          })
+        );
+        tweens.current.push(
+          gsap.to(numRefs.current[i], {
+            opacity: isActive ? 0.08 : 0.2,
+            duration: 0.4,
           })
         );
       });
     }
   }, [hoveredIndex]);
 
-  return (
-    <section id="services" className="py-28 px-8 md:px-16 lg:px-24">
-      <div className="max-w-7xl mx-auto">
+  const selectedService = selectedIndex !== null ? SERVICES[selectedIndex] : null;
 
-        {/* ── Header ───────────────────────────────────────────────────── */}
-        <div className="mb-12">
-          <p className="text-cream/30 text-xs tracking-widest uppercase mb-3">
+  return (
+    <>
+      <section id="services" style={{ position: "relative" }}>
+
+        {/* ── Header ── */}
+        <div style={{ padding: "5rem clamp(2rem, 8vw, 8rem) 3rem" }}>
+          <p style={{
+            color: "rgba(251,251,244,0.28)", fontSize: "0.65rem",
+            letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "0.9rem",
+          }}>
             Was wir machen
           </p>
-          <h2
-            className="text-cream font-bold"
-            style={{
-              fontSize: "clamp(2.4rem, 4.5vw, 4.5rem)",
-              letterSpacing: "-0.03em",
-              lineHeight: 1,
-            }}
-          >
+          <h2 style={{
+            fontSize: "clamp(2.4rem, 4.5vw, 4.5rem)",
+            fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1, color: "#fbfbf4",
+          }}>
             Unsere{" "}
-            <span
-              style={{
-                background:
-                  "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
+            <span style={{
+              background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+            }}>
               Leistungen
             </span>
           </h2>
         </div>
 
-        {/* ── Card container ────────────────────────────────────────────── */}
+        {/* ── Card stack — full width, overlapping ── */}
         <div
-          className="flex flex-col w-full overflow-hidden"
-          style={{ height: "70vh" }}
+          style={{
+            display: "flex", flexDirection: "column",
+            height: "86vh",
+            // Compensate for overlaps so total visual height = 86vh
+          }}
           onMouseLeave={() => setHoveredIndex(null)}
         >
           {SERVICES.map((service, i) => (
             <div
               key={i}
               ref={(el) => { cardRefs.current[i] = el; }}
-              className="flex-shrink-0"
               style={{
                 height: `${100 / SERVICES.length}%`,
-                minHeight: 0,
+                flexShrink: 0, minHeight: 0,
+                position: "relative", overflow: "hidden",
                 willChange: "height",
-                display: "flex",
-                flexDirection: "row",
-                overflow: "hidden",       /* clips image when collapsed */
-                borderTop: "1px solid rgba(251,251,244,0.08)",
+                // Overlap: each card covers bottom of previous by OVERLAP_PX
+                marginTop: i === 0 ? 0 : `-${OVERLAP_PX}px`,
+                // Cards further down stack on top of earlier ones
+                zIndex: hoveredIndex === i ? 10 : SERVICES.length + i,
+                // Rounded top corners to make overlap visible
+                borderRadius: i === 0 ? 0 : "14px 14px 0 0",
                 cursor: "none",
               }}
               onMouseEnter={() => setHoveredIndex(i)}
+              onClick={() => hoveredIndex === i && setSelectedIndex(i)}
             >
-              {/* Top accent line on hover */}
+              {/* Background image with parallax zoom */}
               <div
-                aria-hidden
+                ref={(el) => { imgRefs.current[i] = el; }}
                 style={{
-                  position: "absolute",
-                  top: 0, left: 0, right: 0,
-                  height: "1px",
-                  background: `linear-gradient(90deg, transparent, ${service.accentColor}70, transparent)`,
-                  opacity: hoveredIndex === i ? 1 : 0,
-                  transition: "opacity 0.4s ease",
-                  zIndex: 2,
+                  position: "absolute", inset: 0,
+                  backgroundImage: `url(${BG_IMAGES[i]})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  transform: "scale(1.05)",
+                  willChange: "transform",
                 }}
               />
 
-              {/* ── Left: image panel ─────────────────────────────────── */}
-              <div
+              {/* Dark gradient — adjusts on hover */}
+              <div style={{
+                position: "absolute", inset: 0,
+                background: hoveredIndex === i
+                  ? "linear-gradient(105deg, rgba(8,8,8,0.93) 38%, rgba(8,8,8,0.55) 100%)"
+                  : "linear-gradient(to right, rgba(8,8,8,0.86) 40%, rgba(8,8,8,0.72) 100%)",
+                transition: "background 0.55s ease",
+              }} />
+
+              {/* Accent radial glow (appears on hover) */}
+              <div style={{
+                position: "absolute", inset: 0,
+                background: `radial-gradient(ellipse 55% 110% at 85% 50%, ${service.accentColor}14, transparent 70%)`,
+                opacity: hoveredIndex === i ? 1 : 0,
+                transition: "opacity 0.55s ease",
+              }} />
+
+              {/* Bottom-right shadow for depth */}
+              <div style={{
+                position: "absolute", bottom: 0, left: 0, right: 0, height: "40%",
+                background: "linear-gradient(to top, rgba(8,8,8,0.5), transparent)",
+                pointerEvents: "none",
+              }} />
+
+              {/* Giant watermark number */}
+              <span
+                ref={(el) => { numRefs.current[i] = el; }}
+                aria-hidden
                 style={{
-                  width: "38%",
-                  flexShrink: 0,
-                  position: "relative",
-                  overflow: "hidden",
+                  position: "absolute", right: "3%", bottom: "-5%",
+                  fontSize: "clamp(8rem, 22vw, 22rem)",
+                  fontWeight: 900, lineHeight: 1,
+                  color: service.accentColor,
+                  opacity: 0.35,
+                  letterSpacing: "-0.07em", userSelect: "none", pointerEvents: "none",
                 }}
               >
-                <div
-                  ref={(el) => { imgRefs.current[i] = el; }}
+                {String(i + 1).padStart(2, "0")}
+              </span>
+
+              {/* ── Foreground content ── */}
+              <div style={{
+                position: "relative", zIndex: 2, height: "100%",
+                display: "flex", flexDirection: "column", justifyContent: "center",
+                padding: `${OVERLAP_PX + 12}px clamp(2rem, 8vw, 8rem) 1.5rem`,
+              }}>
+
+                {/* Title — GSAP animates fontSize */}
+                <h3
+                  ref={(el) => { titleRefs.current[i] = el; }}
                   style={{
-                    width: "100%",
-                    height: "100%",
-                    transformOrigin: "center center",
-                    position: "relative",
-                    background: "#0a0a0a",
+                    fontSize: "clamp(1.4rem, 2.2vw, 2rem)",
+                    fontWeight: 700, letterSpacing: "-0.03em",
+                    color: "#fbfbf4", lineHeight: 1, margin: 0,
                   }}
                 >
-                  {/* Main radial glow — stronger on hover */}
-                  <div style={{
-                    position: "absolute", inset: 0,
-                    background: `radial-gradient(ellipse 90% 80% at 40% 50%, ${service.accentColor}35 0%, transparent 65%)`,
-                    opacity: hoveredIndex === i ? 1 : 0.5,
-                    transition: "opacity 0.5s ease",
-                  }} />
-                  {/* Bottom glow */}
-                  <div style={{
-                    position: "absolute", bottom: 0, left: 0, right: 0, height: "50%",
-                    background: `linear-gradient(to top, ${service.accentColor}20, transparent)`,
-                    opacity: hoveredIndex === i ? 1 : 0.3,
-                    transition: "opacity 0.5s ease",
-                  }} />
-                  {/* Subtle grid */}
-                  <svg
-                    aria-hidden
-                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.04 }}
-                    viewBox="0 0 400 300"
-                    preserveAspectRatio="xMidYMid slice"
-                  >
-                    {[0,1,2,3,4,5].map(n => (
-                      <line key={`v${n}`} x1={n*80} y1="0" x2={n*80} y2="300" stroke="#fbfbf4" strokeWidth="0.5"/>
+                  {service.title}
+                </h3>
+
+                {/* Accent divider — only when expanded */}
+                <div style={{
+                  width: "2.5rem", height: "2px", borderRadius: "2px",
+                  background: `linear-gradient(90deg, ${service.accentColor}, transparent)`,
+                  marginTop: "1.5rem",
+                  opacity: hoveredIndex === i ? 1 : 0,
+                  transition: "opacity 0.4s ease 0.1s",
+                }} />
+
+                {/* Expanded content */}
+                <div
+                  ref={(el) => { contentRefs.current[i] = el; }}
+                  style={{ opacity: 0, visibility: "hidden", marginTop: "1.5rem" }}
+                >
+                  {/* Description */}
+                  <p style={{
+                    color: "rgba(251,251,244,0.55)",
+                    fontSize: "clamp(0.875rem, 1vw, 0.975rem)",
+                    lineHeight: 1.85, maxWidth: "480px",
+                    marginBottom: "1.75rem",
+                  }}>
+                    {service.description}
+                  </p>
+
+                  {/* Trust tags */}
+                  <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "2rem" }}>
+                    {TRUST_TAGS[i].map((tag, j) => (
+                      <span key={j} style={{
+                        padding: "0.28rem 0.8rem",
+                        border: `1px solid ${service.accentColor}38`,
+                        borderRadius: "100px",
+                        color: service.accentColor,
+                        fontSize: "0.65rem", letterSpacing: "0.09em",
+                        background: `${service.accentColor}0d`,
+                        whiteSpace: "nowrap",
+                      }}>
+                        {tag}
+                      </span>
                     ))}
-                    {[0,1,2,3,4].map(n => (
-                      <line key={`h${n}`} x1="0" y1={n*75} x2="400" y2={n*75} stroke="#fbfbf4" strokeWidth="0.5"/>
-                    ))}
-                  </svg>
-                  {/* Large number watermark */}
-                  <span
-                    aria-hidden
+                  </div>
+
+                  {/* CTA */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setSelectedIndex(i); }}
                     style={{
-                      position: "absolute", bottom: "0.6rem", right: "1rem",
-                      fontSize: "clamp(3.5rem, 8vw, 8rem)", fontWeight: 800,
-                      color: service.accentColor,
-                      opacity: hoveredIndex === i ? 0.18 : 0.06,
-                      transition: "opacity 0.4s ease",
-                      lineHeight: 1, letterSpacing: "-0.06em", userSelect: "none",
+                      display: "inline-flex", alignItems: "center", gap: "0.5rem",
+                      padding: "0.65rem 1.4rem",
+                      background: "rgba(251,251,244,0.05)",
+                      border: "1px solid rgba(251,251,244,0.18)",
+                      color: "#fbfbf4", fontSize: "0.78rem",
+                      letterSpacing: "0.07em", cursor: "none",
+                      borderRadius: "3px",
+                      transition: "border-color 0.2s, background 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = service.accentColor;
+                      e.currentTarget.style.background = `${service.accentColor}18`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(251,251,244,0.18)";
+                      e.currentTarget.style.background = "rgba(251,251,244,0.05)";
                     }}
                   >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  {/* Top-left accent corner */}
-                  <div style={{
-                    position: "absolute", top: "1rem", left: "1rem",
-                    width: 24, height: 24,
-                    borderTop: `1.5px solid ${service.accentColor}`,
-                    borderLeft: `1.5px solid ${service.accentColor}`,
-                    opacity: hoveredIndex === i ? 0.8 : 0.2,
-                    transition: "opacity 0.4s ease",
-                  }} />
+                    Details ansehen →
+                  </button>
                 </div>
               </div>
 
-              {/* ── Right: content panel ──────────────────────────────── */}
-              <div
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  padding: "1.5rem 2.5rem",
-                  borderLeft: `1px solid rgba(251,251,244,0.06)`,
-                  position: "relative",
-                }}
-              >
-                {/* Title row — always visible, always centered */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                    <span
-                      style={{
-                        width: 7, height: 7, borderRadius: "50%",
-                        flexShrink: 0,
-                        background: service.accentColor,
-                        opacity: hoveredIndex === i ? 1 : 0.25,
-                        transition: "opacity 0.3s ease",
-                      }}
-                    />
-                    <h3
-                      style={{
-                        fontSize: "clamp(1.1rem, 1.9vw, 1.55rem)",
-                        fontWeight: 500,
-                        letterSpacing: "-0.02em",
-                        color: hoveredIndex === i ? "#fbfbf4" : "rgba(251,251,244,0.45)",
-                        transition: "color 0.3s ease",
-                      }}
-                    >
-                      {service.title}
-                    </h3>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexShrink: 0, marginLeft: "1rem" }}>
-                    <span
-                      style={{
-                        color: service.accentColor,
-                        fontFamily: "monospace",
-                        fontSize: "0.7rem",
-                        opacity: hoveredIndex === i ? 0.6 : 0.18,
-                        transition: "opacity 0.3s ease",
-                      }}
-                    >
-                      0{i + 1}
-                    </span>
-                    <span
-                      style={{
-                        color: "rgba(251,251,244,0.4)",
-                        fontSize: "1rem",
-                        opacity: hoveredIndex === i ? 1 : 0,
-                        transition: "opacity 0.3s ease",
-                      }}
-                    >
-                      ↗
-                    </span>
-                  </div>
-                </div>
-
-                {/* Description — absolute, starts below the centered title */}
-                <p
-                  ref={(el) => { descRefs.current[i] = el; }}
-                  style={{
-                    position: "absolute",
-                    top: "calc(50% + 2rem)",
-                    left: "2.5rem",
-                    right: "2.5rem",
-                    color: "rgba(251,251,244,0.5)",
-                    fontSize: "clamp(0.875rem, 1.1vw, 1rem)",
-                    lineHeight: 1.75,
-                    maxWidth: "520px",
-                    opacity: 0,
-                    visibility: "hidden",
-                  }}
-                >
-                  {service.description}
-                </p>
-              </div>
+              {/* Right accent line (visible on hover) */}
+              <div style={{
+                position: "absolute", right: 0, top: "15%", bottom: "15%",
+                width: "1px",
+                background: `linear-gradient(to bottom, transparent, ${service.accentColor}70, transparent)`,
+                opacity: hoveredIndex === i ? 1 : 0,
+                transition: "opacity 0.4s ease",
+              }} />
             </div>
           ))}
-
-          {/* Bottom border */}
-          <div style={{ borderTop: "1px solid rgba(251,251,244,0.08)" }} />
         </div>
 
-      </div>
-    </section>
+      </section>
+
+      <ServiceModal
+        service={selectedService}
+        onClose={() => setSelectedIndex(null)}
+      />
+    </>
   );
 }

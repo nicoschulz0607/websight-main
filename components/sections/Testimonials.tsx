@@ -1,152 +1,202 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { gsap } from "@/lib/gsap";
+import { useEffect, useRef } from "react";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { TESTIMONIALS } from "@/lib/constants";
 
+const QUOTE_WORDS: { text: string; colored?: boolean }[] = [
+  { text: "Seit" },
+  { text: "dem" },
+  { text: "Launch" },
+  { text: "haben" },
+  { text: "wir" },
+  { text: "deutlich" },
+  { text: "mehr",     colored: true },
+  { text: "Anfragen\u00a0\u2014", colored: true },
+  { text: "und" },
+  { text: "die" },
+  { text: "Qualit\u00e4t" },
+  { text: "der" },
+  { text: "Kontakte" },
+  { text: "ist" },
+  { text: "eine" },
+  { text: "andere." },
+  { text: "Kunden" },
+  { text: "kommen" },
+  { text: "bereits" },
+  { text: "mit" },
+  { text: "Vertrauen", colored: true },
+  { text: "auf" },
+  { text: "uns" },
+  { text: "zu," },
+  { text: "bevor" },
+  { text: "wir" },
+  { text: "das" },
+  { text: "erste" },
+  { text: "Gespr\u00e4ch" },
+  { text: "gef\u00fchrt" },
+  { text: "haben." },
+];
+
 export default function Testimonials() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const sectionRef  = useRef<HTMLElement>(null);
+  const quoteRef    = useRef<HTMLParagraphElement>(null);
+  const authorRef   = useRef<HTMLDivElement>(null);
+  const bgQuoteRef  = useRef<HTMLDivElement>(null);
 
-  const goTo = (nextIndex: number, direction: "left" | "right") => {
-    if (isAnimating || nextIndex === activeIndex) return;
-    setIsAnimating(true);
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Background quote mark — blurs in first
+      if (bgQuoteRef.current) {
+        gsap.fromTo(
+          bgQuoteRef.current,
+          { autoAlpha: 0, filter: "blur(3rem)", scale: 1.08 },
+          {
+            autoAlpha: 1, filter: "blur(0rem)", scale: 1,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top top",
+              end: "+=40%",
+              scrub: 1.5,
+            },
+          }
+        );
+      }
 
-    const xOut = direction === "right" ? -80 : 80;
-    const xIn = direction === "right" ? 80 : -80;
+      const words = quoteRef.current?.querySelectorAll<HTMLSpanElement>("[data-word]");
+      if (words && words.length > 0) {
+        gsap.fromTo(
+          words,
+          { autoAlpha: 0, filter: "blur(1.8rem)", y: 32 },
+          {
+            autoAlpha: 1, filter: "blur(0rem)", y: 0,
+            ease: "power2.out",
+            stagger: 0.06,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top top",
+              end: "+=180%",
+              scrub: 1.5,
+              pin: true,
+              anticipatePin: 1,
+              onLeave: () => {
+                // Author appears once quote is fully revealed
+                gsap.to(authorRef.current, {
+                  autoAlpha: 1, y: 0, duration: 0.8, ease: "power3.out",
+                });
+              },
+              onEnterBack: () => {
+                // Hide author if user scrolls back up
+                gsap.to(authorRef.current, { autoAlpha: 0, y: 20, duration: 0.4 });
+              },
+            },
+          }
+        );
+      }
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
 
-    gsap.to(cardRef.current, {
-      x: xOut,
-      opacity: 0,
-      duration: 0.35,
-      ease: "power2.in",
-      onComplete: () => {
-        setActiveIndex(nextIndex);
-        gsap.set(cardRef.current, { x: xIn, opacity: 0 });
-        gsap.to(cardRef.current, {
-          x: 0,
-          opacity: 1,
-          duration: 0.45,
-          ease: "power2.out",
-          onComplete: () => setIsAnimating(false),
-        });
-      },
-    });
-  };
-
-  const prev = () => {
-    const nextIndex = (activeIndex - 1 + TESTIMONIALS.length) % TESTIMONIALS.length;
-    goTo(nextIndex, "left");
-  };
-
-  const next = () => {
-    const nextIndex = (activeIndex + 1) % TESTIMONIALS.length;
-    goTo(nextIndex, "right");
-  };
-
-  const testimonial = TESTIMONIALS[activeIndex];
+  const t = TESTIMONIALS[0];
 
   return (
-    <section id="testimonials" className="py-32 px-8 md:px-16 lg:px-24">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-16">
-          <p className="text-cream/30 text-xs tracking-widest uppercase mb-3">Kundenstimmen</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-cream leading-tight">
-            Was Kunden über uns <span className="gradient-text">sagen</span>
-          </h2>
-        </div>
+    <section
+      ref={sectionRef}
+      id="testimonials"
+      style={{
+        padding: "clamp(8rem, 14vw, 14rem) clamp(2rem, 9vw, 8.5rem)",
+        borderTop: "1px solid rgba(251,251,244,0.06)",
+        borderBottom: "1px solid rgba(251,251,244,0.06)",
+        position: "relative",
+        overflow: "hidden",
+        background: "#0a0a0a",
+      }}
+    >
+      {/* Large decorative quote mark — fades in behind text */}
+      <div
+        ref={bgQuoteRef}
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -54%)",
+          fontSize: "clamp(18rem, 38vw, 36rem)",
+          fontWeight: 900,
+          lineHeight: 1,
+          color: "transparent",
+          background: "linear-gradient(135deg, rgba(96,165,250,0.07) 0%, rgba(139,111,247,0.07) 50%, rgba(173,43,238,0.07) 100%)",
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          userSelect: "none",
+          pointerEvents: "none",
+          zIndex: 0,
+          opacity: 0,
+          fontFamily: "Georgia, serif",
+          letterSpacing: "-0.05em",
+        }}
+        aria-hidden
+      >
+        &#8220;
+      </div>
 
-        {/* Card */}
-        <div className="relative">
-          <div
-            ref={cardRef}
-            className="relative border border-cream/10 rounded-2xl p-10 md:p-14 overflow-hidden"
-            style={{ background: "rgba(255,255,255,0.02)" }}
+      {/* Quote — blur reveal */}
+      <p
+        ref={quoteRef}
+        style={{
+          position: "relative", zIndex: 1,
+          fontSize: "clamp(1.8rem, 3.2vw, 3rem)",
+          fontWeight: 500,
+          lineHeight: 1.55,
+          letterSpacing: "-0.025em",
+          maxWidth: "1050px",
+          margin: "0 auto 4rem",
+          textAlign: "center",
+        }}
+      >
+        {QUOTE_WORDS.map((w, i) => (
+          <span
+            key={i}
+            data-word
+            style={{
+              display: "inline-block",
+              marginRight: "0.28em",
+              willChange: "filter, opacity, transform",
+              ...(w.colored ? {
+                background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              } : { color: "#fbfbf4" }),
+            }}
           >
-            {/* Subtle gradient top */}
-            <div
-              className="absolute top-0 left-0 right-0 h-px"
-              style={{
-                background: "linear-gradient(90deg, transparent, rgba(96,165,250,0.4), rgba(173,43,238,0.4), transparent)",
-              }}
-            />
+            {w.text}
+          </span>
+        ))}
+      </p>
 
-            <blockquote className="text-cream/85 text-xl md:text-2xl leading-relaxed font-light mb-10">
-              &ldquo;{testimonial.quote}&rdquo;
-            </blockquote>
-
-            <div className="flex items-center gap-4">
-              {/* Avatar placeholder */}
-              <div
-                className="w-10 h-10 rounded-full flex-shrink-0"
-                style={{
-                  background: `linear-gradient(135deg, #60a5fa, #ad2bee)`,
-                }}
-              />
-              <div>
-                <p className="text-cream font-semibold text-sm">{testimonial.name}</p>
-                <p className="text-cream/40 text-xs">
-                  {testimonial.role}, {testimonial.company}
-                </p>
-              </div>
-            </div>
-
-            {/* Invisible left/right click zones */}
-            <div
-              className="absolute left-0 top-0 w-1/2 h-full"
-              onClick={prev}
-              style={{ cursor: "none" }}
-            />
-            <div
-              className="absolute right-0 top-0 w-1/2 h-full"
-              onClick={next}
-              style={{ cursor: "none" }}
-            />
-          </div>
-
-          {/* Navigation */}
-          <div className="flex items-center justify-between mt-8">
-            {/* Dots */}
-            <div className="flex items-center gap-2">
-              {TESTIMONIALS.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => goTo(i, i > activeIndex ? "right" : "left")}
-                  className="transition-all duration-300"
-                  style={{
-                    width: i === activeIndex ? "24px" : "8px",
-                    height: "4px",
-                    borderRadius: "2px",
-                    background: i === activeIndex ? "#60a5fa" : "rgba(251,251,244,0.2)",
-                  }}
-                />
-              ))}
-            </div>
-
-            {/* Arrow buttons */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={prev}
-                className="w-10 h-10 rounded-full border border-cream/20 hover:border-primary-blue flex items-center justify-center text-cream/50 hover:text-primary-blue transition-all duration-200"
-              >
-                ←
-              </button>
-              <button
-                onClick={next}
-                className="w-10 h-10 rounded-full border border-cream/20 hover:border-primary-blue flex items-center justify-center text-cream/50 hover:text-primary-blue transition-all duration-200"
-              >
-                →
-              </button>
-            </div>
-          </div>
+      {/* Author — appears after quote is fully revealed */}
+      <div
+        ref={authorRef}
+        style={{
+          position: "relative", zIndex: 1,
+          display: "flex", alignItems: "center", justifyContent: "center", gap: "1.25rem",
+          opacity: 0, transform: "translateY(20px)",
+        }}
+      >
+        <div style={{
+          width: 48, height: 48, borderRadius: "50%", flexShrink: 0,
+          background: "linear-gradient(135deg, #60a5fa, #ad2bee)",
+        }} />
+        <div>
+          <p style={{ fontSize: "1rem", fontWeight: 600, color: "#fbfbf4", marginBottom: "0.2rem" }}>
+            {t.name}
+          </p>
+          <p style={{ fontSize: "0.78rem", color: "rgba(251,251,244,0.35)", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            {t.role} · {t.company}
+          </p>
         </div>
-
-        {/* Context hint */}
-        <p className="text-cream/20 text-xs text-center mt-6 tracking-widest uppercase">
-          Links oder rechts auf die Karte klicken zum Navigieren
-        </p>
       </div>
     </section>
   );

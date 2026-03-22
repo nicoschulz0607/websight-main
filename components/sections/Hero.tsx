@@ -121,18 +121,56 @@ export default function Hero() {
 
         {/* CTA buttons */}
         <div ref={ctaRef} className="flex items-center gap-4 mt-8 flex-wrap">
+          {/* Primary: gradient fill */}
           <a
             href="#work"
-            className="flex items-center justify-center rounded-full bg-cream text-black text-xs font-semibold tracking-wide px-7 py-3 hover:bg-cream/90 transition-colors"
+            className="flex items-center justify-center rounded-full text-xs font-bold tracking-widest uppercase"
+            style={{
+              padding: "0.8rem 2rem",
+              background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
+              color: "#fff",
+              textDecoration: "none",
+              transition: "opacity 0.2s, transform 0.2s, box-shadow 0.2s",
+              boxShadow: "0 0 0 rgba(139,111,247,0)",
+              letterSpacing: "0.1em",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.opacity = "0.88";
+              (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(-2px)";
+              (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 8px 30px rgba(139,111,247,0.45)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.opacity = "1";
+              (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(0)";
+              (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 0 0 rgba(139,111,247,0)";
+            }}
           >
             Unsere Projekte
           </a>
+          {/* Secondary: gradient border */}
           <a
             href="#contact"
-            className="flex items-center justify-center rounded-full border text-cream/70 hover:text-cream text-xs font-medium tracking-wide px-7 py-3 transition-all duration-300"
-            style={{ borderColor: "rgba(251,251,244,0.25)" }}
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(251,251,244,0.6)")}
-            onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(251,251,244,0.25)")}
+            className="flex items-center justify-center rounded-full text-xs font-semibold tracking-widest uppercase"
+            style={{
+              padding: "0.8rem 2rem",
+              border: "1px solid transparent",
+              background: "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)) padding-box, linear-gradient(135deg, rgba(96,165,250,0.5), rgba(173,43,238,0.5)) border-box",
+              color: "rgba(251,251,244,0.8)",
+              textDecoration: "none",
+              letterSpacing: "0.1em",
+              transition: "color 0.25s, background 0.25s, transform 0.2s",
+              backdropFilter: "blur(4px)",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.background = "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%) padding-box, linear-gradient(135deg, #60a5fa, #ad2bee) border-box";
+              (e.currentTarget as HTMLAnchorElement).style.color = "#fff";
+              (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.background = "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)) padding-box, linear-gradient(135deg, rgba(96,165,250,0.5), rgba(173,43,238,0.5)) border-box";
+              (e.currentTarget as HTMLAnchorElement).style.color = "rgba(251,251,244,0.8)";
+              (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(0)";
+            }}
           >
             Gespräch starten →
           </a>
