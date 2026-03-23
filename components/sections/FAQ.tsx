@@ -15,7 +15,7 @@ export default function FAQ() {
   const answerRefs      = useRef<(HTMLDivElement | null)[]>([]);
   const answerInnerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const numberRefs      = useRef<(HTMLSpanElement | null)[]>([]);
-  const barRefs         = useRef<(HTMLDivElement | null)[]>([]);
+  const barRefs         = useRef<(HTMLSpanElement | null)[]>([]);
 
   // Scroll reveal
   useEffect(() => {
