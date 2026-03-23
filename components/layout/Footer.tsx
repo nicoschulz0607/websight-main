@@ -105,7 +105,7 @@ export default function Footer() {
           </div>
 
           {/* Link groups */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "4rem" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "clamp(2rem, 6vw, 4rem)" }}>
 
             {/* Navigation */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -231,7 +231,7 @@ export default function Footer() {
           flexWrap: "wrap",
           justifyContent: "space-between",
           alignItems: "center",
-          gap: "1rem",
+          gap: "0.75rem",
         }}>
           <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
             {["Impressum", "Datenschutz", "AGB"].map((item) => (

@@ -137,7 +137,7 @@ export default function Contact() {
       }}>
 
         {/* ── Left ─────────────────────────────────────────── */}
-        <div className="c-reveal" style={{ flex: "1 1 340px", minWidth: 0 }}>
+        <div className="c-reveal" style={{ flex: "1 1 300px", minWidth: 0, width: "100%" }}>
           <span style={{
             display: "block", fontSize: "0.7rem", fontWeight: 700,
             letterSpacing: "0.3em", textTransform: "uppercase", color: "#60a5fa", marginBottom: "1.5rem",
@@ -209,7 +209,7 @@ export default function Contact() {
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           style={{
-            flex: "1 1 420px", minWidth: 0,
+            flex: "1 1 300px", minWidth: 0, width: "100%",
             borderRadius: "1.5rem", padding: "1px",
             background: "rgba(251,251,244,0.07)",
           }}
