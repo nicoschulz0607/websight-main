@@ -38,7 +38,7 @@ export default function BlurText({ lines, className = "", noBorderTop = false }:
           scrollTrigger: {
             trigger: wrapperRef.current,
             start: isMobile ? "top 75%" : "top 40%",
-            end: isMobile ? "bottom 40%" : "bottom 85%",
+            end: isMobile ? "bottom 15%" : "bottom 85%",
             scrub: 1.5,
           },
         }
@@ -46,11 +46,11 @@ export default function BlurText({ lines, className = "", noBorderTop = false }:
     }, wrapperRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [isMobile]);
 
   return (
     /* Tall wrapper — provides scroll distance without GSAP pin */
-    <div ref={wrapperRef} style={{ height: isMobile ? "150vh" : "190vh" }}>
+    <div ref={wrapperRef} style={{ height: isMobile ? "250vh" : "190vh" }}>
       <section
         ref={stickyRef}
         className={className}
