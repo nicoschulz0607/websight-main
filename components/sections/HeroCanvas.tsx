@@ -113,8 +113,6 @@ export default function HeroCanvas() {
       mouseRef.current = { x: e.clientX - r.left, y: e.clientY - r.top, active: true };
     };
     const onLeave = () => { mouseRef.current = { x: -9999, y: -9999, active: false }; };
-    canvas.addEventListener("mousemove", onMove,  { passive: true });
-    canvas.addEventListener("mouseleave", onLeave, { passive: true });
 
     // ── Draw helpers ─────────────────────────────────────────────────────────
     const drawGlow = (
@@ -245,8 +243,6 @@ export default function HeroCanvas() {
     return () => {
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", init);
-      canvas.removeEventListener("mousemove", onMove);
-      canvas.removeEventListener("mouseleave", onLeave);
     };
   }, []);
 

@@ -2,8 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 export default function Hero() {
+  const isMobile = useIsMobile();
   const sectionRef   = useRef<HTMLElement>(null);
   const badgeRef     = useRef<HTMLDivElement>(null);
   const headlineRef  = useRef<HTMLHeadingElement>(null);
@@ -13,14 +15,14 @@ export default function Hero() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set([badgeRef.current, headlineRef.current, descRef.current, ctaRef.current], {
+      gsap.set([badgeRef.current, descRef.current, ctaRef.current], {
         opacity: 0, y: 28,
       });
       gsap.set(scrollHintRef.current, { opacity: 0 });
 
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
       tl.to(badgeRef.current,    { opacity: 1, y: 0, duration: 0.6 }, 0.4);
-      tl.to(headlineRef.current, { opacity: 1, y: 0, duration: 0.8 }, 0.6);
+      tl.from(headlineRef.current, { y: 28, duration: 0.8 }, 0.6);
       tl.to(descRef.current,     { opacity: 1, y: 0, duration: 0.6 }, 0.95);
       tl.to(ctaRef.current,      { opacity: 1, y: 0, duration: 0.55 }, 1.15);
       tl.to(scrollHintRef.current, { opacity: 1, duration: 0.5 }, 1.45);
@@ -41,6 +43,9 @@ export default function Hero() {
         src="/hero-bg.png"
         alt=""
         aria-hidden
+        width={2206}
+        height={1536}
+        fetchPriority="high"
         className="absolute inset-0 w-full h-full object-cover"
         style={{ animation: "heroBgScale 22s ease-in-out infinite alternate" }}
       />
@@ -50,8 +55,9 @@ export default function Hero() {
         aria-hidden
         className="absolute inset-0"
         style={{
-          background:
-            "linear-gradient(108deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 38%, rgba(0,0,0,0.18) 65%, rgba(0,0,0,0.05) 100%)",
+          background: isMobile
+            ? "rgba(0,0,0,0.6)"
+            : "linear-gradient(108deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 38%, rgba(0,0,0,0.18) 65%, rgba(0,0,0,0.05) 100%)",
         }}
       />
 
@@ -69,9 +75,10 @@ export default function Hero() {
       <div
         className="absolute flex flex-col"
         style={{
-          left: "clamp(2rem, 6vw, 7rem)",
-          bottom: "clamp(5rem, 10vh, 9rem)",
-          maxWidth: "min(560px, 46vw)",
+          left: "clamp(1.5rem, 6vw, 7rem)",
+          right: isMobile ? "1.5rem" : "auto",
+          bottom: isMobile ? "5.5rem" : "clamp(5rem, 10vh, 9rem)",
+          maxWidth: isMobile ? "100%" : "min(560px, 46vw)",
         }}
       >
         {/* Badge */}
@@ -113,66 +120,36 @@ export default function Hero() {
         <p
           ref={descRef}
           className="text-cream/55 leading-relaxed mt-5"
-          style={{ fontSize: "clamp(0.9rem, 1.4vw, 1.1rem)", maxWidth: "420px" }}
+          style={{ fontSize: isMobile ? "0.95rem" : "clamp(0.9rem, 1.4vw, 1.1rem)", maxWidth: "420px" }}
         >
           Maßgeschneiderte Websites, starke Marken und digitale Produkte
           — die nicht nur schön aussehen, sondern auch performen.
         </p>
 
-        {/* CTA buttons */}
-        <div ref={ctaRef} className="flex items-center gap-4 mt-8 flex-wrap">
-          {/* Primary: gradient fill */}
+        {/* CTA button */}
+        <div ref={ctaRef} className="flex items-center mt-8">
           <a
-            href="#work"
-            className="flex items-center justify-center rounded-full text-xs font-bold tracking-widest uppercase"
+            href="#kontakt"
+            className="hero-cta flex items-center justify-center rounded-full font-bold tracking-widest uppercase"
             style={{
-              padding: "0.8rem 2rem",
+              padding: "1rem 2.6rem",
+              fontSize: "clamp(0.75rem, 1.1vw, 0.875rem)",
               background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
               color: "#fff",
               textDecoration: "none",
-              transition: "opacity 0.2s, transform 0.2s, box-shadow 0.2s",
-              boxShadow: "0 0 0 rgba(139,111,247,0)",
-              letterSpacing: "0.1em",
+              letterSpacing: "0.12em",
+              transition: "opacity 0.2s, transform 0.2s",
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLAnchorElement).style.opacity = "0.88";
               (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(-2px)";
-              (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 8px 30px rgba(139,111,247,0.45)";
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLAnchorElement).style.opacity = "1";
               (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(0)";
-              (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 0 0 rgba(139,111,247,0)";
             }}
           >
-            Unsere Projekte
-          </a>
-          {/* Secondary: gradient border */}
-          <a
-            href="#contact"
-            className="flex items-center justify-center rounded-full text-xs font-semibold tracking-widest uppercase"
-            style={{
-              padding: "0.8rem 2rem",
-              border: "1px solid transparent",
-              background: "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)) padding-box, linear-gradient(135deg, rgba(96,165,250,0.5), rgba(173,43,238,0.5)) border-box",
-              color: "rgba(251,251,244,0.8)",
-              textDecoration: "none",
-              letterSpacing: "0.1em",
-              transition: "color 0.25s, background 0.25s, transform 0.2s",
-              backdropFilter: "blur(4px)",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.background = "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%) padding-box, linear-gradient(135deg, #60a5fa, #ad2bee) border-box";
-              (e.currentTarget as HTMLAnchorElement).style.color = "#fff";
-              (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(-2px)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.background = "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)) padding-box, linear-gradient(135deg, rgba(96,165,250,0.5), rgba(173,43,238,0.5)) border-box";
-              (e.currentTarget as HTMLAnchorElement).style.color = "rgba(251,251,244,0.8)";
-              (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(0)";
-            }}
-          >
-            Gespräch starten →
+            Kontakt aufnehmen
           </a>
         </div>
       </div>

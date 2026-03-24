@@ -65,12 +65,11 @@ export default function Navbar() {
         </ul>
 
         {/* CTA */}
-        <a
-          href="#contact"
-          className="hidden md:flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-white transition-colors duration-200 border border-cream/25 hover:border-cream/60 rounded-full px-5 py-2"
-        >
-          Gespräch starten
-        </a>
+        <span className="nav-cta-wrap hidden md:inline-flex">
+          <a href="#kontakt" className="nav-cta-inner">
+            Gespräch aufnehmen
+          </a>
+        </span>
 
         {/* Mobile hamburger */}
         <button

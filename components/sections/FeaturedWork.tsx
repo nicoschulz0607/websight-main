@@ -23,6 +23,7 @@ export default function FeaturedWork() {
   const tweens = useRef<gsap.core.Tween[]>([]);
 
   useEffect(() => {
+    if (window.matchMedia("(max-width: 768px)").matches) return;
     tweens.current.forEach((t) => t.kill());
     tweens.current = [];
     cardRefs.current.forEach((card, i) => {
@@ -35,7 +36,92 @@ export default function FeaturedWork() {
   }, [hoveredIndex]);
 
   return (
-    <section id="work">
+    <>
+      <div className="block md:hidden">
+        <section id="work">
+          {/* Heading */}
+          <div style={{ padding: "2.5rem 1.5rem 1.5rem", background: "#000", display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, rgba(251,251,244,0.06), transparent)" }} />
+            <span style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(251,251,244,0.25)", whiteSpace: "nowrap" }}>Ausgewählte Arbeiten</span>
+            <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, transparent, rgba(251,251,244,0.06))" }} />
+          </div>
+
+          {/* Info card */}
+          <div style={{ background: "#080808", padding: "2rem 1.5rem", position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(251,251,244,0.05)" }}>
+            <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(251,251,244,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(251,251,244,0.02) 1px, transparent 1px)", backgroundSize: "40px 40px", pointerEvents: "none" }} />
+            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 60% at 20% 90%, rgba(96,165,250,0.08) 0%, transparent 65%)", pointerEvents: "none" }} />
+            <div style={{ position: "relative" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
+                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#60a5fa", display: "inline-block" }} />
+                <span style={{ fontSize: "0.62rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(251,251,244,0.35)" }}>Portfolio</span>
+              </div>
+              <h2 style={{ fontSize: "2.1rem", fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.04em", color: "#fbfbf4", marginBottom: "0.75rem" }}>
+                Unsere{" "}
+                <span style={{ background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Projekte.</span>
+              </h2>
+              <p style={{ fontSize: "0.82rem", color: "rgba(251,251,244,0.32)", lineHeight: 1.75 }}>
+                Design ohne Kompromisse — durchdacht, präzise, wirkungsvoll.
+              </p>
+            </div>
+          </div>
+
+          {/* Project image cards */}
+          {PROJECTS.map((project, i) => (
+            <div key={project.id} style={{ height: 240, position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(251,251,244,0.05)" }}>
+              <img
+                src={PROJECT_IMAGES[i]} alt={project.title}
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+              />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.1) 100%)" }} />
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "1px", background: `linear-gradient(90deg, transparent, ${project.accentColor}70, transparent)` }} />
+              <span style={{ position: "absolute", top: "1rem", left: "1.25rem", fontSize: "0.62rem", fontFamily: "monospace", letterSpacing: "0.2em", color: "rgba(251,251,244,0.5)", zIndex: 2 }}>
+                {project.number}
+              </span>
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "1.25rem", zIndex: 2 }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem", marginBottom: "0.5rem" }}>
+                  {project.tags.map((tag) => (
+                    <span key={tag} style={{ fontSize: "0.62rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(251,251,244,0.7)", background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)", border: "1px solid rgba(251,251,244,0.12)", padding: "0.2rem 0.5rem", borderRadius: "2rem" }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#fbfbf4", lineHeight: 1.15 }}>{project.title}</h3>
+                <p style={{ fontSize: "0.78rem", color: "rgba(251,251,244,0.5)", marginTop: "0.3rem" }}>{project.subtitle}</p>
+              </div>
+            </div>
+          ))}
+
+          {/* CTA card */}
+          <div style={{ background: "#080808", padding: "2.25rem 1.5rem", position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 60% at 70% 80%, rgba(173,43,238,0.12) 0%, transparent 65%)", pointerEvents: "none" }} />
+            <div style={{ position: "relative" }}>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", background: "rgba(173,43,238,0.1)", border: "1px solid rgba(173,43,238,0.25)", borderRadius: "2rem", padding: "0.3rem 0.75rem", marginBottom: "1.25rem" }}>
+                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#ad2bee", display: "inline-block" }} />
+                <span style={{ fontSize: "0.62rem", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: "#ad2bee" }}>Nächstes Projekt</span>
+              </div>
+              <p style={{ fontSize: "0.65rem", color: "rgba(251,251,244,0.3)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "0.6rem" }}>Zusammenarbeiten</p>
+              <h3 style={{ fontSize: "1.45rem", fontWeight: 800, lineHeight: 1.15, letterSpacing: "-0.02em", color: "#fbfbf4", marginBottom: "0.75rem" }}>
+                Hier könnte dein Projekt stehen.
+              </h3>
+              <p style={{ fontSize: "0.82rem", color: "rgba(251,251,244,0.38)", lineHeight: 1.7, marginBottom: "1.5rem" }}>
+                Lass uns gemeinsam etwas Außergewöhnliches schaffen.
+              </p>
+              <a
+                href="#kontakt"
+                style={{ display: "inline-flex", alignItems: "center", gap: "0.6rem", background: "linear-gradient(135deg, #60a5fa, #ad2bee)", color: "#fbfbf4", textDecoration: "none", borderRadius: "0.75rem", padding: "0.9rem 1.6rem", fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}
+              >
+                Gespräch starten
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M7 17 17 7M7 7h10v10"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div className="hidden md:block">
+        <section id="work-desktop">
       {/* Section heading */}
       <div style={{
         padding: "4rem clamp(2rem, 8vw, 8rem) 2rem",
@@ -53,7 +139,7 @@ export default function FeaturedWork() {
       </div>
 
       <div
-        className="flex w-full overflow-hidden"
+        className="flex w-full overflow-hidden cursor-none"
         style={{ height: "80vh" }}
         onMouseLeave={() => { setCursorMode("default"); setHoveredIndex(null); }}
       >
@@ -312,5 +398,7 @@ export default function FeaturedWork() {
         </div>
       </div>
     </section>
+  </div>
+</>
   );
 }

@@ -25,8 +25,9 @@ const COLLAPSED_H = (100 - EXPANDED_H) / (SERVICES.length - 1);
 const OVERLAP_PX  = 20; // px each card overlaps the previous
 
 export default function Services() {
-  const [hoveredIndex,  setHoveredIndex]  = useState<number | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [hoveredIndex,    setHoveredIndex]    = useState<number | null>(null);
+  const [selectedIndex,   setSelectedIndex]   = useState<number | null>(null);
+  const [mobileOpenIndex, setMobileOpenIndex] = useState<number | null>(null);
 
   const cardRefs    = useRef<(HTMLDivElement | null)[]>([]);
   const imgRefs     = useRef<(HTMLDivElement | null)[]>([]);
@@ -36,6 +37,7 @@ export default function Services() {
   const tweens      = useRef<gsap.core.Tween[]>([]);
 
   useEffect(() => {
+    if (window.matchMedia("(max-width: 768px)").matches) return;
     tweens.current.forEach((t) => t.kill());
     tweens.current = [];
 
@@ -105,9 +107,93 @@ export default function Services() {
 
   const selectedService = selectedIndex !== null ? SERVICES[selectedIndex] : null;
 
+  /* ── Layouts ─────────────────────────────────────── */
   return (
     <>
-      <section id="services" style={{ position: "relative" }}>
+      {/* ── Mobile layout ── */}
+      <div className="block md:hidden">
+        <section id="services" style={{ position: "relative" }}>
+          {/* Header */}
+          <div style={{ padding: "4rem 1.5rem 2.5rem" }}>
+            <p style={{ color: "rgba(251,251,244,0.28)", fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "0.9rem" }}>
+              Was wir machen
+            </p>
+            <h2 style={{ fontSize: "clamp(2.2rem, 8vw, 3.5rem)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1, color: "#fbfbf4" }}>
+              Unsere{" "}
+              <span style={{ background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                Leistungen
+              </span>
+            </h2>
+          </div>
+
+          {/* Accordion */}
+          <div style={{ borderTop: "1px solid rgba(251,251,244,0.06)" }}>
+            {SERVICES.map((service, i) => {
+              const isOpen = mobileOpenIndex === i;
+              return (
+                <div key={i} style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(251,251,244,0.06)" }}>
+                  {/* Background image */}
+                  <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${BG_IMAGES[i]})`, backgroundSize: "cover", backgroundPosition: "center", zIndex: 0 }} />
+                  {/* Dark overlay */}
+                  <div style={{ position: "absolute", inset: 0, background: isOpen ? "rgba(8,8,8,0.93)" : "rgba(8,8,8,0.87)", transition: "background 0.35s ease", zIndex: 1 }} />
+                  {/* Accent side line when open */}
+                  <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 2, background: isOpen ? `linear-gradient(to bottom, ${service.accentColor}, transparent)` : "transparent", transition: "background 0.35s ease", zIndex: 3 }} />
+
+                  {/* Content */}
+                  <div style={{ position: "relative", zIndex: 2 }}>
+                    {/* Tap header */}
+                    <div
+                      onClick={() => setMobileOpenIndex(isOpen ? null : i)}
+                      style={{ padding: "1.4rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                        <div style={{ width: 7, height: 7, borderRadius: "50%", background: service.accentColor, flexShrink: 0 }} />
+                        <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#fbfbf4", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
+                          {service.title}
+                        </h3>
+                      </div>
+                      <span style={{ color: service.accentColor, fontSize: "1.5rem", lineHeight: 1, display: "inline-block", transition: "transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94)", transform: isOpen ? "rotate(45deg)" : "none", flexShrink: 0, marginLeft: "0.75rem" }}>
+                        +
+                      </span>
+                    </div>
+
+                    {/* Expandable content */}
+                    <div style={{ display: "grid", gridTemplateRows: isOpen ? "1fr" : "0fr", transition: "grid-template-rows 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94)" }}>
+                      <div style={{ overflow: "hidden" }}>
+                      <div style={{ padding: "0 1.5rem 1.75rem" }}>
+                        <div style={{ width: "2rem", height: "2px", background: `linear-gradient(90deg, ${service.accentColor}, transparent)`, borderRadius: "2px", marginBottom: "1rem" }} />
+                        <p style={{ color: "rgba(251,251,244,0.55)", fontSize: "0.875rem", lineHeight: 1.85, marginBottom: "1.25rem" }}>
+                          {service.description}
+                        </p>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "1.4rem" }}>
+                          {TRUST_TAGS[i].map((tag, j) => (
+                            <span key={j} style={{ padding: "0.28rem 0.75rem", border: `1px solid ${service.accentColor}38`, borderRadius: "100px", color: service.accentColor, fontSize: "0.65rem", letterSpacing: "0.09em", background: `${service.accentColor}0d` }}>
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => setSelectedIndex(i)}
+                          style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.7rem 1.4rem", background: "rgba(251,251,244,0.05)", border: "1px solid rgba(251,251,244,0.18)", color: "#fbfbf4", fontSize: "0.8rem", letterSpacing: "0.07em", cursor: "pointer", borderRadius: "4px" }}
+                        >
+                          Details ansehen →
+                        </button>
+                      </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <ServiceModal service={selectedService} onClose={() => setSelectedIndex(null)} />
+      </div>
+
+      {/* ── Desktop layout ── */}
+      <div className="hidden md:block">
+        <section id="services-desktop" style={{ position: "relative" }}>
 
         {/* ── Header ── */}
         <div style={{ padding: "5rem clamp(2rem, 8vw, 8rem) 3rem" }}>
@@ -155,7 +241,7 @@ export default function Services() {
                 zIndex: hoveredIndex === i ? 10 : SERVICES.length + i,
                 // Rounded top corners to make overlap visible
                 borderRadius: i === 0 ? 0 : "14px 14px 0 0",
-                cursor: "none",
+                cursor: "pointer",
               }}
               onMouseEnter={() => setHoveredIndex(i)}
               onClick={() => hoveredIndex === i && setSelectedIndex(i)}
@@ -282,7 +368,7 @@ export default function Services() {
                       background: "rgba(251,251,244,0.05)",
                       border: "1px solid rgba(251,251,244,0.18)",
                       color: "#fbfbf4", fontSize: "0.78rem",
-                      letterSpacing: "0.07em", cursor: "none",
+                      letterSpacing: "0.07em", cursor: "pointer",
                       borderRadius: "3px",
                       transition: "border-color 0.2s, background 0.2s",
                     }}
@@ -314,10 +400,11 @@ export default function Services() {
 
       </section>
 
-      <ServiceModal
-        service={selectedService}
-        onClose={() => setSelectedIndex(null)}
-      />
+        <ServiceModal
+          service={selectedService}
+          onClose={() => setSelectedIndex(null)}
+        />
+      </div>
     </>
   );
 }

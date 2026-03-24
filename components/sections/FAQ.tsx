@@ -52,61 +52,9 @@ export default function FAQ() {
     });
   }, [openIndex]);
 
-  // Original proximity border glow
+  // Original proximity border glow (Removed per user request)
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const cRect  = container.getBoundingClientRect();
-      const mouseY = e.clientY - cRect.top;
-      const mouseX = e.clientX - cRect.left;
-
-      container.style.background = `radial-gradient(circle 220px at ${mouseX}px ${mouseY}px, rgba(173,43,238,0.06) 0%, transparent 70%)`;
-
-      itemRefs.current.forEach((item) => {
-        if (!item) return;
-        const r       = item.getBoundingClientRect();
-        const topY    = r.top    - cRect.top;
-        const bottomY = r.bottom - cRect.top;
-        const localX  = mouseX - (r.left - cRect.left);
-        const isInside = mouseY > topY && mouseY < bottomY;
-
-        if (isInside) {
-          item.style.background = [
-            `radial-gradient(ellipse 280px 2px at ${localX}px 0.5px,             rgba(173,43,238,0.75) 0%, transparent 100%)`,
-            `radial-gradient(ellipse 280px 2px at ${localX}px calc(100% - 0.5px), rgba(173,43,238,0.75) 0%, transparent 100%)`,
-          ].join(", ");
-          item.style.borderTopColor = "rgba(251,251,244,0.02)";
-        } else {
-          const distY    = Math.min(Math.abs(mouseY - topY), Math.abs(mouseY - bottomY));
-          const strength = Math.max(0, 1 - distY / 60);
-          if (strength > 0.01) {
-            item.style.background     = `radial-gradient(ellipse 300px 2px at ${localX}px 0.5px, rgba(173,43,238,${(strength * 0.9).toFixed(3)}) 0%, transparent 100%)`;
-            item.style.borderTopColor = `rgba(251,251,244,${(0.08 * (1 - strength * 0.8)).toFixed(3)})`;
-          } else {
-            item.style.background     = "none";
-            item.style.borderTopColor = "rgba(251,251,244,0.08)";
-          }
-        }
-      });
-    };
-
-    const handleMouseLeave = () => {
-      container.style.background = "none";
-      itemRefs.current.forEach((item) => {
-        if (!item) return;
-        item.style.background     = "none";
-        item.style.borderTopColor = "rgba(251,251,244,0.08)";
-      });
-    };
-
-    container.addEventListener("mousemove", handleMouseMove, { passive: true });
-    container.addEventListener("mouseleave", handleMouseLeave, { passive: true });
-    return () => {
-      container.removeEventListener("mousemove", handleMouseMove);
-      container.removeEventListener("mouseleave", handleMouseLeave);
-    };
+    // Empty
   }, []);
 
   return (

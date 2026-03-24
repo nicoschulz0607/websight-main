@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 interface TextLine {
   text: string;
@@ -15,6 +16,7 @@ interface BlurTextProps {
 }
 
 export default function BlurText({ lines, className = "", noBorderTop = false }: BlurTextProps) {
+  const isMobile     = useIsMobile();
   const wrapperRef   = useRef<HTMLDivElement>(null);  // tall scroll-driver
   const stickyRef    = useRef<HTMLElement>(null);      // sticky viewport-height section
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,7 +50,7 @@ export default function BlurText({ lines, className = "", noBorderTop = false }:
 
   return (
     /* Tall wrapper — provides scroll distance without GSAP pin */
-    <div ref={wrapperRef} style={{ height: "190vh" }}>
+    <div ref={wrapperRef} style={{ height: isMobile ? "150vh" : "190vh" }}>
       <section
         ref={stickyRef}
         className={className}

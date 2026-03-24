@@ -28,7 +28,13 @@ html,
 body {
   background: #000000;
   color: #fbfbf4;
-  cursor: none;
+}
+
+/* ── Touch devices: restore cursor ──────────────────────── */
+@media (pointer: coarse) {
+  html, body { cursor: auto; }
+  .cursor-none, .cursor-none * { cursor: auto !important; }
+  a, button, [role="button"] { cursor: pointer !important; }
 }
 
 /* Hero background — slow Ken Burns drift */
@@ -157,6 +163,95 @@ body {
   top: 0;
   font-size: 0.65rem;
   color: #8b6ff7;
+}
+
+/* ── Hero CTA — pulsing glow ─────────────────────────────── */
+@keyframes hero-cta-pulse {
+  0%, 100% { box-shadow: 0 0 22px rgba(139,111,247,0.35), 0 0 48px rgba(96,165,250,0.15); }
+  50%       { box-shadow: 0 0 40px rgba(173,43,238,0.55),  0 0 80px rgba(139,111,247,0.25); }
+}
+.hero-cta {
+  animation: hero-cta-pulse 2.8s ease-in-out infinite;
+}
+
+/* ── Navbar CTA — spinning gradient border ───────────────── */
+@property --spin-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes nav-border-spin {
+  to { --spin-angle: 360deg; }
+}
+
+.nav-cta-wrap {
+  position: relative;
+  border-radius: 9999px;
+  padding: 1px;
+  background: rgba(251,251,244,0.12);
+  isolation: isolate;
+  transition: background 0.3s ease;
+}
+
+/* Glow behind the border */
+.nav-cta-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  background: conic-gradient(from var(--spin-angle), #60a5fa, #8b6ff7, #ad2bee, #60a5fa);
+  animation: nav-border-spin 2s linear infinite;
+  filter: blur(7px);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: -1;
+}
+
+/* Sharp spinning border ring */
+.nav-cta-wrap::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 9999px;
+  background: conic-gradient(from var(--spin-angle), #60a5fa, #8b6ff7, #ad2bee, #60a5fa);
+  animation: nav-border-spin 2s linear infinite;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: -1;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1px;
+}
+
+.nav-cta-wrap:hover::before,
+.nav-cta-wrap:hover::after {
+  opacity: 1;
+}
+
+.nav-cta-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #000;
+  border-radius: 9999px;
+  padding: 0.5rem 1.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+  transition: color 0.2s;
 }
 
 /* ── Contact submit button — shimmer loader ──────────────── */
