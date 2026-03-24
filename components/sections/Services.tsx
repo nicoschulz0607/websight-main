@@ -27,7 +27,6 @@ const OVERLAP_PX  = 20; // px each card overlaps the previous
 export default function Services() {
   const [hoveredIndex,    setHoveredIndex]    = useState<number | null>(null);
   const [selectedIndex,   setSelectedIndex]   = useState<number | null>(null);
-  const [mobileOpenIndex, setMobileOpenIndex] = useState<number | null>(null);
 
   const cardRefs    = useRef<(HTMLDivElement | null)[]>([]);
   const imgRefs     = useRef<(HTMLDivElement | null)[]>([]);
@@ -126,25 +125,23 @@ export default function Services() {
             </h2>
           </div>
 
-          {/* Accordion */}
+          {/* Stacked Cards */}
           <div style={{ borderTop: "1px solid rgba(251,251,244,0.06)" }}>
             {SERVICES.map((service, i) => {
-              const isOpen = mobileOpenIndex === i;
               return (
                 <div key={i} style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(251,251,244,0.06)" }}>
                   {/* Background image */}
                   <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${BG_IMAGES[i]})`, backgroundSize: "cover", backgroundPosition: "center", zIndex: 0 }} />
                   {/* Dark overlay */}
-                  <div style={{ position: "absolute", inset: 0, background: isOpen ? "rgba(8,8,8,0.93)" : "rgba(8,8,8,0.87)", transition: "background 0.35s ease", zIndex: 1 }} />
-                  {/* Accent side line when open */}
-                  <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 2, background: isOpen ? `linear-gradient(to bottom, ${service.accentColor}, transparent)` : "transparent", transition: "background 0.35s ease", zIndex: 3 }} />
+                  <div style={{ position: "absolute", inset: 0, background: "rgba(8,8,8,0.93)", zIndex: 1 }} />
+                  {/* Accent side line */}
+                  <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 2, background: `linear-gradient(to bottom, ${service.accentColor}, transparent)`, zIndex: 3 }} />
 
                   {/* Content */}
                   <div style={{ position: "relative", zIndex: 2 }}>
                     {/* Tap header */}
                     <div
-                      onClick={() => setMobileOpenIndex(isOpen ? null : i)}
-                      style={{ padding: "1.4rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
+                      style={{ padding: "1.4rem 1.5rem 0.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                         <div style={{ width: 7, height: 7, borderRadius: "50%", background: service.accentColor, flexShrink: 0 }} />
@@ -152,15 +149,11 @@ export default function Services() {
                           {service.title}
                         </h3>
                       </div>
-                      <span style={{ color: service.accentColor, fontSize: "1.5rem", lineHeight: 1, display: "inline-block", transition: "transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94)", transform: isOpen ? "rotate(45deg)" : "none", flexShrink: 0, marginLeft: "0.75rem" }}>
-                        +
-                      </span>
                     </div>
 
-                    {/* Expandable content */}
-                    <div style={{ display: "grid", gridTemplateRows: isOpen ? "1fr" : "0fr", transition: "grid-template-rows 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94)" }}>
-                      <div style={{ overflow: "hidden" }}>
-                      <div style={{ padding: "0 1.5rem 1.75rem" }}>
+                    {/* Content */}
+                    <div>
+                      <div style={{ padding: "1rem 1.5rem 1.75rem" }}>
                         <div style={{ width: "2rem", height: "2px", background: `linear-gradient(90deg, ${service.accentColor}, transparent)`, borderRadius: "2px", marginBottom: "1rem" }} />
                         <p style={{ color: "rgba(251,251,244,0.55)", fontSize: "0.875rem", lineHeight: 1.85, marginBottom: "1.25rem" }}>
                           {service.description}
@@ -174,11 +167,10 @@ export default function Services() {
                         </div>
                         <button
                           onClick={() => setSelectedIndex(i)}
-                          style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.7rem 1.4rem", background: "rgba(251,251,244,0.05)", border: "1px solid rgba(251,251,244,0.18)", color: "#fbfbf4", fontSize: "0.8rem", letterSpacing: "0.07em", cursor: "pointer", borderRadius: "4px" }}
+                          style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.7rem 1.4rem", background: "rgba(251,251,244,0.05)", border: "1px solid rgba(251,251,244,0.18)", color: "#fbfbf4", fontSize: "0.8rem", letterSpacing: "0.07em", cursor: "pointer", borderRadius: "4px", transition: "background 0.2s" }}
                         >
                           Details ansehen →
                         </button>
-                      </div>
                       </div>
                     </div>
                   </div>
