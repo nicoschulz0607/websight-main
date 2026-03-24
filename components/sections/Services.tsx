@@ -139,39 +139,20 @@ export default function Services() {
 
                   {/* Content */}
                   <div style={{ position: "relative", zIndex: 2 }}>
-                    {/* Tap header */}
-                    <div
-                      style={{ padding: "1.4rem 1.5rem 0.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}
-                    >
+                    <div style={{ padding: "2rem 1.5rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                        <div style={{ width: 7, height: 7, borderRadius: "50%", background: service.accentColor, flexShrink: 0 }} />
-                        <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#fbfbf4", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: service.accentColor, flexShrink: 0 }} />
+                        <h3 style={{ fontSize: "1.35rem", fontWeight: 700, color: "#fbfbf4", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
                           {service.title}
                         </h3>
                       </div>
-                    </div>
-
-                    {/* Content */}
-                    <div>
-                      <div style={{ padding: "1rem 1.5rem 1.75rem" }}>
-                        <div style={{ width: "2rem", height: "2px", background: `linear-gradient(90deg, ${service.accentColor}, transparent)`, borderRadius: "2px", marginBottom: "1rem" }} />
-                        <p style={{ color: "rgba(251,251,244,0.55)", fontSize: "0.875rem", lineHeight: 1.85, marginBottom: "1.25rem" }}>
-                          {service.description}
-                        </p>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "1.4rem" }}>
-                          {TRUST_TAGS[i].map((tag, j) => (
-                            <span key={j} style={{ padding: "0.28rem 0.75rem", border: `1px solid ${service.accentColor}38`, borderRadius: "100px", color: service.accentColor, fontSize: "0.65rem", letterSpacing: "0.09em", background: `${service.accentColor}0d` }}>
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                        <button
-                          onClick={() => setSelectedIndex(i)}
-                          style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.7rem 1.4rem", background: "rgba(251,251,244,0.05)", border: "1px solid rgba(251,251,244,0.18)", color: "#fbfbf4", fontSize: "0.8rem", letterSpacing: "0.07em", cursor: "pointer", borderRadius: "4px", transition: "background 0.2s" }}
-                        >
-                          Details ansehen →
-                        </button>
-                      </div>
+                      
+                      <button
+                        onClick={() => setSelectedIndex(i)}
+                        style={{ display: "inline-flex", width: "fit-content", alignItems: "center", gap: "0.5rem", padding: "0.85rem 1.5rem", background: "rgba(251,251,244,0.06)", border: "1px solid rgba(251,251,244,0.15)", color: "#fbfbf4", fontSize: "0.8rem", letterSpacing: "0.06em", cursor: "pointer", borderRadius: "6px", transition: "background 0.2s" }}
+                      >
+                        Details ansehen →
+                      </button>
                     </div>
                   </div>
                 </div>
