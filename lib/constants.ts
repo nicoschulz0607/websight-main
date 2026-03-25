@@ -23,9 +23,10 @@ export const TESTIMONIALS = [
   {
     quote:
       "Seit dem Launch haben wir deutlich mehr Anfragen über die Website – und die Qualität der Kontakte ist eine andere. Kunden kommen bereits mit Vertrauen auf uns zu, bevor wir das erste Gespräch geführt haben.",
-    name: "DEIN KOLLEGE",
-    role: "POSITION",
-    company: "FIRMENNAME",
+    name: "Maximilian Konz",
+    role: "Gründer",
+    company: "O-IMMO",
+    image: "/maxi.jpeg",
   },
 ];
 

@@ -186,8 +186,11 @@ export default function Testimonials() {
         }}
       >
         <div style={{
-          width: 48, height: 48, borderRadius: "50%", flexShrink: 0,
-          background: "linear-gradient(135deg, #60a5fa, #ad2bee)",
+          width: 52, height: 52, borderRadius: "50%", flexShrink: 0,
+          backgroundImage: t.image ? `url(${t.image})` : "linear-gradient(135deg, #60a5fa, #ad2bee)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          border: "2px solid rgba(251,251,244,0.06)",
         }} />
         <div>
           <p style={{ fontSize: "1rem", fontWeight: 600, color: "#fbfbf4", marginBottom: "0.2rem" }}>

@@ -40,7 +40,7 @@ export default function Hero() {
       {/* ── Background image — Ken Burns slow scale ──────────────────────── */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/hero-bg.png"
+        src="/hero-bg-optimized.jpg"
         alt=""
         aria-hidden
         width={2206}
