@@ -25,8 +25,10 @@ export default function ClientSections() {
   return (
     <>
       <Hero />
-      <BlurText lines={BLUR_TEXT_1_LINES} />
-      <FeaturedWork />
+      <div className="hidden md:block">
+        <BlurText lines={BLUR_TEXT_1_LINES} />
+        <FeaturedWork />
+      </div>
       <BlurText lines={BLUR_TEXT_2_LINES} />
       <Services />
       <BlurText lines={BLUR_TEXT_3_LINES} noBorderTop />

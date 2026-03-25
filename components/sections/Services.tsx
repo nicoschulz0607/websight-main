@@ -125,39 +125,79 @@ export default function Services() {
             </h2>
           </div>
 
-          {/* Stacked Cards */}
-          <div style={{ borderTop: "1px solid rgba(251,251,244,0.06)" }}>
-            {SERVICES.map((service, i) => {
-              return (
-                <div key={i} style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(251,251,244,0.06)" }}>
-                  {/* Background image */}
-                  <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${BG_IMAGES[i]})`, backgroundSize: "cover", backgroundPosition: "center", zIndex: 0 }} />
-                  {/* Dark overlay */}
-                  <div style={{ position: "absolute", inset: 0, background: "rgba(8,8,8,0.93)", zIndex: 1 }} />
-                  {/* Accent side line */}
-                  <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 2, background: `linear-gradient(to bottom, ${service.accentColor}, transparent)`, zIndex: 3 }} />
+          {/* Mobile Bento Grid */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "0.75rem",
+            padding: "0 1.25rem 2rem",
+          }}>
+            {SERVICES.map((service, i) => (
+              <div
+                key={i}
+                onClick={() => setSelectedIndex(i)}
+                style={{
+                  position: "relative",
+                  overflow: "hidden",
+                  borderRadius: "16px",
+                  background: "rgba(251,251,244,0.03)",
+                  border: "1px solid rgba(251,251,244,0.08)",
+                  aspectRatio: "1 / 1.15",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  padding: "1.25rem",
+                  cursor: "pointer",
+                }}
+              >
+                {/* Subtle Background Glow */}
+                <div style={{
+                  position: "absolute",
+                  top: "-30%", left: "-30%", width: "160%", height: "160%",
+                  background: `radial-gradient(circle at top left, ${service.accentColor}15 0%, transparent 65%)`,
+                  zIndex: 0,
+                  pointerEvents: "none",
+                }} />
 
-                  {/* Content */}
-                  <div style={{ position: "relative", zIndex: 2 }}>
-                    <div style={{ padding: "2rem 1.5rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: service.accentColor, flexShrink: 0 }} />
-                        <h3 style={{ fontSize: "1.35rem", fontWeight: 700, color: "#fbfbf4", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-                          {service.title}
-                        </h3>
-                      </div>
-                      
-                      <button
-                        onClick={() => setSelectedIndex(i)}
-                        style={{ display: "inline-flex", width: "fit-content", alignItems: "center", gap: "0.5rem", padding: "0.85rem 1.5rem", background: "rgba(251,251,244,0.06)", border: "1px solid rgba(251,251,244,0.15)", color: "#fbfbf4", fontSize: "0.8rem", letterSpacing: "0.06em", cursor: "pointer", borderRadius: "6px", transition: "background 0.2s" }}
-                      >
-                        Details ansehen →
-                      </button>
-                    </div>
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  {/* Icon/Dot bubble */}
+                  <div style={{
+                    width: 32, height: 32, borderRadius: "10px",
+                    background: `${service.accentColor}15`,
+                    border: `1px solid ${service.accentColor}30`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    marginBottom: "1rem",
+                  }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: service.accentColor, boxShadow: `0 0 8px ${service.accentColor}80` }} />
+                  </div>
+                  
+                  <h3 style={{
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                    color: "#fbfbf4",
+                    lineHeight: 1.25,
+                    letterSpacing: "-0.01em",
+                  }}>
+                    {service.title}
+                  </h3>
+                </div>
+
+                {/* Bottom Plus Sign */}
+                <div style={{ position: "relative", zIndex: 1, alignSelf: "flex-end" }}>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: "50%",
+                    background: "rgba(251,251,244,0.05)",
+                    border: "1px solid rgba(251,251,244,0.1)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    color: "rgba(251,251,244,0.7)",
+                    fontSize: "1.1rem",
+                    fontWeight: 300,
+                  }}>
+                    +
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </section>
 
