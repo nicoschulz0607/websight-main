@@ -27,6 +27,9 @@ const OVERLAP_PX  = 20; // px each card overlaps the previous
 export default function Services() {
   const [hoveredIndex,    setHoveredIndex]    = useState<number | null>(null);
   const [selectedIndex,   setSelectedIndex]   = useState<number | null>(null);
+  const [openIndexA,      setOpenIndexA]      = useState<number | null>(null);
+  const [activeCardC,     setActiveCardC]     = useState(0);
+  const scrollRefC = useRef<HTMLDivElement>(null);
 
   const cardRefs    = useRef<(HTMLDivElement | null)[]>([]);
   const imgRefs     = useRef<(HTMLDivElement | null)[]>([]);
@@ -112,8 +115,9 @@ export default function Services() {
       {/* ── Mobile layout ── */}
       <div className="block md:hidden">
         <section id="services" style={{ position: "relative" }}>
-          {/* Header */}
-          <div style={{ padding: "4rem 1.5rem 2.5rem" }}>
+
+          {/* Shared header */}
+          <div style={{ padding: "4rem 1.5rem 2rem" }}>
             <p style={{ color: "rgba(251,251,244,0.28)", fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "0.9rem" }}>
               Was wir machen
             </p>
@@ -125,80 +129,151 @@ export default function Services() {
             </h2>
           </div>
 
-          {/* Mobile Bento Grid */}
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "0.75rem",
-            padding: "0 1.25rem 2rem",
-          }}>
+          {/* ── Preview label A ── */}
+          <div style={{ margin: "1rem 1.5rem 0", paddingBottom: "0.6rem", borderBottom: "1px solid rgba(96,165,250,0.2)", display: "flex", alignItems: "center", gap: "0.7rem" }}>
+            <div style={{ width: "3px", height: "14px", background: "#60a5fa", borderRadius: "2px" }} />
+            <span style={{ fontSize: "0.58rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(96,165,250,0.65)", fontWeight: 700 }}>
+              A — Editorial Accordion
+            </span>
+          </div>
+
+          {/* ── KONZEPT A: Editorial Accordion ── */}
+          <div style={{ marginBottom: "0.5rem" }}>
             {SERVICES.map((service, i) => (
-              <div
-                key={i}
-                onClick={() => setSelectedIndex(i)}
-                style={{
-                  position: "relative",
-                  overflow: "hidden",
-                  borderRadius: "16px",
-                  background: "rgba(251,251,244,0.03)",
-                  border: "1px solid rgba(251,251,244,0.08)",
-                  aspectRatio: "1 / 1.15",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  padding: "1.25rem",
-                  cursor: "pointer",
-                }}
-              >
-                {/* Subtle Background Glow */}
-                <div style={{
-                  position: "absolute",
-                  top: "-30%", left: "-30%", width: "160%", height: "160%",
-                  background: `radial-gradient(circle at top left, ${service.accentColor}15 0%, transparent 65%)`,
-                  zIndex: 0,
-                  pointerEvents: "none",
-                }} />
-
-                <div style={{ position: "relative", zIndex: 1 }}>
-                  {/* Icon/Dot bubble */}
-                  <div style={{
-                    width: 32, height: 32, borderRadius: "10px",
-                    background: `${service.accentColor}15`,
-                    border: `1px solid ${service.accentColor}30`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    marginBottom: "1rem",
+              <div key={i} style={{ borderBottom: "1px solid rgba(251,251,244,0.07)" }}>
+                <button
+                  onClick={() => setOpenIndexA(openIndexA === i ? null : i)}
+                  style={{ width: "100%", display: "flex", alignItems: "center", padding: "1.2rem 1.5rem", background: "none", border: "none", cursor: "pointer", gap: "1rem", textAlign: "left" }}
+                >
+                  <span style={{
+                    fontSize: "clamp(1.7rem, 6.5vw, 2.2rem)", fontWeight: 900,
+                    background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
+                    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                    lineHeight: 1, minWidth: "3rem", textAlign: "right", flexShrink: 0,
                   }}>
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: service.accentColor, boxShadow: `0 0 8px ${service.accentColor}80` }} />
-                  </div>
-                  
-                  <h3 style={{
-                    fontSize: "1.1rem",
-                    fontWeight: 600,
-                    color: "#fbfbf4",
-                    lineHeight: 1.25,
-                    letterSpacing: "-0.01em",
-                  }}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span style={{ flex: 1, fontSize: "1.05rem", fontWeight: 600, color: "#fbfbf4", lineHeight: 1.2 }}>
                     {service.title}
-                  </h3>
-                </div>
-
-                {/* Bottom Plus Sign */}
-                <div style={{ position: "relative", zIndex: 1, alignSelf: "flex-end" }}>
-                  <div style={{
-                    width: 28, height: 28, borderRadius: "50%",
-                    background: "rgba(251,251,244,0.05)",
-                    border: "1px solid rgba(251,251,244,0.1)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    color: "rgba(251,251,244,0.7)",
-                    fontSize: "1.1rem",
-                    fontWeight: 300,
-                  }}>
-                    +
+                  </span>
+                  <span style={{ color: "rgba(251,251,244,0.35)", fontSize: "1.3rem", transition: "transform 0.3s ease", transform: openIndexA === i ? "rotate(90deg)" : "none", display: "inline-block", flexShrink: 0 }}>
+                    ›
+                  </span>
+                </button>
+                <div style={{ maxHeight: openIndexA === i ? "520px" : "0", overflow: "hidden", transition: "max-height 0.45s cubic-bezier(0.4,0,0.2,1)" }}>
+                  <div style={{ position: "relative", padding: "0 1.5rem 2rem" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={BG_IMAGES[i]} alt="" aria-hidden style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "50%", objectFit: "cover", opacity: 0.12 }} />
+                    <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "80%", background: "linear-gradient(to right, #000 25%, transparent 100%)" }} />
+                    <div style={{ position: "relative", zIndex: 1 }}>
+                      <p style={{ color: "rgba(251,251,244,0.55)", fontSize: "0.88rem", lineHeight: 1.75, marginBottom: "1.2rem", maxWidth: "78%" }}>
+                        {service.description}
+                      </p>
+                      <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", marginBottom: "1.4rem" }}>
+                        {TRUST_TAGS[i].map((tag, j) => (
+                          <span key={j} style={{ padding: "0.25rem 0.7rem", border: `1px solid ${service.accentColor}38`, borderRadius: "100px", color: service.accentColor, fontSize: "0.62rem", letterSpacing: "0.08em", background: `${service.accentColor}0d` }}>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <button onClick={() => setSelectedIndex(i)} style={{ background: "none", border: "none", cursor: "pointer", color: service.accentColor, fontSize: "0.82rem", fontWeight: 700, letterSpacing: "0.06em", display: "flex", alignItems: "center", gap: "0.35rem", padding: 0 }}>
+                        Details ansehen →
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* ── Preview label B ── */}
+          <div style={{ margin: "3rem 1.5rem 0", paddingBottom: "0.6rem", borderBottom: "1px solid rgba(139,111,247,0.2)", display: "flex", alignItems: "center", gap: "0.7rem" }}>
+            <div style={{ width: "3px", height: "14px", background: "#8b6ff7", borderRadius: "2px" }} />
+            <span style={{ fontSize: "0.58rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(139,111,247,0.65)", fontWeight: 700 }}>
+              B — Cinematic Cards
+            </span>
+          </div>
+
+          {/* ── KONZEPT B: Cinematic Cards ── */}
+          <div style={{ marginBottom: "0.5rem" }}>
+            {SERVICES.map((service, i) => (
+              <div key={i} style={{ position: "relative", height: "60vh", overflow: "hidden", marginBottom: "2px" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={BG_IMAGES[i]} alt="" aria-hidden style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.95) 35%, rgba(0,0,0,0.5) 70%, rgba(0,0,0,0.22) 100%)" }} />
+                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: "3px", background: service.accentColor }} />
+                <span aria-hidden style={{ position: "absolute", right: "-1%", top: "-8%", fontSize: "clamp(6rem, 30vw, 10rem)", fontWeight: 900, lineHeight: 1, color: service.accentColor, opacity: 0.07, letterSpacing: "-0.05em", userSelect: "none", pointerEvents: "none" }}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "2rem 1.5rem 1.75rem" }}>
+                  <h3 style={{ fontSize: "clamp(1.8rem, 7vw, 2.5rem)", fontWeight: 700, color: "#fbfbf4", letterSpacing: "-0.03em", lineHeight: 1.05, marginBottom: "0.9rem" }}>
+                    {service.title}
+                  </h3>
+                  <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", marginBottom: "1.25rem" }}>
+                    {TRUST_TAGS[i].map((tag, j) => (
+                      <span key={j} style={{ padding: "0.22rem 0.65rem", border: `1px solid ${service.accentColor}45`, borderRadius: "100px", color: service.accentColor, fontSize: "0.6rem", letterSpacing: "0.08em", background: `${service.accentColor}12` }}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <button onClick={() => setSelectedIndex(i)} style={{ alignSelf: "flex-start", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "4px", cursor: "pointer", color: "#fbfbf4", fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.07em", padding: "0.55rem 1.1rem" }}>
+                    Details ansehen →
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Preview label C ── */}
+          <div style={{ margin: "3rem 1.5rem 0", paddingBottom: "0.6rem", borderBottom: "1px solid rgba(173,43,238,0.2)", display: "flex", alignItems: "center", gap: "0.7rem" }}>
+            <div style={{ width: "3px", height: "14px", background: "#ad2bee", borderRadius: "2px" }} />
+            <span style={{ fontSize: "0.58rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(173,43,238,0.65)", fontWeight: 700 }}>
+              C — Swipe Gallery
+            </span>
+          </div>
+
+          {/* ── KONZEPT C: Horizontal Swipe ── */}
+          <div style={{ paddingBottom: "0.5rem" }}>
+            <div
+              ref={scrollRefC}
+              onScroll={() => {
+                const el = scrollRefC.current;
+                if (!el) return;
+                const pct = el.scrollLeft / (el.scrollWidth - el.clientWidth);
+                setActiveCardC(Math.round(pct * (SERVICES.length - 1)));
+              }}
+              style={{ display: "flex", gap: "0.75rem", overflowX: "scroll", scrollSnapType: "x mandatory", padding: "1.5rem 1.25rem 1rem", scrollbarWidth: "none" }}
+            >
+              {SERVICES.map((service, i) => (
+                <div key={i} style={{ minWidth: "78vw", height: "62vh", flexShrink: 0, borderRadius: "16px", position: "relative", overflow: "hidden", scrollSnapAlign: "start" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={BG_IMAGES[i]} alt="" aria-hidden style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.93) 45%, rgba(0,0,0,0.3) 100%)" }} />
+                  <div style={{ position: "absolute", top: "1.25rem", left: "1.25rem", fontSize: "0.6rem", color: service.accentColor, letterSpacing: "0.18em", fontWeight: 700, background: `${service.accentColor}18`, border: `1px solid ${service.accentColor}35`, borderRadius: "100px", padding: "0.2rem 0.6rem" }}>
+                    {String(i + 1).padStart(2, "0")} / {String(SERVICES.length).padStart(2, "0")}
+                  </div>
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 1.25rem 1.5rem" }}>
+                    <h3 style={{ fontSize: "clamp(1.4rem, 6vw, 2rem)", fontWeight: 700, color: "#fbfbf4", letterSpacing: "-0.02em", lineHeight: 1.1, marginBottom: "0.75rem" }}>
+                      {service.title}
+                    </h3>
+                    <p style={{ color: "rgba(251,251,244,0.5)", fontSize: "0.82rem", lineHeight: 1.6, marginBottom: "1rem", overflow: "hidden", maxHeight: "3.2em" }}>
+                      {service.description}
+                    </p>
+                    <button onClick={() => setSelectedIndex(i)} style={{ background: "none", border: "none", cursor: "pointer", color: service.accentColor, fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.07em", padding: 0, display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                      Details →
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Scroll dots */}
+            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", paddingBottom: "2.5rem" }}>
+              {SERVICES.map((service, i) => (
+                <div key={i} style={{ height: "0.35rem", borderRadius: "100px", background: activeCardC === i ? service.accentColor : "rgba(251,251,244,0.18)", width: activeCardC === i ? "1.5rem" : "0.35rem", transition: "all 0.3s ease" }} />
+              ))}
+            </div>
+          </div>
+
         </section>
 
         <ServiceModal service={selectedService} onClose={() => setSelectedIndex(null)} />
