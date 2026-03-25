@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 const STEPS = [
   {
@@ -64,6 +65,7 @@ const STEPS = [
 ];
 
 export default function Process() {
+  const isMobile  = useIsMobile();
   const stepsRef  = useRef<HTMLDivElement>(null);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
   const bgNumRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -89,6 +91,7 @@ export default function Process() {
           start: "top top",
           end: "bottom bottom",
           scrub: 1,
+          invalidateOnRefresh: true,
         },
       });
 
@@ -104,7 +107,15 @@ export default function Process() {
       });
     }, stepsRef);
 
-    return () => ctx.revert();
+    // Refresh ScrollTrigger to ensure correct top positions after dynamic component loading
+    const t1 = setTimeout(() => ScrollTrigger.refresh(), 500);
+    const t2 = setTimeout(() => ScrollTrigger.refresh(), 1500);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      ctx.revert();
+    };
   }, []);
 
   return (
@@ -159,7 +170,9 @@ export default function Process() {
               {/* Dark overlay — lighter so image is visible in the middle */}
               <div style={{
                 position: "absolute", inset: 0,
-                background: "linear-gradient(105deg, rgba(8,8,8,0.78) 35%, rgba(8,8,8,0.48) 100%)",
+                background: isMobile 
+                  ? "linear-gradient(105deg, rgba(8,8,8,0.65) 35%, rgba(8,8,8,0.2) 100%)"
+                  : "linear-gradient(105deg, rgba(8,8,8,0.78) 35%, rgba(8,8,8,0.48) 100%)",
                 pointerEvents: "none",
               }} />
 
