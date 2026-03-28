@@ -23,6 +23,24 @@ export default function Contact() {
   const successRef     = useRef<HTMLDivElement>(null);
   const checkRef       = useRef<SVGPolylineElement>(null);
 
+  /* ── Border glow ─────────────────────────────────────────── */
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = cardWrapperRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top)  / rect.height;
+    if (shineRef.current)
+      shineRef.current.style.background =
+        `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(255,255,255,0.045) 0%, transparent 60%)`;
+    if (cardWrapperRef.current)
+      cardWrapperRef.current.style.background =
+        `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(200,80,255,1) 0%, rgba(173,43,238,1) 8%, rgba(139,111,247,0.7) 20%, rgba(20,20,20,1) 40%)`;
+  };
+
+  const handleMouseLeave = () => {
+    if (shineRef.current) shineRef.current.style.background = "none";
+    if (cardWrapperRef.current) cardWrapperRef.current.style.background = "rgba(251,251,244,0.07)";
+  };
 
   /* ── Scroll reveal ───────────────────────────────────────── */
   useEffect(() => {
@@ -188,6 +206,8 @@ export default function Contact() {
         <div
           ref={cardWrapperRef}
           className="c-reveal"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
           style={{
             flex: "1 1 300px", minWidth: 0, width: "100%",
             borderRadius: "1.5rem", padding: "1px",
