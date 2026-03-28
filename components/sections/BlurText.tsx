@@ -37,7 +37,7 @@ export default function BlurText({ lines, className = "", noBorderTop = false }:
           stagger: 0.1,
           scrollTrigger: {
             trigger: wrapperRef.current,
-            start: isMobile ? "top top" : "top 40%",
+            start: isMobile ? "top 60%" : "top 40%",
             end: isMobile ? "bottom bottom" : "bottom 85%",
             scrub: 1.5,
           },
