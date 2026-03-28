@@ -46,15 +46,67 @@ export default function FAQ() {
 
       const isOpen = openIndex === i;
       gsap.to(wrap,   { height: isOpen ? inner.scrollHeight : 0, duration: 0.55, ease: "power3.out" });
-      gsap.to(number, { opacity: isOpen ? 0.45 : 0.08, duration: 0.4 });
+      gsap.to(number, { opacity: isOpen ? 0.85 : 0.28, duration: 0.4 });
       // Vertical bar of "+" disappears on open
       if (bar) gsap.to(bar, { scaleY: isOpen ? 0 : 1, duration: 0.35, ease: "power2.inOut" });
     });
   }, [openIndex]);
 
-  // Original proximity border glow (Removed per user request)
+  // Original proximity border glow
   useEffect(() => {
-    // Empty
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const cRect  = container.getBoundingClientRect();
+      const mouseY = e.clientY - cRect.top;
+      const mouseX = e.clientX - cRect.left;
+
+      container.style.background = `radial-gradient(circle 220px at ${mouseX}px ${mouseY}px, rgba(173,43,238,0.06) 0%, transparent 70%)`;
+
+      itemRefs.current.forEach((item) => {
+        if (!item) return;
+        const r       = item.getBoundingClientRect();
+        const topY    = r.top    - cRect.top;
+        const bottomY = r.bottom - cRect.top;
+        const localX  = mouseX - (r.left - cRect.left);
+        const isInside = mouseY > topY && mouseY < bottomY;
+
+        if (isInside) {
+          item.style.background = [
+            `radial-gradient(ellipse 280px 2px at ${localX}px 0.5px, rgba(173,43,238,0.75) 0%, transparent 100%)`,
+            `radial-gradient(ellipse 280px 2px at ${localX}px calc(100% - 0.5px), rgba(173,43,238,0.75) 0%, transparent 100%)`,
+          ].join(", ");
+          item.style.borderTopColor = "rgba(251,251,244,0.02)";
+        } else {
+          const distY    = Math.min(Math.abs(mouseY - topY), Math.abs(mouseY - bottomY));
+          const strength = Math.max(0, 1 - distY / 60);
+          if (strength > 0.01) {
+            item.style.background     = `radial-gradient(ellipse 300px 2px at ${localX}px 0.5px, rgba(173,43,238,${(strength * 0.9).toFixed(3)}) 0%, transparent 100%)`;
+            item.style.borderTopColor = `rgba(251,251,244,${(0.08 * (1 - strength * 0.8)).toFixed(3)})`;
+          } else {
+            item.style.background     = "none";
+            item.style.borderTopColor = "rgba(251,251,244,0.08)";
+          }
+        }
+      });
+    };
+
+    const handleMouseLeave = () => {
+      container.style.background = "none";
+      itemRefs.current.forEach((item) => {
+        if (!item) return;
+        item.style.background     = "none";
+        item.style.borderTopColor = "rgba(251,251,244,0.08)";
+      });
+    };
+
+    container.addEventListener("mousemove", handleMouseMove, { passive: true });
+    container.addEventListener("mouseleave", handleMouseLeave, { passive: true });
+    return () => {
+      container.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("mouseleave", handleMouseLeave);
+    };
   }, []);
 
   return (
@@ -130,7 +182,7 @@ export default function FAQ() {
                     fontWeight: 700,
                     letterSpacing: "0.08em",
                     color: accent,
-                    opacity: 0.08,
+                    opacity: 0.28,
                     marginTop: "0.35rem",
                     minWidth: "2rem",
                     userSelect: "none",
@@ -194,7 +246,7 @@ export default function FAQ() {
                       <p style={{
                         paddingTop: "1.25rem",
                         paddingBottom: "0.5rem",
-                        fontSize: "clamp(0.95rem, 1.2vw, 1.05rem)",
+                        fontSize: "clamp(1rem, 1.4vw, 1.15rem)",
                         fontWeight: 400,
                         lineHeight: 1.8,
                         color: "rgba(251,251,244,0.45)",

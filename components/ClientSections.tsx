@@ -17,7 +17,7 @@ const Services = dynamic(() => import("@/components/sections/Services"), {
   loading: () => <div style={{ height: "86vh", background: "#000" }} />,
 });
 const Process      = dynamic(() => import("@/components/sections/Process"),      { ssr: false, loading: () => <div style={{ height: "600vh", background: "#000" }} /> });
-const Testimonials = dynamic(() => import("@/components/sections/Testimonials"), { ssr: false, loading: () => <div style={{ height: "80vh",  background: "#000" }} /> });
+const Testimonials = dynamic(() => import("@/components/sections/Testimonials"), { ssr: false, loading: () => <div style={{ height: "380vh", background: "#000" }} /> });
 const FAQ          = dynamic(() => import("@/components/sections/FAQ"),          { ssr: false, loading: () => <div style={{ height: "80vh",  background: "#000" }} /> });
 const Contact      = dynamic(() => import("@/components/sections/Contact"),      { ssr: false, loading: () => <div style={{ height: "70vh",  background: "#000" }} /> });
 

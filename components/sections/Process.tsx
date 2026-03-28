@@ -70,6 +70,7 @@ export default function Process() {
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
   const bgNumRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const dotRefs   = useRef<(HTMLDivElement | null)[]>([]);
+  const btnRefs   = useRef<(HTMLAnchorElement | null)[]>([]);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -83,6 +84,9 @@ export default function Process() {
       });
       dotRefs.current.forEach((dot, i) => {
         gsap.set(dot, { opacity: i === 0 ? 1 : 0.18, scaleX: i === 0 ? 1 : 0.4 });
+      });
+      btnRefs.current.forEach((btn, i) => {
+        gsap.set(btn, { autoAlpha: i === 0 ? 1 : 0, y: i === 0 ? 0 : 8 });
       });
 
       const tl = gsap.timeline({
@@ -101,9 +105,11 @@ export default function Process() {
           .to(panelRefs.current[i],    { autoAlpha: 0, y: -60, duration: 0.4 }, "+=0.7")
           .to(bgNumRefs.current[i],    { opacity: 0, scale: 0.8, x: -40, duration: 0.4 }, "<")
           .to(dotRefs.current[i],      { opacity: 0.18, scaleX: 0.4, duration: 0.3 }, "<")
+          .to(btnRefs.current[i],      { autoAlpha: 0, y: 8, duration: 0.2 }, "<")
           .fromTo(panelRefs.current[i + 1], { autoAlpha: 0, y: 70 }, { autoAlpha: 1, y: 0, duration: 0.5 }, "<0.15")
           .fromTo(bgNumRefs.current[i + 1], { opacity: 0, scale: 1.2, x: 40 }, { opacity: 0.18, scale: 1, x: 0, duration: 0.5 }, "<")
-          .to(dotRefs.current[i + 1],  { opacity: 1, scaleX: 1, duration: 0.3 }, "<0.1");
+          .to(dotRefs.current[i + 1],  { opacity: 1, scaleX: 1, duration: 0.3 }, "<0.1")
+          .to(btnRefs.current[i + 1],  { autoAlpha: 1, y: 0, duration: 0.3 }, "<0.1");
       });
     }, stepsRef);
 
@@ -212,20 +218,22 @@ export default function Process() {
             </div>
           ))}
 
-          <div style={{ position: "absolute", bottom: "2.5rem", left: "clamp(2rem, 8vw, 8rem)", zIndex: 20 }}>
+          {STEPS.map((step, i) => (
             <a
+              key={i}
+              ref={(el) => { btnRefs.current[i] = el; }}
               href="#kontakt"
               style={{
-                color: "rgba(251,251,244,0.25)", fontSize: "0.8rem",
-                textDecoration: "none", letterSpacing: "0.06em",
-                fontFamily: "monospace", transition: "color 0.25s",
+                position: "absolute", bottom: "2.5rem",
+                left: "clamp(2rem, 8vw, 8rem)", zIndex: 20,
+                color: step.accent, fontSize: "0.9rem", fontWeight: 700,
+                letterSpacing: "0.07em", textDecoration: "none",
+                display: "flex", alignItems: "center", gap: "0.3rem",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(251,251,244,0.7)")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(251,251,244,0.25)")}
             >
-              Erstgespräch vereinbaren →
+              Gespräch vereinbaren →
             </a>
-          </div>
+          ))}
         </div>
       </div>
     </>

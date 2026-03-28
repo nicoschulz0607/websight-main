@@ -20,7 +20,7 @@ const TRUST_TAGS = [
   ["Einzigartig", "Vertrauensstark", "Markenkonform", "Strategisch"],
 ];
 
-const EXPANDED_H  = 50;
+const EXPANDED_H  = 56;
 const COLLAPSED_H = (100 - EXPANDED_H) / (SERVICES.length - 1);
 const OVERLAP_PX  = 20; // px each card overlaps the previous
 
@@ -53,7 +53,7 @@ export default function Services() {
         );
         tweens.current.push(
           gsap.to(titleRefs.current[i], {
-            fontSize: "clamp(1.4rem, 2.2vw, 2rem)", y: 0,
+            fontSize: "clamp(1.5rem, 2vw, 2rem)", y: 0,
             duration: 0.5, ease: "power2.out",
           })
         );
@@ -83,7 +83,7 @@ export default function Services() {
         );
         tweens.current.push(
           gsap.to(titleRefs.current[i], {
-            fontSize: isActive ? "clamp(3rem, 6vw, 5.5rem)" : "clamp(0.9rem, 1.4vw, 1.2rem)",
+            fontSize: isActive ? "clamp(2.4rem, 3.5vw, 3.5rem)" : "clamp(1.1rem, 1.6vw, 1.5rem)",
             y: isActive ? 0 : 0,
             duration: 0.6, ease: "power3.out",
           })
@@ -286,8 +286,8 @@ export default function Services() {
               {/* ── Foreground content ── */}
               <div style={{
                 position: "relative", zIndex: 2, height: "100%",
-                display: "flex", flexDirection: "column", justifyContent: "center",
-                padding: `${OVERLAP_PX + 12}px clamp(2rem, 8vw, 8rem) 1.5rem`,
+                display: "flex", flexDirection: "column", justifyContent: "flex-end",
+                padding: `${OVERLAP_PX + 12}px clamp(2rem, 8vw, 8rem) clamp(1.5rem, 3vh, 3rem)`,
               }}>
 
                 {/* Title — GSAP animates fontSize */}
@@ -334,7 +334,7 @@ export default function Services() {
                         border: `1px solid ${service.accentColor}38`,
                         borderRadius: "100px",
                         color: service.accentColor,
-                        fontSize: "0.65rem", letterSpacing: "0.09em",
+                        fontSize: "0.75rem", letterSpacing: "0.07em",
                         background: `${service.accentColor}0d`,
                         whiteSpace: "nowrap",
                       }}>
