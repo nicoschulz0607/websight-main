@@ -4,111 +4,168 @@ import { NextResponse } from "next/server";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 function confirmationHtml(name: string, email: string, projekt: string): string {
+  const F = `-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif`;
+  const MONO = `'Courier New', Courier, monospace`;
   return `<!DOCTYPE html>
-<html lang="de">
+<html lang="de" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Websight – Anfrage erhalten</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap');
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background-color: #000000; font-family: 'Geist', system-ui, sans-serif; color: #fbfbf4; -webkit-font-smoothing: antialiased; }
-    .wrapper { max-width: 600px; margin: 0 auto; padding: 40px 24px; }
-    .header { text-align: center; padding: 0 0 44px; }
-    .header img { height: 36px; width: auto; }
-    .hero { background: #080808; border: 1px solid rgba(251,251,244,0.06); border-radius: 16px; padding: 52px 40px; text-align: center; position: relative; overflow: hidden; }
-    .hero::before { content: ''; position: absolute; top: -80px; left: -10%; width: 45%; height: 45%; border-radius: 50%; background: radial-gradient(circle, rgba(96,165,250,0.07), transparent 70%); pointer-events: none; }
-    .hero::after { content: ''; position: absolute; bottom: -80px; right: -10%; width: 45%; height: 45%; border-radius: 50%; background: radial-gradient(circle, rgba(173,43,238,0.07), transparent 70%); pointer-events: none; }
-    .hero-badge { display: inline-block; background: rgba(139,111,247,0.08); border: 1px solid rgba(139,111,247,0.18); color: rgba(251,251,244,0.45); font-size: 0.65rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; font-family: monospace; padding: 6px 16px; border-radius: 9999px; margin-bottom: 28px; }
-    .hero h1 { font-size: 3rem; font-weight: 800; line-height: 0.95; color: #fbfbf4; letter-spacing: -0.04em; margin-bottom: 20px; }
-    .gradient-text { background: linear-gradient(90deg, #60a5fa, #ad2bee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .hero p { font-size: 1rem; line-height: 1.85; color: rgba(251,251,244,0.45); max-width: 400px; margin: 0 auto; }
-    .divider { height: 1px; background: rgba(251,251,244,0.06); margin: 36px 0; }
-    .card { background: #080808; border: 1px solid rgba(251,251,244,0.06); border-radius: 12px; padding: 28px 32px; margin: 0 0 24px; }
-    .section-label { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; font-family: monospace; color: rgba(251,251,244,0.25); margin-bottom: 20px; }
-    .summary-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid rgba(251,251,244,0.06); gap: 16px; }
-    .summary-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .summary-key { font-size: 0.85rem; color: rgba(251,251,244,0.38); min-width: 80px; }
-    .summary-value { font-size: 0.85rem; color: rgba(251,251,244,0.72); text-align: right; flex: 1; }
-    .step { display: flex; gap: 18px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid rgba(251,251,244,0.06); }
-    .step:first-of-type { padding-top: 0; }
-    .step:last-child { border-bottom: none; padding-bottom: 0; }
-    .step-num { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.25em; font-family: monospace; min-width: 28px; padding-top: 2px; }
-    .step-num.blue { color: #60a5fa; }
-    .step-num.mid  { color: #8b6ff7; }
-    .step-num.purp { color: #ad2bee; }
-    .step h3 { font-size: 0.95rem; font-weight: 500; color: rgba(251,251,244,0.72); margin-bottom: 4px; letter-spacing: -0.01em; }
-    .step p { font-size: 0.85rem; color: rgba(251,251,244,0.38); line-height: 1.7; }
-    .signature { padding: 24px 32px; border-left: 1px solid rgba(139,111,247,0.3); margin: 0 0 32px; }
-    .signature p { font-size: 1rem; color: rgba(251,251,244,0.45); line-height: 1.85; font-style: italic; margin-bottom: 12px; }
-    .signature-name { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; background: linear-gradient(90deg, #60a5fa, #ad2bee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .footer { text-align: center; }
-    .footer-meta { font-size: 0.75rem; color: rgba(251,251,244,0.25); line-height: 1.8; }
-    .footer-meta a { color: rgba(251,251,244,0.25); text-decoration: none; }
-  </style>
+  <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
 </head>
-<body>
-  <div class="wrapper">
-    <div class="header">
-      <img src="https://websight-design.de/logo.png" alt="Websight" />
-    </div>
-    <div class="hero">
-      <div class="hero-badge">Anfrage eingegangen</div>
-      <h1>Dein Potenzial<br><span class="gradient-text">wird analysiert.</span></h1>
-      <p>Wir haben deine Anfrage erhalten und melden uns innerhalb von 24 Stunden persönlich bei dir.</p>
-    </div>
-    <div class="divider"></div>
-    <div class="card">
-      <div class="section-label">Deine Angaben</div>
-      <div class="summary-row">
-        <span class="summary-key">Name</span>
-        <span class="summary-value">${name}</span>
-      </div>
-      <div class="summary-row">
-        <span class="summary-key">E-Mail</span>
-        <span class="summary-value">${email}</span>
-      </div>
-      <div class="summary-row">
-        <span class="summary-key">Projekt</span>
-        <span class="summary-value">${projekt}</span>
-      </div>
-    </div>
-    <div class="card">
-      <div class="section-label">Was passiert als nächstes</div>
-      <div class="step">
-        <span class="step-num blue">01</span>
-        <div>
-          <h3>Analyse deines Projekts</h3>
-          <p>Wir schauen uns deine Anfrage an und bereiten konkrete Ideen vor.</p>
-        </div>
-      </div>
-      <div class="step">
-        <span class="step-num mid">02</span>
-        <div>
-          <h3>Persönliche Rückmeldung</h3>
-          <p>Du hörst innerhalb von 24 Stunden von uns – mit einem konkreten Plan, keinem Standardangebot.</p>
-        </div>
-      </div>
-      <div class="step">
-        <span class="step-num purp">03</span>
-        <div>
-          <h3>Erstgespräch &amp; Strategie</h3>
-          <p>Wir sprechen über deine Ziele und entwickeln gemeinsam die richtige digitale Strategie.</p>
-        </div>
-      </div>
-    </div>
-    <div class="signature">
-      <p>„Wir freuen uns auf dein Projekt – lass uns was Gutes bauen."</p>
-      <div class="signature-name">Nico Schulz — Websight</div>
-    </div>
-    <div class="footer">
-      <div class="footer-meta">
-        <a href="mailto:nico@websight-design.de">nico@websight-design.de</a> · <a href="https://websight-design.de">websight-design.de</a><br>
-        +49 172 9249820
-      </div>
-    </div>
-  </div>
+<body style="margin:0;padding:0;background-color:#000000;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+
+<!-- Outer wrapper -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#000000" style="background-color:#000000;">
+  <tr>
+    <td align="center" style="padding:40px 16px;">
+
+      <!-- Content table -->
+      <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" bgcolor="#000000" style="max-width:560px;width:100%;background-color:#000000;">
+
+        <!-- LOGO -->
+        <tr>
+          <td align="center" style="padding:0 0 36px 0;background-color:#000000;">
+            <span style="font-family:${MONO};font-size:18px;font-weight:700;letter-spacing:0.2em;color:#fbfbf4;text-transform:uppercase;">WEBSIGHT</span>
+          </td>
+        </tr>
+
+        <!-- HERO CARD -->
+        <tr>
+          <td bgcolor="#0d0d0d" style="background-color:#0d0d0d;border-radius:16px;border:1px solid #1e1e1e;padding:48px 36px;text-align:center;">
+            <!-- Badge -->
+            <div style="display:inline-block;margin-bottom:24px;">
+              <span style="font-family:${MONO};font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:#8b8b8b;background-color:#1a1025;border:1px solid #3a2060;border-radius:999px;padding:6px 18px;display:inline-block;">Anfrage eingegangen</span>
+            </div>
+            <!-- Headline -->
+            <h1 style="margin:0 0 18px 0;font-family:${F};font-size:38px;font-weight:800;line-height:1.05;letter-spacing:-0.03em;color:#fbfbf4;">
+              Dein Potenzial<br>
+              <span style="color:#8b6ff7;">wird analysiert.</span>
+            </h1>
+            <!-- Sub -->
+            <p style="margin:0;font-family:${F};font-size:15px;line-height:1.75;color:#888888;max-width:380px;display:inline-block;">
+              Wir haben deine Anfrage erhalten und melden uns innerhalb von 24&nbsp;Stunden pers&ouml;nlich bei dir.
+            </p>
+          </td>
+        </tr>
+
+        <!-- DIVIDER -->
+        <tr>
+          <td style="padding:28px 0;background-color:#000000;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td style="height:1px;background-color:#1a1a1a;font-size:0;line-height:0;">&nbsp;</td></tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- DEINE ANGABEN CARD -->
+        <tr>
+          <td bgcolor="#0d0d0d" style="background-color:#0d0d0d;border-radius:12px;border:1px solid #1e1e1e;padding:28px 32px 20px 32px;">
+            <!-- Label -->
+            <p style="margin:0 0 18px 0;font-family:${MONO};font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:#555555;">Deine Angaben</p>
+            <!-- Rows -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="padding:11px 0;border-bottom:1px solid #1e1e1e;font-family:${F};font-size:13px;color:#666666;width:80px;">Name</td>
+                <td style="padding:11px 0;border-bottom:1px solid #1e1e1e;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${name}</td>
+              </tr>
+              <tr>
+                <td style="padding:11px 0;border-bottom:1px solid #1e1e1e;font-family:${F};font-size:13px;color:#666666;">E-Mail</td>
+                <td style="padding:11px 0;border-bottom:1px solid #1e1e1e;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${email}</td>
+              </tr>
+              <tr>
+                <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#666666;vertical-align:top;">Projekt</td>
+                <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${projekt}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- SPACER -->
+        <tr><td style="height:20px;background-color:#000000;font-size:0;line-height:0;">&nbsp;</td></tr>
+
+        <!-- WAS PASSIERT CARD -->
+        <tr>
+          <td bgcolor="#0d0d0d" style="background-color:#0d0d0d;border-radius:12px;border:1px solid #1e1e1e;padding:28px 32px 20px 32px;">
+            <p style="margin:0 0 18px 0;font-family:${MONO};font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:#555555;">Was passiert als n&auml;chstes</p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <!-- Step 01 -->
+              <tr>
+                <td style="padding:0 14px 0 0;vertical-align:top;width:28px;border-bottom:1px solid #1e1e1e;padding-bottom:14px;">
+                  <span style="font-family:${MONO};font-size:10px;font-weight:700;letter-spacing:0.18em;color:#60a5fa;">01</span>
+                </td>
+                <td style="border-bottom:1px solid #1e1e1e;padding-bottom:14px;">
+                  <p style="margin:0 0 4px 0;font-family:${F};font-size:14px;font-weight:600;color:#cccccc;">Analyse deines Projekts</p>
+                  <p style="margin:0;font-family:${F};font-size:13px;color:#666666;line-height:1.6;">Wir schauen uns deine Anfrage an und bereiten konkrete Ideen vor.</p>
+                </td>
+              </tr>
+              <!-- Spacer row -->
+              <tr><td colspan="2" style="height:14px;font-size:0;line-height:0;">&nbsp;</td></tr>
+              <!-- Step 02 -->
+              <tr>
+                <td style="padding:0 14px 0 0;vertical-align:top;width:28px;border-bottom:1px solid #1e1e1e;padding-bottom:14px;">
+                  <span style="font-family:${MONO};font-size:10px;font-weight:700;letter-spacing:0.18em;color:#8b6ff7;">02</span>
+                </td>
+                <td style="border-bottom:1px solid #1e1e1e;padding-bottom:14px;">
+                  <p style="margin:0 0 4px 0;font-family:${F};font-size:14px;font-weight:600;color:#cccccc;">Pers&ouml;nliche R&uuml;ckmeldung</p>
+                  <p style="margin:0;font-family:${F};font-size:13px;color:#666666;line-height:1.6;">Du h&ouml;rst innerhalb von 24 Stunden von uns &ndash; mit einem konkreten Plan, keinem Standardangebot.</p>
+                </td>
+              </tr>
+              <!-- Spacer row -->
+              <tr><td colspan="2" style="height:14px;font-size:0;line-height:0;">&nbsp;</td></tr>
+              <!-- Step 03 -->
+              <tr>
+                <td style="padding:0 14px 0 0;vertical-align:top;width:28px;">
+                  <span style="font-family:${MONO};font-size:10px;font-weight:700;letter-spacing:0.18em;color:#ad2bee;">03</span>
+                </td>
+                <td>
+                  <p style="margin:0 0 4px 0;font-family:${F};font-size:14px;font-weight:600;color:#cccccc;">Erstgespr&auml;ch &amp; Strategie</p>
+                  <p style="margin:0;font-family:${F};font-size:13px;color:#666666;line-height:1.6;">Wir sprechen &uuml;ber deine Ziele und entwickeln gemeinsam die richtige digitale Strategie.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- DIVIDER -->
+        <tr>
+          <td style="padding:28px 0;background-color:#000000;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr><td style="height:1px;background-color:#1a1a1a;font-size:0;line-height:0;">&nbsp;</td></tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- SIGNATURE -->
+        <tr>
+          <td style="background-color:#000000;border-left:2px solid #3a2060;padding:20px 0 20px 24px;">
+            <p style="margin:0 0 10px 0;font-family:${F};font-size:15px;font-style:italic;line-height:1.7;color:#666666;">&bdquo;Wir freuen uns auf dein Projekt &ndash; lass uns was Gutes bauen.&ldquo;</p>
+            <span style="font-family:${MONO};font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8b6ff7;">Nico Schulz &mdash; Websight</span>
+          </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+          <td align="center" style="padding:32px 0 0 0;background-color:#000000;">
+            <p style="margin:0;font-family:${F};font-size:12px;color:#444444;line-height:1.8;">
+              <a href="mailto:nico@websight-design.de" style="color:#444444;text-decoration:none;">nico@websight-design.de</a>
+              &nbsp;&middot;&nbsp;
+              <a href="https://websight-design.de" style="color:#444444;text-decoration:none;">websight-design.de</a><br>
+              +49 172 9249820
+            </p>
+          </td>
+        </tr>
+
+      </table>
+      <!-- /Content table -->
+
+    </td>
+  </tr>
+</table>
+<!-- /Outer wrapper -->
+
 </body>
 </html>`;
 }
