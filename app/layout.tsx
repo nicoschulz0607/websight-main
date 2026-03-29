@@ -5,6 +5,8 @@ import { CursorProvider } from "@/components/providers/CursorContext";
 import CustomCursor from "@/components/ui/CustomCursor";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geist = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +34,8 @@ export default function RootLayout({
           <main>{children}</main>
           <Footer />
         </CursorProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
