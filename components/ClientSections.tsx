@@ -6,7 +6,7 @@ import { BLUR_TEXT_1_LINES, BLUR_TEXT_2_LINES, BLUR_TEXT_3_LINES } from "@/lib/c
 const Hero = dynamic(() => import("@/components/sections/Hero"));
 const BlurText = dynamic(() => import("@/components/sections/BlurText"), {
   ssr: false,
-  loading: () => <div style={{ height: "100vh", background: "#000" }} />,
+  loading: () => <div style={{ height: "190vh", background: "#000" }} />,
 });
 const FeaturedWork = dynamic(() => import("@/components/sections/FeaturedWork"), {
   ssr: false,
