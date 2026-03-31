@@ -3,19 +3,61 @@ import { NextResponse } from "next/server";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-function confirmationHtml(name: string, email: string, projekt: string): string {
+interface ConfigItem { label: string; price: string; }
+interface Config { items: ConfigItem[]; totalOnce: number; totalMo: number; estimation: string; company?: string; phone?: string; }
+
+function confirmationHtml(name: string, email: string, projekt: string, config?: Config): string {
   const F = `-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif`;
   const MONO = `'Courier New', Courier, monospace`;
+
+  const configCard = config && config.items.length > 0 ? `
+        <!-- SPACER -->
+        <tr><td style="height:20px;background-color:#000000;font-size:0;line-height:0;">&nbsp;</td></tr>
+
+        <!-- KONFIGURATION CARD -->
+        <tr>
+          <td bgcolor="#0d0d0d" style="background-color:#0d0d0d;border-radius:12px;border:1px solid #1e1e1e;padding:28px 32px 20px 32px;">
+            <p style="margin:0 0 18px 0;font-family:${MONO};font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:#555555;">Deine Konfiguration</p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              ${config.items.map((item, i) => `
+              <tr>
+                <td style="padding:10px 0;${i < config.items.length - 1 ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#888888;">${item.label}</td>
+                <td style="padding:10px 0;${i < config.items.length - 1 ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#cccccc;text-align:right;white-space:nowrap;">${item.price}</td>
+              </tr>`).join("")}
+            </table>
+            <!-- Total -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:16px;border-top:1px solid #2a2a2a;">
+              <tr>
+                <td style="padding-top:14px;font-family:${MONO};font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#555555;">Gesch&auml;tzter Rahmen</td>
+                <td style="padding-top:14px;text-align:right;">
+                  <span style="font-family:${F};font-size:16px;font-weight:700;color:#8b6ff7;">${config.estimation}</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>` : "";
+
   return `<!DOCTYPE html>
 <html lang="de" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
   <title>Websight – Anfrage erhalten</title>
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+  <style type="text/css">
+    /* Force our dark design in both light and dark mode */
+    @media (prefers-color-scheme: light) {
+      body, table, td { background-color: #000000 !important; color: #fbfbf4 !important; }
+    }
+    @media (prefers-color-scheme: dark) {
+      body, table, td { background-color: #000000 !important; }
+    }
+  </style>
 </head>
-<body style="margin:0;padding:0;background-color:#000000;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+<body style="margin:0;padding:0;background-color:#000000;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;color-scheme:light dark;">
 
 <!-- Outer wrapper -->
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#000000" style="background-color:#000000;">
@@ -72,16 +114,26 @@ function confirmationHtml(name: string, email: string, projekt: string): string 
                 <td style="padding:11px 0;border-bottom:1px solid #1e1e1e;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${name}</td>
               </tr>
               <tr>
-                <td style="padding:11px 0;border-bottom:1px solid #1e1e1e;font-family:${F};font-size:13px;color:#666666;">E-Mail</td>
-                <td style="padding:11px 0;border-bottom:1px solid #1e1e1e;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${email}</td>
+                <td style="padding:11px 0;${config?.company || config?.phone ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#666666;">E-Mail</td>
+                <td style="padding:11px 0;${config?.company || config?.phone ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${email}</td>
               </tr>
-              <tr>
-                <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#666666;vertical-align:top;">Projekt</td>
+              ${config?.company ? `<tr>
+                <td style="padding:11px 0;${config?.phone ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#666666;">Unternehmen</td>
+                <td style="padding:11px 0;${config?.phone ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${config.company}</td>
+              </tr>` : ""}
+              ${config?.phone ? `<tr>
+                <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#666666;">Telefon</td>
+                <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${config.phone}</td>
+              </tr>` : ""}
+              ${!config ? `<tr>
+                <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#666666;vertical-align:top;">Nachricht</td>
                 <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${projekt}</td>
-              </tr>
+              </tr>` : ""}
             </table>
           </td>
         </tr>
+
+        ${configCard}
 
         <!-- SPACER -->
         <tr><td style="height:20px;background-color:#000000;font-size:0;line-height:0;">&nbsp;</td></tr>
@@ -172,7 +224,7 @@ function confirmationHtml(name: string, email: string, projekt: string): string 
 
 export async function POST(req: Request) {
   try {
-    const { name, email, message } = await req.json();
+    const { name, email, message, config } = await req.json();
 
     // 1. Benachrichtigung an Nico
     const { data, error } = await resend.emails.send({
@@ -193,7 +245,7 @@ export async function POST(req: Request) {
       from: "Websight <noreply@websight-design.de>",
       to: [email],
       subject: "Deine Anfrage bei Websight – wir haben sie erhalten",
-      html: confirmationHtml(name, email, message),
+      html: confirmationHtml(name, email, message, config as Config | undefined),
     });
 
     console.log("[Contact] E-Mails gesendet:", data?.id);

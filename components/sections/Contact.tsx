@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "@/lib/gsap";
 
@@ -156,10 +157,39 @@ export default function Contact() {
 
           <p style={{
             fontSize: "clamp(0.95rem, 1.3vw, 1.1rem)", color: "rgba(251,251,244,0.5)",
-            lineHeight: 1.7, maxWidth: "420px", marginBottom: "2.5rem",
+            lineHeight: 1.7, maxWidth: "420px", marginBottom: "1.5rem",
           }}>
             Vereinbare ein kostenloses Erstgespräch oder starte direkt mit einer High-Impact Digital-Strategie.
           </p>
+
+          <Link
+            href="/anfragen"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: "0.5rem",
+              fontSize: "0.75rem", fontWeight: 700,
+              letterSpacing: "0.1em", textTransform: "uppercase",
+              padding: "0.75rem 1.5rem", borderRadius: 999,
+              border: "1px solid rgba(139,111,247,0.35)",
+              color: "#8b6ff7", textDecoration: "none",
+              marginBottom: "2.5rem",
+              transition: "border-color 0.2s, background 0.2s, color 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(139,111,247,0.7)";
+              (e.currentTarget as HTMLAnchorElement).style.background = "rgba(139,111,247,0.08)";
+              (e.currentTarget as HTMLAnchorElement).style.color = "#ad2bee";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(139,111,247,0.35)";
+              (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+              (e.currentTarget as HTMLAnchorElement).style.color = "#8b6ff7";
+            }}
+          >
+            Projekt berechnen
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M7 17 17 7M7 7h10v10"/>
+            </svg>
+          </Link>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {[
