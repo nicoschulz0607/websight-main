@@ -16,7 +16,7 @@ function confirmationHtml(name: string, email: string, projekt: string, config?:
 
         <!-- KONFIGURATION CARD -->
         <tr>
-          <td bgcolor="#0d0d0d" style="background-color:#0d0d0d;border-radius:12px;border:1px solid #1e1e1e;padding:28px 32px 20px 32px;">
+          <td bgcolor="#0d0d0d" class="card-bg" style="background-color:#0d0d0d;border-radius:12px;border:1px solid #1e1e1e;padding:28px 32px 20px 32px;">
             <p style="margin:0 0 18px 0;font-family:${MONO};font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:#555555;">Deine Konfiguration</p>
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               ${config.items.map((item, i) => `
@@ -43,24 +43,30 @@ function confirmationHtml(name: string, email: string, projekt: string, config?:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="color-scheme" content="light dark">
-  <meta name="supported-color-schemes" content="light dark">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
   <title>Websight – Anfrage erhalten</title>
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
   <style type="text/css">
-    /* Force our dark design in both light and dark mode */
-    @media (prefers-color-scheme: light) {
-      body, table, td { background-color: #000000 !important; color: #fbfbf4 !important; }
-    }
+    /* Prevent all email clients from applying dark-mode color transformations.
+       We ship a dark design intentionally — block any automatic inversion. */
+    :root { color-scheme: light; supported-color-schemes: light; }
+    /* Gmail dark-mode override selectors */
+    [data-ogsc] body, [data-ogsb] body { background-color: #000000 !important; color: #fbfbf4 !important; }
+    [data-ogsc] table, [data-ogsb] table { background-color: #000000 !important; }
+    [data-ogsc] .card-bg, [data-ogsb] .card-bg { background-color: #0d0d0d !important; }
+    /* Apple Mail / Outlook dark-mode override */
     @media (prefers-color-scheme: dark) {
-      body, table, td { background-color: #000000 !important; }
+      body { background-color: #000000 !important; color: #fbfbf4 !important; }
+      .body-bg { background-color: #000000 !important; }
+      .card-bg { background-color: #0d0d0d !important; }
     }
   </style>
 </head>
-<body style="margin:0;padding:0;background-color:#000000;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;color-scheme:light dark;">
+<body style="margin:0;padding:0;background-color:#000000;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;color-scheme:light;">
 
 <!-- Outer wrapper -->
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#000000" style="background-color:#000000;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#000000" class="body-bg" style="background-color:#000000;">
   <tr>
     <td align="center" style="padding:40px 16px;">
 
@@ -76,7 +82,7 @@ function confirmationHtml(name: string, email: string, projekt: string, config?:
 
         <!-- HERO CARD -->
         <tr>
-          <td bgcolor="#0d0d0d" style="background-color:#0d0d0d;border-radius:16px;border:1px solid #1e1e1e;padding:48px 36px;text-align:center;">
+          <td bgcolor="#0d0d0d" class="card-bg" style="background-color:#0d0d0d;border-radius:16px;border:1px solid #1e1e1e;padding:48px 36px;text-align:center;">
             <!-- Badge -->
             <div style="display:inline-block;margin-bottom:24px;">
               <span style="font-family:${MONO};font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:#8b8b8b;background-color:#1a1025;border:1px solid #3a2060;border-radius:999px;padding:6px 18px;display:inline-block;">Anfrage eingegangen</span>
@@ -104,7 +110,7 @@ function confirmationHtml(name: string, email: string, projekt: string, config?:
 
         <!-- DEINE ANGABEN CARD -->
         <tr>
-          <td bgcolor="#0d0d0d" style="background-color:#0d0d0d;border-radius:12px;border:1px solid #1e1e1e;padding:28px 32px 20px 32px;">
+          <td bgcolor="#0d0d0d" class="card-bg" style="background-color:#0d0d0d;border-radius:12px;border:1px solid #1e1e1e;padding:28px 32px 20px 32px;">
             <!-- Label -->
             <p style="margin:0 0 18px 0;font-family:${MONO};font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:#555555;">Deine Angaben</p>
             <!-- Rows -->
@@ -140,7 +146,7 @@ function confirmationHtml(name: string, email: string, projekt: string, config?:
 
         <!-- WAS PASSIERT CARD -->
         <tr>
-          <td bgcolor="#0d0d0d" style="background-color:#0d0d0d;border-radius:12px;border:1px solid #1e1e1e;padding:28px 32px 20px 32px;">
+          <td bgcolor="#0d0d0d" class="card-bg" style="background-color:#0d0d0d;border-radius:12px;border:1px solid #1e1e1e;padding:28px 32px 20px 32px;">
             <p style="margin:0 0 18px 0;font-family:${MONO};font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:#555555;">Was passiert als n&auml;chstes</p>
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               <!-- Step 01 -->
