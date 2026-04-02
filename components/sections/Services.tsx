@@ -9,7 +9,7 @@ import ServiceModal from "@/components/ServiceModal";
 const BG_IMAGES = [
   "https://images.pexels.com/photos/574077/pexels-photo-574077.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1",  // Code/Laptop – Webdesign
   "https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1",  // Analytics-Dashboard – SEO
-  "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1", // Keyboard/Tech – Automatisierung
+  "https://images.pexels.com/photos/325111/pexels-photo-325111.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1",   // Schaltkreis – Automatisierung
   "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1", // Team/Creative – Marke
 ];
 
@@ -53,7 +53,7 @@ export default function Services() {
         );
         tweens.current.push(
           gsap.to(titleRefs.current[i], {
-            fontSize: "clamp(1.5rem, 2vw, 2rem)", y: 0,
+            fontSize: "clamp(1.25rem, 1.6vw, 1.75rem)", y: 0,
             duration: 0.5, ease: "power2.out",
           })
         );
@@ -83,7 +83,7 @@ export default function Services() {
         );
         tweens.current.push(
           gsap.to(titleRefs.current[i], {
-            fontSize: isActive ? "clamp(2.4rem, 3.5vw, 3.5rem)" : "clamp(1.1rem, 1.6vw, 1.5rem)",
+            fontSize: isActive ? "clamp(2rem, 2.6vw, 2.8rem)" : "clamp(1rem, 1.4vw, 1.35rem)",
             y: isActive ? 0 : 0,
             duration: 0.6, ease: "power3.out",
           })
@@ -188,7 +188,7 @@ export default function Services() {
             Was wir machen
           </p>
           <h2 style={{
-            fontSize: "clamp(2.4rem, 4.5vw, 4.5rem)",
+            fontSize: "clamp(2rem, 3.2vw, 3.5rem)",
             fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1, color: "#fbfbf4",
           }}>
             Unsere{" "}

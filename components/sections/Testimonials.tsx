@@ -187,7 +187,7 @@ export default function Testimonials() {
           <p
             ref={quoteRef}
             style={{
-              fontSize: "clamp(2.2rem, 4vw, 4.2rem)",
+              fontSize: "clamp(1.8rem, 3.2vw, 3.5rem)",
               fontWeight: 700, lineHeight: 1.18, letterSpacing: "-0.035em",
               maxWidth: "1000px", width: "100%", textAlign: "center",
             }}

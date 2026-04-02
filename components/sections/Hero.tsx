@@ -13,14 +13,14 @@ export default function Hero() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set([descRef.current, ctaRef.current], {
+      gsap.set([headlineRef.current, descRef.current, ctaRef.current], {
         opacity: 0, y: 28,
       });
 
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-      tl.from(headlineRef.current, { y: 28, duration: 0.8 }, 0.4);
-      tl.to(descRef.current,     { opacity: 1, y: 0, duration: 0.6 }, 0.7);
-      tl.to(ctaRef.current,      { opacity: 1, y: 0, duration: 0.55 }, 0.9);
+      tl.to(headlineRef.current, { opacity: 1, y: 0, duration: 0.85 }, 0.3);
+      tl.to(descRef.current,     { opacity: 1, y: 0, duration: 0.65 }, 0.75);
+      tl.to(ctaRef.current,      { opacity: 1, y: 0, duration: 0.55 }, 0.98);
     }, sectionRef);
 
     return () => ctx.revert();
@@ -102,24 +102,25 @@ export default function Hero() {
         <p
           ref={descRef}
           className="text-cream/55 leading-relaxed mt-5"
-          style={{ fontSize: isMobile ? "0.95rem" : "clamp(0.9rem, 1.4vw, 1.1rem)", maxWidth: "420px" }}
+          style={{ fontSize: isMobile ? "0.9rem" : "clamp(0.9rem, 1.4vw, 1.1rem)", maxWidth: isMobile ? "320px" : "420px" }}
         >
-          Maßgeschneiderte Websites, starke Marken und digitale Produkte
-          — die nicht nur schön aussehen, sondern auch performen.
+          Websites & Marken, die nicht nur schön aussehen —
+          sondern auch performen.
         </p>
 
         {/* CTA button */}
-        <div ref={ctaRef} className="flex items-center mt-8">
+        <div ref={ctaRef} className="flex items-center mt-7">
           <a
             href="#kontakt"
             className="hero-cta flex items-center justify-center rounded-full font-bold tracking-widest uppercase"
             style={{
-              padding: "1rem 2.6rem",
-              fontSize: "clamp(0.75rem, 1.1vw, 0.875rem)",
+              padding: isMobile ? "0.85rem 2rem" : "1rem 2.6rem",
+              fontSize: isMobile ? "0.72rem" : "clamp(0.75rem, 1.1vw, 0.875rem)",
               background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
               color: "#fff",
               textDecoration: "none",
               letterSpacing: "0.12em",
+              whiteSpace: "nowrap",
               transition: "opacity 0.2s, transform 0.2s",
             }}
             onMouseEnter={(e) => {

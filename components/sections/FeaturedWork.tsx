@@ -5,16 +5,11 @@ import { gsap } from "@/lib/gsap";
 import { useCursor } from "@/components/providers/CursorContext";
 import { PROJECTS } from "@/lib/constants";
 
-const TOTAL = 4;
+const TOTAL = 3;
 const DEFAULT_W = 100 / TOTAL;
-const EXPANDED_W = 44;
+const EXPANDED_W = 52;
 const COLLAPSED_W = (100 - EXPANDED_W) / (TOTAL - 1);
 
-// Placeholder images — replace with real project screenshots
-const PROJECT_IMAGES = [
-  "https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg?auto=compress&cs=tinysrgb&w=1200&h=900&dpr=1",
-  "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1200&h=900&dpr=1",
-];
 
 export default function FeaturedWork() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -65,30 +60,25 @@ export default function FeaturedWork() {
             </div>
           </div>
 
-          {/* Project image cards */}
-          {PROJECTS.map((project, i) => (
-            <div key={project.id} style={{ height: 240, position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(251,251,244,0.05)" }}>
-              <img
-                src={PROJECT_IMAGES[i]} alt={project.title}
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-              />
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.1) 100%)" }} />
+          {/* Project cards — atmospheric full-bleed */}
+          {PROJECTS.map((project) => (
+            <a key={project.id} href={project.href} target="_blank" rel="noopener noreferrer"
+              style={{ display: "block", textDecoration: "none", height: 280, position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(251,251,244,0.05)" }}>
+              <img src={project.bgImage} alt={project.title}
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.1) 100%)" }} />
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "1px", background: `linear-gradient(90deg, transparent, ${project.accentColor}70, transparent)` }} />
-              <span style={{ position: "absolute", top: "1rem", left: "1.25rem", fontSize: "0.62rem", fontFamily: "monospace", letterSpacing: "0.2em", color: "rgba(251,251,244,0.5)", zIndex: 2 }}>
-                {project.number}
-              </span>
+              <span style={{ position: "absolute", top: "1rem", left: "1.25rem", fontSize: "0.62rem", fontFamily: "monospace", letterSpacing: "0.2em", color: "rgba(251,251,244,0.55)", zIndex: 2 }}>{project.number}</span>
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "1.25rem", zIndex: 2 }}>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem", marginBottom: "0.5rem" }}>
                   {project.tags.map((tag) => (
-                    <span key={tag} style={{ fontSize: "0.62rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(251,251,244,0.7)", background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)", border: "1px solid rgba(251,251,244,0.12)", padding: "0.2rem 0.5rem", borderRadius: "2rem" }}>
-                      {tag}
-                    </span>
+                    <span key={tag} style={{ fontSize: "0.62rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(251,251,244,0.75)", background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)", border: "1px solid rgba(251,251,244,0.15)", padding: "0.2rem 0.5rem", borderRadius: "2rem" }}>{tag}</span>
                   ))}
                 </div>
-                <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#fbfbf4", lineHeight: 1.15 }}>{project.title}</h3>
-                <p style={{ fontSize: "0.78rem", color: "rgba(251,251,244,0.5)", marginTop: "0.3rem" }}>{project.subtitle}</p>
+                <h3 style={{ fontSize: "1.35rem", fontWeight: 700, color: "#fbfbf4", lineHeight: 1.15, textShadow: "0 2px 10px rgba(0,0,0,0.8)" }}>{project.title}</h3>
+                <p style={{ fontSize: "0.78rem", color: "rgba(251,251,244,0.55)", marginTop: "0.3rem" }}>{project.subtitle}</p>
               </div>
-            </div>
+            </a>
           ))}
 
           {/* CTA card */}
@@ -204,23 +194,10 @@ export default function FeaturedWork() {
               ))}
               {/* Placeholder row */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.875rem", padding: "0.5rem 0" }}>
-                <span style={{ fontSize: "0.6rem", fontFamily: "monospace", color: "rgba(251,251,244,0.15)", minWidth: "1.5rem" }}>03</span>
+                <span style={{ fontSize: "0.6rem", fontFamily: "monospace", color: "rgba(251,251,244,0.15)", minWidth: "1.5rem" }}>02</span>
                 <span style={{ fontSize: "clamp(0.78rem, 1vw, 0.9rem)", color: "rgba(251,251,244,0.18)", fontStyle: "italic" }}>Dein Projekt?</span>
               </div>
 
-              {/* All projects link */}
-              <a href="#" style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingTop: "0.75rem", textDecoration: "none",
-                color: "rgba(251,251,244,0.35)", fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase",
-                transition: "color 0.2s",
-              }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(251,251,244,0.8)")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(251,251,244,0.35)")}
-              >
-                Alle Projekte
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M7 17 17 7M7 7h10v10"/>
-                </svg>
-              </a>
             </div>
           </div>
         </div>
@@ -229,126 +206,128 @@ export default function FeaturedWork() {
         {PROJECTS.map((project, i) => {
           const isHovered = hoveredIndex === i + 1;
           return (
-            <div
+            <a
               key={project.id}
-              ref={(el) => { cardRefs.current[i + 1] = el; }}
+              href={project.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              ref={(el) => { cardRefs.current[i + 1] = el as HTMLDivElement | null; }}
               className="relative h-full flex-shrink-0 overflow-hidden border-r border-cream/[0.06]"
-              style={{ width: `${DEFAULT_W}%`, minWidth: 0, willChange: "width", background: "#0a0a0a", cursor: "none" }}
+              style={{ width: `${DEFAULT_W}%`, minWidth: 0, willChange: "width", cursor: "none", display: "block", textDecoration: "none" }}
               onMouseEnter={() => { setCursorMode("view-project"); setHoveredIndex(i + 1); }}
             >
-              {/* Full-bleed image */}
+              {/* Full-bleed atmospheric background photo */}
               <img
-                src={PROJECT_IMAGES[i]}
-                alt={project.title}
+                src={project.bgImage}
+                alt=""
+                aria-hidden
                 style={{
                   position: "absolute", inset: 0, width: "100%", height: "100%",
                   objectFit: "cover", objectPosition: "center",
-                  transform: isHovered ? "scale(1.07)" : "scale(1.0)",
-                  transition: "transform 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                  transform: isHovered ? "scale(1.06)" : "scale(1.0)",
+                  transition: "transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94)",
                 }}
               />
 
-              {/* Dark overlay — stronger on hover */}
+              {/* Dark gradient overlay */}
               <div className="absolute inset-0" style={{
                 background: isHovered
-                  ? "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.15) 100%)"
-                  : "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.05) 100%)",
-                transition: "background 0.45s ease",
+                  ? "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.18) 100%)"
+                  : "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.12) 100%)",
+                transition: "background 0.5s ease",
               }} />
 
               {/* Accent top line */}
               <div className="absolute top-0 left-0 right-0 h-px" style={{
-                background: `linear-gradient(90deg, transparent, ${project.accentColor}70, transparent)`,
+                background: `linear-gradient(90deg, transparent, ${project.accentColor}90, transparent)`,
                 opacity: isHovered ? 1 : 0, transition: "opacity 0.4s ease",
               }} />
-
-              {/* Large decorative number — editorial background */}
-              <div style={{
-                position: "absolute", bottom: "-0.15em", right: "-0.05em",
-                fontSize: "clamp(10rem, 18vw, 16rem)", fontWeight: 900,
-                lineHeight: 1, letterSpacing: "-0.06em",
-                color: "transparent",
-                WebkitTextStroke: "1px rgba(251,251,244,0.07)",
-                userSelect: "none", pointerEvents: "none", zIndex: 1,
-                fontVariantNumeric: "tabular-nums",
-              }}>
-                {project.number}
-              </div>
 
               {/* Number top-left */}
               <div className="absolute top-7 left-7" style={{ zIndex: 2 }}>
                 <span style={{ fontSize: "0.62rem", fontFamily: "monospace", letterSpacing: "0.2em",
-                  color: "rgba(251,251,244,0.5)", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
+                  color: "rgba(251,251,244,0.55)", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>
                   {project.number}
                 </span>
               </div>
 
-              {/* Arrow top-right */}
-              <div className="absolute top-7 right-7" style={{ zIndex: 2,
-                opacity: isHovered ? 1 : 0, transition: "opacity 0.3s ease",
-                fontSize: "1rem", color: "#fbfbf4", textShadow: "0 1px 4px rgba(0,0,0,0.8)",
-              }}>↗</div>
-
-              {/* Bottom overlay content */}
-              <div className="absolute bottom-0 left-0 right-0 p-7 md:p-8" style={{ zIndex: 2 }}>
-                {/* Tags — slide up on hover */}
+              {/* Browser mockup — top-right, visible on hover */}
+              <div className="absolute top-7 right-7" style={{
+                zIndex: 2, width: "min(260px, 42%)",
+                opacity: isHovered ? 1 : 0,
+                transform: isHovered ? "translateY(0)" : "translateY(10px)",
+                transition: "opacity 0.45s ease, transform 0.45s ease",
+              }}>
                 <div style={{
-                  display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "0.75rem",
-                  transform: isHovered ? "translateY(0)" : "translateY(8px)",
+                  borderRadius: 7, overflow: "hidden",
+                  boxShadow: "0 12px 40px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.1)",
+                }}>
+                  <div style={{ background: "#1c1c1c", borderBottom: "1px solid #2a2a2a", padding: "0 8px", height: 22, display: "flex", alignItems: "center", gap: 4 }}>
+                    {["#ff5f57", "#ffbd2e", "#28c840"].map((c) => (
+                      <span key={c} style={{ width: 7, height: 7, borderRadius: "50%", background: c, display: "inline-block", flexShrink: 0 }} />
+                    ))}
+                    <div style={{ flex: 1, margin: "0 6px", background: "#111", borderRadius: 3, height: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontSize: "0.52rem", color: "rgba(251,251,244,0.25)", letterSpacing: "0.03em" }}>{project.href?.replace("https://", "")}</span>
+                    </div>
+                  </div>
+                  <img src={project.image} alt={project.title}
+                    style={{ width: "100%", height: 130, objectFit: "cover", objectPosition: "top", display: "block" }} />
+                </div>
+              </div>
+
+              {/* Bottom info */}
+              <div className="absolute bottom-0 left-0 right-0 p-7 md:p-8" style={{ zIndex: 2 }}>
+                <div style={{
+                  display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "0.65rem",
                   opacity: isHovered ? 1 : 0,
-                  transition: "transform 0.4s ease, opacity 0.4s ease",
+                  transform: isHovered ? "translateY(0)" : "translateY(8px)",
+                  transition: "opacity 0.4s ease, transform 0.4s ease",
                 }}>
                   {project.tags.map((tag) => (
                     <span key={tag} style={{
-                      fontSize: "0.65rem", fontWeight: 600, letterSpacing: "0.1em",
-                      textTransform: "uppercase", color: "rgba(251,251,244,0.7)",
-                      background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)",
-                      border: "1px solid rgba(251,251,244,0.12)",
-                      padding: "0.25rem 0.625rem", borderRadius: "2rem",
+                      fontSize: "0.6rem", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase",
+                      color: "rgba(251,251,244,0.75)", background: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)",
+                      border: "1px solid rgba(251,251,244,0.15)", padding: "0.22rem 0.55rem", borderRadius: "2rem",
                     }}>{tag}</span>
                   ))}
                 </div>
-
-                {/* Title — always visible, shifts up on hover */}
                 <h3 style={{
-                  fontSize: "clamp(1rem, 2vw, 1.75rem)", fontWeight: 700, lineHeight: 1.15,
-                  color: "#fbfbf4", marginBottom: "0.5rem",
+                  fontSize: "1.85rem", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.03em",
+                  color: "#fbfbf4", marginBottom: "0.35rem",
                   transform: isHovered ? "translateY(0)" : "translateY(4px)",
                   transition: "transform 0.4s ease",
-                  textShadow: "0 2px 12px rgba(0,0,0,0.6)",
+                  textShadow: "0 2px 16px rgba(0,0,0,0.7)",
                 }}>
                   {project.title}
                 </h3>
-
-                {/* Subtitle — only on hover */}
                 <p style={{
-                  fontSize: "0.8rem", color: "rgba(251,251,244,0.55)", lineHeight: 1.5,
-                  transform: isHovered ? "translateY(0)" : "translateY(6px)",
+                  fontSize: "0.8rem", color: "rgba(251,251,244,0.6)", lineHeight: 1.5,
                   opacity: isHovered ? 1 : 0,
-                  transition: "transform 0.4s ease 0.05s, opacity 0.4s ease 0.05s",
+                  transform: isHovered ? "translateY(0)" : "translateY(4px)",
+                  transition: "opacity 0.4s ease 0.06s, transform 0.4s ease 0.06s",
                   maxWidth: "280px",
                 }}>
                   {project.subtitle}
                 </p>
               </div>
-            </div>
+            </a>
           );
         })}
 
-        {/* ── Tile 3: CTA ──────────────────────────────────── */}
+        {/* ── Tile 2: CTA ──────────────────────────────────── */}
         <div
-          ref={(el) => { cardRefs.current[3] = el; }}
+          ref={(el) => { cardRefs.current[2] = el; }}
           className="relative h-full flex-shrink-0 overflow-hidden"
           style={{ width: `${DEFAULT_W}%`, minWidth: 0, willChange: "width", background: "#080808" }}
-          onMouseEnter={() => setHoveredIndex(3)}
+          onMouseEnter={() => setHoveredIndex(2)}
         >
           <div className="absolute inset-0 pointer-events-none" style={{
             background: "radial-gradient(ellipse 80% 60% at 70% 80%, rgba(173,43,238,0.12) 0%, transparent 65%)",
-            opacity: hoveredIndex === 3 ? 1 : 0.4, transition: "opacity 0.5s ease",
+            opacity: hoveredIndex === 2 ? 1 : 0.4, transition: "opacity 0.5s ease",
           }} />
           <div className="absolute top-0 left-0 right-0 h-px" style={{
             background: "linear-gradient(90deg, transparent, rgba(173,43,238,0.5), rgba(96,165,250,0.5), transparent)",
-            opacity: hoveredIndex === 3 ? 1 : 0, transition: "opacity 0.4s ease",
+            opacity: hoveredIndex === 2 ? 1 : 0, transition: "opacity 0.4s ease",
           }} />
 
           <div className="absolute inset-0 flex flex-col justify-between p-8 md:p-10">
@@ -367,11 +346,11 @@ export default function FeaturedWork() {
               <p style={{ fontSize: "0.65rem", color: "rgba(251,251,244,0.3)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1rem" }}>
                 Zusammenarbeiten
               </p>
-              <h3 style={{ fontSize: "clamp(1.2rem, 2vw, 1.9rem)", fontWeight: 800, lineHeight: 1.15, letterSpacing: "-0.02em", color: "#fbfbf4", marginBottom: "0.875rem" }}>
+              <h3 style={{ fontSize: "1.35rem", fontWeight: 800, lineHeight: 1.2, letterSpacing: "-0.02em", color: "#fbfbf4", marginBottom: "0.75rem" }}>
                 Hier könnte dein Projekt stehen.
               </h3>
-              <p style={{ fontSize: "clamp(0.78rem, 0.85vw, 0.875rem)", color: "rgba(251,251,244,0.38)", lineHeight: 1.7, maxWidth: "220px" }}>
-                Lass uns gemeinsam etwas Außergewöhnliches schaffen — von der Idee bis zum fertigen Produkt.
+              <p style={{ fontSize: "0.78rem", color: "rgba(251,251,244,0.38)", lineHeight: 1.7 }}>
+                Lass uns gemeinsam etwas Außergewöhnliches schaffen.
               </p>
             </div>
 
@@ -384,9 +363,8 @@ export default function FeaturedWork() {
                 borderRadius: "0.75rem", padding: "0.875rem 1.5rem",
                 fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
                 width: "fit-content",
-                opacity: hoveredIndex === 3 ? 1 : 0.65,
-                transform: hoveredIndex === 3 ? "translateY(0)" : "translateY(6px)",
-                transition: "opacity 0.35s ease, transform 0.35s ease",
+                opacity: hoveredIndex === 2 ? 1 : 0.65,
+                transition: "opacity 0.35s ease",
               }}
             >
               Gespräch starten

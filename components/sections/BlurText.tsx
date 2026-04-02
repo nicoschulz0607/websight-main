@@ -69,7 +69,7 @@ export default function BlurText({ lines, className = "", noBorderTop = false }:
         <div ref={containerRef} style={{ maxWidth: "1000px", width: "100%", padding: "0 clamp(2rem, 8vw, 8rem)", position: "relative", zIndex: 1 }}>
           <p
             style={{
-              fontSize: "clamp(2.8rem, 6vw, 5.8rem)",
+              fontSize: "clamp(2.2rem, 4.2vw, 5rem)",
               fontWeight: 700,
               lineHeight: 1.18,
               letterSpacing: "-0.035em",

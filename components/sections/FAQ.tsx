@@ -131,7 +131,7 @@ export default function FAQ() {
           Häufige Fragen
         </p>
         <h2 style={{
-          fontSize: "clamp(3.5rem, 6vw, 5.5rem)",
+          fontSize: "clamp(2.5rem, 4vw, 4.5rem)",
           fontWeight: 700,
           lineHeight: 1,
           letterSpacing: "-0.03em",

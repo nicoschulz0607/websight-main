@@ -200,7 +200,7 @@ export default function Process() {
 
               <div style={{ position: "relative", zIndex: 2, maxWidth: "660px" }}>
                 <h2 style={{
-                  fontSize: "clamp(3.2rem, 7.5vw, 7rem)",
+                  fontSize: "clamp(2.8rem, 5.5vw, 6rem)",
                   fontWeight: 700, letterSpacing: "-0.04em",
                   color: "#fbfbf4", lineHeight: 0.92, marginBottom: "2rem",
                 }}>

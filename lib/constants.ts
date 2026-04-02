@@ -2,20 +2,14 @@ export const PROJECTS = [
   {
     id: 1,
     number: "01",
-    title: "Projekt Name",
-    subtitle: "Kurze Beschreibung des Projekts",
-    tags: ["Marke", "Strategie", "Webdesign"],
+    title: "Oimmo",
+    subtitle: "Immobilien geschmackvoll verkaufen.",
+    tags: ["Webdesign", "Entwicklung"],
     bgColor: "#0d0d0d",
     accentColor: "#60a5fa",
-  },
-  {
-    id: 2,
-    number: "02",
-    title: "Projekt Name",
-    subtitle: "Kurze Beschreibung des Projekts",
-    tags: ["UI/UX", "Entwicklung"],
-    bgColor: "#0a0a0a",
-    accentColor: "#ad2bee",
+    image: "/oimmo-preview.jpg",
+    bgImage: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    href: "https://o-immo.vercel.app",
   },
 ];
 

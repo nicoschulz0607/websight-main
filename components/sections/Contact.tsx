@@ -145,7 +145,7 @@ export default function Contact() {
           }}>Bereit zu starten</span>
 
           <h2 style={{
-            fontSize: "clamp(2.6rem, 5.5vw, 5rem)", fontWeight: 800,
+            fontSize: "clamp(2.2rem, 4vw, 4.5rem)", fontWeight: 800,
             lineHeight: 1.08, letterSpacing: "-0.03em", color: "#fbfbf4", marginBottom: "1.5rem",
           }}>
             Lass uns dein{" "}
