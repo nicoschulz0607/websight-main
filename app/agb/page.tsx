@@ -26,7 +26,7 @@ export default function AGB() {
 
       <Section title="1. Geltungsbereich">
         <p>
-          Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge zwischen Nico Schulz / Websight (nachfolgend „Auftragnehmer") und seinen Auftraggebern (nachfolgend „Auftraggeber") über Leistungen im Bereich Webdesign, Webentwicklung, digitale Strategie, SEO und verwandte Dienstleistungen.
+          Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge zwischen Nico Schulz / Websight (nachfolgend &bdquo;Auftragnehmer&ldquo;) und seinen Auftraggebern (nachfolgend &bdquo;Auftraggeber&ldquo;) über Leistungen im Bereich Webdesign, Webentwicklung, digitale Strategie, SEO und verwandte Dienstleistungen.
         </p>
         <p style={{ marginTop: "0.75rem" }}>
           Abweichende Bedingungen des Auftraggebers werden nicht anerkannt, sofern der Auftragnehmer ihrer Geltung nicht ausdrücklich schriftlich zugestimmt hat.

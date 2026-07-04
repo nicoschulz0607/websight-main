@@ -1,18 +1,16 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- kept for the commented-out "Projekt berechnen" link below
 import Link from "next/link";
-import gsap from "gsap";
-import { ScrollTrigger } from "@/lib/gsap";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap } from "@/lib/gsap";
 
 type Status = "idle" | "loading" | "success" | "error";
 
-const LOADING_TEXTS = ["Analysiere…", "Verarbeite…", "Fast fertig…"];
+const LOADING_TEXTS = ["Wird gesendet…"];
 
 export default function Contact() {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", message: "", website: "" });
   const [status, setStatus]     = useState<Status>("idle");
   const [loadingIdx, setLoadingIdx] = useState(0);
 
@@ -104,7 +102,7 @@ export default function Contact() {
         });
       }
 
-      setFormData({ name: "", email: "", message: "" });
+      setFormData({ name: "", email: "", message: "", website: "" });
       setStatus("success");
     } catch {
       setStatus("error");
@@ -148,20 +146,21 @@ export default function Contact() {
             fontSize: "clamp(2.2rem, 4vw, 4.5rem)", fontWeight: 800,
             lineHeight: 1.08, letterSpacing: "-0.03em", color: "#fbfbf4", marginBottom: "1.5rem",
           }}>
-            Lass uns dein{" "}
+            Lass uns über dein{" "}
             <span style={{
               background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-            }}>Potenzial</span>{" "}analysieren.
+            }}>Projekt</span>{" "}sprechen.
           </h2>
 
           <p style={{
             fontSize: "clamp(0.95rem, 1.3vw, 1.1rem)", color: "rgba(251,251,244,0.5)",
             lineHeight: 1.7, maxWidth: "420px", marginBottom: "1.5rem",
           }}>
-            Vereinbare ein kostenloses Erstgespräch oder starte direkt mit einer High-Impact Digital-Strategie.
+            Erzähl mir kurz, worum es geht — du bekommst innerhalb von 24 Stunden eine ehrliche Einschätzung. Kostenlos und unverbindlich.
           </p>
 
+          {/* "Projekt berechnen"-Link zum Konfigurator temporär ausgeblendet — bleibt im Code, bis wieder gebraucht.
           <Link
             href="/anfragen"
             style={{
@@ -190,6 +189,7 @@ export default function Contact() {
               <path d="M7 17 17 7M7 7h10v10"/>
             </svg>
           </Link>
+          */}
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {[
@@ -298,7 +298,7 @@ export default function Contact() {
                     }}>gesendet!</span>
                   </p>
                   <p style={{ color: "rgba(251,251,244,0.45)", fontSize: "0.9rem", lineHeight: 1.6 }}>
-                    Wir melden uns innerhalb von 24 Stunden bei dir.
+                    Ich melde mich innerhalb von 24 Stunden bei dir.
                   </p>
                 </div>
 
@@ -327,30 +327,41 @@ export default function Contact() {
               <form ref={formRef} onSubmit={handleSubmit} autoComplete="on"
                 style={{ display: "flex", flexDirection: "column", gap: "2rem", position: "relative", zIndex: 1 }}>
 
+                {/* Honeypot — hidden from real users, bots that auto-fill every field trip it */}
+                <div aria-hidden style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+                  <label htmlFor="website">Website</label>
+                  <input type="text" id="website" name="website" tabIndex={-1} autoComplete="off"
+                    value={formData.website}
+                    onChange={(e) => setFormData({ ...formData, website: e.target.value })} />
+                </div>
+
                 <div className="contact-field">
-                  <input type="text" name="name" value={formData.name}
+                  <input type="text" id="contact-name" name="name" value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required placeholder=" " autoComplete="name" />
-                  <label>Dein Name</label>
+                  <label htmlFor="contact-name">Dein Name</label>
                 </div>
 
                 <div className="contact-field">
-                  <input type="email" name="email" value={formData.email}
+                  <input type="email" id="contact-email" name="email" value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required placeholder=" " autoComplete="email" />
-                  <label>E-Mail Adresse</label>
+                  <label htmlFor="contact-email">E-Mail Adresse</label>
                 </div>
 
                 <div className="contact-field">
-                  <textarea name="message" value={formData.message}
+                  <textarea id="contact-message" name="message" value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     required placeholder=" " rows={4} />
-                  <label>Projekt Details</label>
+                  <label htmlFor="contact-message">Projekt Details</label>
                 </div>
 
                 {status === "error" && (
                   <p style={{ color: "#f87171", fontSize: "0.875rem", margin: "-0.75rem 0" }}>
-                    Etwas ist schiefgelaufen. Bitte versuche es nochmal.
+                    Etwas ist schiefgelaufen. Schreib mir gerne direkt: {" "}
+                    <a href="mailto:nico@websight-design.de" style={{ color: "#f87171" }}>nico@websight-design.de</a>
+                    {" "}oder{" "}
+                    <a href="tel:+491729249820" style={{ color: "#f87171" }}>+49 172 9249820</a>.
                   </p>
                 )}
 
@@ -379,7 +390,7 @@ export default function Contact() {
                       LOADING_TEXTS[loadingIdx]
                     ) : (
                       <>
-                        Analyse starten
+                        Nachricht senden
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M7 17 17 7M7 7h10v10"/>
                         </svg>

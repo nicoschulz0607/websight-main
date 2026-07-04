@@ -2,9 +2,9 @@
 import { useState, useEffect } from "react";
 
 export function useIsMobile(breakpoint = 768): boolean {
-  const [isMobile, setIsMobile] = useState(
-    () => typeof window !== "undefined" ? window.innerWidth < breakpoint : false
-  );
+  // Always start false so the first client render matches the server-rendered
+  // HTML (SSR has no window) — the real value is set after mount in the effect.
+  const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < breakpoint);
     check();

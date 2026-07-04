@@ -21,7 +21,7 @@ export default function Impressum() {
         Impressum
       </h1>
 
-      <Section title="Angaben gemäß § 5 TMG">
+      <Section title="Angaben gemäß § 5 DDG">
         <p>Nico Schulz</p>
         <p>Websight</p>
         <p style={{ color: "rgba(251,251,244,0.4)", marginTop: "0.25rem" }}>
@@ -38,20 +38,17 @@ export default function Impressum() {
 
       <Section title="Umsatzsteuer">
         <p style={{ color: "rgba(251,251,244,0.6)", lineHeight: 1.8 }}>
-          Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (Kleinunternehmerregelung).<br />
-          <span style={{ color: "rgba(251,251,244,0.35)", fontSize: "0.85rem" }}>
-            (Falls du bereits eine USt-IdNr. hast, hier eintragen: USt-IdNr.: DE[NUMMER])
-          </span>
+          Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (Kleinunternehmerregelung).
         </p>
       </Section>
 
-      <Section title="Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV">
+      <Section title="Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV">
         <p>Nico Schulz<br />Hailanderstraße 14, 72336 Balingen</p>
       </Section>
 
       <Section title="Haftung für Inhalte">
         <p style={{ color: "rgba(251,251,244,0.6)", lineHeight: 1.8 }}>
-          Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht unter der Verpflichtung, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
+          Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht unter der Verpflichtung, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
         </p>
         <p style={{ color: "rgba(251,251,244,0.6)", lineHeight: 1.8, marginTop: "1rem" }}>
           Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.

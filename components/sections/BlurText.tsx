@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
 import { useIsMobile } from "@/lib/useIsMobile";
 
 interface TextLine {
@@ -28,7 +28,7 @@ export default function BlurText({ lines, className = "", noBorderTop = false }:
 
       gsap.fromTo(
         words,
-        { autoAlpha: 0, filter: "blur(1.8rem)", y: 32 },
+        { autoAlpha: 0, filter: "blur(0.8rem)", y: 32 },
         {
           autoAlpha: 1,
           filter: "blur(0rem)",
@@ -85,7 +85,6 @@ export default function BlurText({ lines, className = "", noBorderTop = false }:
                   style={{
                     display: "inline-block",
                     marginRight: "0.28em",
-                    willChange: "filter, opacity, transform",
                     ...(line.colored
                       ? {
                           background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",

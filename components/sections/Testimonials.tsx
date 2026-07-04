@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
 import { TESTIMONIALS } from "@/lib/constants";
 
 const QUOTE_WORDS: { text: string; colored?: boolean }[] = [
@@ -74,8 +74,6 @@ export default function Testimonials() {
   const t = TESTIMONIALS[0];
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
     const ctx = gsap.context(() => {
       const section   = stickyRef.current;
       const container = scrollContRef.current;
@@ -84,18 +82,18 @@ export default function Testimonials() {
       // ── Inner scroll: content moves UP inside the fixed viewport window ──
       // Words at the top "disappear" by exiting through overflow:hidden,
       // not by dimming — this is the natural "reading scroll" feel.
-      const sectionH = section.clientHeight;
-      const contentH = container.scrollHeight;
-      const travel   = Math.max(0, contentH - sectionH + 64);
-
+      // The travel distance is computed as a function (not a fixed number) so
+      // ScrollTrigger re-measures it on every refresh — e.g. after a resize or
+      // when the mobile browser's address bar hides/shows during scroll.
       gsap.to(container, {
-        y: -travel,
+        y: () => -Math.max(0, container.scrollHeight - section.clientHeight + 64),
         ease: "none",
         scrollTrigger: {
           trigger: wrapperRef.current,
           start: "top top",
           end: "bottom bottom",
           scrub: 1.5,
+          invalidateOnRefresh: true,
         },
       });
 
@@ -104,7 +102,7 @@ export default function Testimonials() {
       const words = quoteRef.current?.querySelectorAll<HTMLSpanElement>("[data-word]");
       if (words && words.length > 0) {
         gsap.fromTo(words,
-          { autoAlpha: 0, filter: "blur(1.8rem)", y: 32 },
+          { autoAlpha: 0, filter: "blur(0.8rem)", y: 32 },
           {
             autoAlpha: 1, filter: "blur(0rem)", y: 0,
             ease: "power2.out",
@@ -199,7 +197,6 @@ export default function Testimonials() {
                 style={{
                   display: "inline-block",
                   marginRight: "0.28em",
-                  willChange: "filter, opacity, transform",
                   ...(w.colored ? {
                     background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
                     WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",

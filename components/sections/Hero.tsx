@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap } from "@/lib/gsap";
 import { useIsMobile } from "@/lib/useIsMobile";
 
@@ -33,15 +34,14 @@ export default function Hero() {
       style={{ background: "#000" }}
     >
       {/* ── Background image — Ken Burns slow scale ──────────────────────── */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src="/hero-bg-optimized.jpg"
         alt=""
         aria-hidden
-        width={2206}
-        height={1536}
-        fetchPriority="high"
-        className="absolute inset-0 w-full h-full object-cover"
+        fill
+        sizes="100vw"
+        priority
+        className="object-cover"
         style={{ animation: "heroBgScale 22s ease-in-out infinite alternate" }}
       />
 

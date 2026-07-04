@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FAQ_ITEMS } from "@/lib/constants";
 
 const ACCENTS = ["#60a5fa", "#8b6ff7", "#ad2bee", "#60a5fa", "#8b6ff7", "#ad2bee"];
@@ -19,7 +18,6 @@ export default function FAQ() {
 
   // Scroll reveal
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
       gsap.fromTo(
         itemRefs.current,
@@ -159,7 +157,17 @@ export default function FAQ() {
             <div
               key={item.question}
               ref={(el) => { itemRefs.current[i] = el; }}
+              role="button"
+              tabIndex={0}
+              aria-expanded={isOpen}
+              aria-controls={`faq-answer-${i}`}
               onClick={() => setOpenIndex(isOpen ? null : i)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setOpenIndex(isOpen ? null : i);
+                }
+              }}
               style={{
                 borderTop: "1px solid rgba(251,251,244,0.08)",
                 borderLeft: isOpen ? `2px solid ${accent}` : "2px solid transparent",
@@ -239,6 +247,8 @@ export default function FAQ() {
 
                   {/* Answer */}
                   <div
+                    id={`faq-answer-${i}`}
+                    role="region"
                     ref={(el) => { answerRefs.current[i] = el; }}
                     style={{ height: 0, overflow: "hidden" }}
                   >

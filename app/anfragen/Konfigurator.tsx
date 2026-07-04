@@ -40,7 +40,17 @@ const UPSELLS: Record<UpsellKey, UpsellDef> = {
   pflege:    { name: "Monatliche Inhaltspflege",        desc: "1h/Mo — Texte, Bilder, Öffnungszeiten aktuell",          price: "29 €/Mo",        once: 0,   mo: 29, badge: null,        triggers: ["web"]        },
 };
 
-const LOADING_TEXTS = ["Analysiere…", "Verarbeite…", "Fast fertig…"];
+const LOADING_TEXTS = ["Wird gesendet…"];
+
+/** Formats the estimate consistently everywhere it's shown — no rounding-down
+ *  anchor, so the tile price, sticky bar and confirmation mail always agree. */
+function formatEstimate(totalOnce: number, totalMo: number): string {
+  if (totalOnce === 0 && totalMo === 0) return "Im Gespräch klären";
+  const parts: string[] = [];
+  if (totalOnce > 0) parts.push(`ab ${totalOnce.toLocaleString("de-DE")} €`);
+  if (totalMo > 0) parts.push(`${totalMo.toLocaleString("de-DE")} €/Mo`);
+  return `Richtwert: ${parts.join(" · ")}`;
+}
 
 /* ── Tile ────────────────────────────────────────────────────── */
 interface TileProps {
@@ -57,9 +67,17 @@ function Tile({ name, desc, price, badge, selected, onClick }: TileProps) {
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-pressed={selected}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); }
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
       style={{
         position: "relative",
         borderRadius: 14,
@@ -212,7 +230,7 @@ export default function Konfigurator() {
 
   /* ── Modal ── */
   const [modalOpen, setModalOpen] = useState(false);
-  const [formData, setFormData]   = useState({ name: "", company: "", email: "", phone: "", message: "" });
+  const [formData, setFormData]   = useState({ name: "", company: "", email: "", phone: "", message: "", website: "" });
   const [status,     setStatus]     = useState<Status>("idle");
   const [loadingIdx, setLoadingIdx] = useState(0);
 
@@ -245,14 +263,25 @@ export default function Konfigurator() {
     return () => { document.body.style.overflow = ""; };
   }, [modalOpen]);
 
+  /* ── Escape closes the modal ── */
+  useEffect(() => {
+    if (!modalOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setModalOpen(false); setStatus("idle"); }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [modalOpen]);
+
   /* ── Calculations ── */
   const totalOnce =
-    (web?.once ?? 0) + (buch?.once ?? 0) + (auto?.once ?? 0) +
+    (web?.once ?? 0) + (buch?.once ?? 0) + (auto?.once ?? 0) + (seo?.once ?? 0) +
     bers.reduce((s, b) => s + b.once, 0) +
     Object.values(upsells).reduce((s, u) => s + (u?.once ?? 0), 0);
 
   const totalMo =
     (web?.mo ?? 0) + (buch?.mo ?? 0) + (auto?.mo ?? 0) + (seo?.mo ?? 0) +
+    bers.reduce((s, b) => s + b.mo, 0) +
     Object.values(upsells).reduce((s, u) => s + (u?.mo ?? 0), 0);
 
   const selectedItems = [
@@ -262,8 +291,7 @@ export default function Konfigurator() {
   ].filter(Boolean) as string[];
 
   const visibleUpsells = (Object.keys(UPSELLS) as UpsellKey[])
-    .filter((k) => UPSELLS[k].triggers.some((t) => main.includes(t)))
-    .slice(0, 3);
+    .filter((k) => UPSELLS[k].triggers.some((t) => main.includes(t)));
 
   /* ── Handlers ── */
   const toggleMain = (key: MainKey) => {
@@ -295,11 +323,7 @@ export default function Konfigurator() {
 
   /* ── Build message ── */
   const buildMessage = () => {
-    const lo = Math.floor((totalOnce * 0.9) / 100) * 100;
-    const est =
-      (lo > 0 ? `ab ${lo.toLocaleString("de-DE")} €` : "") +
-      (totalMo > 0 ? (lo > 0 ? " + " : "") + `${totalMo.toLocaleString("de-DE")} €/Mo` : "") ||
-      "Im Gespräch klären";
+    const est = formatEstimate(totalOnce, totalMo);
 
     let b = "=== KONFIGURIERTES PROJEKT ===\n\n";
     if (web)  b += `WEBSITE: ${web.label}\n`;
@@ -335,11 +359,7 @@ export default function Konfigurator() {
       const u = upsells[k];
       if (u) items.push({ label: u.name, price: fmtPrice(u.once, u.mo) });
     });
-    const lo = Math.floor((totalOnce * 0.9) / 100) * 100;
-    const estimation =
-      (lo > 0 ? `ab ${lo.toLocaleString("de-DE")} €` : "") +
-      (totalMo > 0 ? (lo > 0 ? " · " : "") + `${totalMo.toLocaleString("de-DE")} €/Mo` : "") ||
-      "Im Gespräch klären";
+    const estimation = formatEstimate(totalOnce, totalMo);
     return {
       items,
       totalOnce,
@@ -358,7 +378,7 @@ export default function Konfigurator() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: formData.name, email: formData.email, message: buildMessage(), config: buildConfig() }),
+        body: JSON.stringify({ name: formData.name, email: formData.email, message: buildMessage(), config: buildConfig(), website: formData.website }),
       });
       if (!res.ok) throw new Error();
       setStatus("success");
@@ -369,11 +389,7 @@ export default function Konfigurator() {
 
   const canSubmit = formData.name.trim().length > 0 && formData.email.includes("@") && status !== "loading";
 
-  const lo = Math.floor((totalOnce * 0.9) / 100) * 100;
-  const estStr =
-    (lo > 0 ? `ab ${lo.toLocaleString("de-DE")}\u202f€` : "") +
-    (totalMo > 0 ? (lo > 0 ? " · " : "") + `${totalMo.toLocaleString("de-DE")}\u202f€/Mo` : "") ||
-    "Im Gespräch";
+  const estStr = formatEstimate(totalOnce, totalMo);
 
   /* ── Grid style ── */
   const grid2: React.CSSProperties = {
@@ -621,27 +637,37 @@ export default function Konfigurator() {
           background: "linear-gradient(90deg,transparent,rgba(96,165,250,0.3),rgba(139,111,247,0.4),rgba(173,43,238,0.3),transparent)",
         }} />
 
-        <div style={{ maxWidth: 920, margin: "0 auto", padding: "1.1rem clamp(1.25rem,4vw,2.5rem)" }}>
+        <div style={{ maxWidth: 920, margin: "0 auto", padding: "1.1rem clamp(1.25rem,4vw,2.5rem) calc(1.1rem + env(safe-area-inset-bottom))" }}>
           <div style={{
             display: "flex", alignItems: "center",
             justifyContent: "space-between", gap: "1.5rem", flexWrap: "wrap",
           }}>
             {/* Left — Preise + Auswahl */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", minWidth: 0 }}>
-              <div style={{ display: "flex", alignItems: "baseline", gap: "0.75rem", flexWrap: "wrap" }}>
-                <span style={{
-                  fontSize: "1.6rem", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1,
-                  background: "linear-gradient(90deg,#60a5fa,#8b6ff7,#ad2bee)",
-                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-                }}>
-                  {totalMo.toLocaleString("de-DE")}&thinsp;€/Mo
+              {selectedItems.length === 0 ? (
+                <span style={{ fontSize: 14, color: "rgba(251,251,244,0.35)" }}>
+                  Wähle Leistungen — dein Richtwert erscheint hier
                 </span>
-                {totalOnce > 0 && (
-                  <span style={{ fontSize: 14, color: "rgba(251,251,244,0.55)", letterSpacing: "0.01em" }}>
-                    + {totalOnce.toLocaleString("de-DE")}&thinsp;€ einmalig
-                  </span>
-                )}
-              </div>
+              ) : (
+                <div style={{ display: "flex", alignItems: "baseline", gap: "0.75rem", flexWrap: "wrap" }}>
+                  {totalMo > 0 && (
+                    <span style={{
+                      fontSize: "1.6rem", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1,
+                      background: "linear-gradient(90deg,#60a5fa,#8b6ff7,#ad2bee)",
+                      WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                    }}>
+                      {totalMo.toLocaleString("de-DE")}&thinsp;€/Mo
+                    </span>
+                  )}
+                  {totalOnce > 0 && (
+                    <span style={totalMo > 0
+                      ? { fontSize: 14, color: "rgba(251,251,244,0.55)", letterSpacing: "0.01em" }
+                      : { fontSize: "1.6rem", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, background: "linear-gradient(90deg,#60a5fa,#8b6ff7,#ad2bee)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                      {totalMo > 0 ? "+ " : "ab "}{totalOnce.toLocaleString("de-DE")}&thinsp;€ einmalig
+                    </span>
+                  )}
+                </div>
+              )}
               {selectedItems.length > 0 && (
                 <span style={{
                   fontSize: 12, color: "rgba(251,251,244,0.35)",
@@ -711,6 +737,9 @@ export default function Konfigurator() {
       {/* ══ Modal ══ */}
       {modalOpen && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Anfrage senden"
           onClick={(e) => { if (e.target === e.currentTarget) { setModalOpen(false); setStatus("idle"); } }}
           style={{
             position: "fixed", inset: 0, zIndex: 200,
@@ -757,16 +786,16 @@ export default function Konfigurator() {
                     </svg>
                   </div>
                   <h3 style={{ fontSize: "1.5rem", fontWeight: 800, letterSpacing: "-0.03em", marginBottom: "0.5rem" }}>
-                    Dein Potenzial{" "}
+                    Deine Anfrage{" "}
                     <span style={{
                       background: "linear-gradient(135deg,#60a5fa,#ad2bee)",
                       WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                     }}>
-                      wird analysiert.
+                      ist angekommen.
                     </span>
                   </h3>
                   <p style={{ fontSize: 13, color: "rgba(251,251,244,0.45)", lineHeight: 1.7, maxWidth: 360, margin: "0 auto 2rem" }}>
-                    Anfrage erhalten — ich melde mich innerhalb von 24 Stunden persönlich bei dir.
+                    Ich melde mich innerhalb von 24 Stunden persönlich bei dir.
                   </p>
                   {[
                     { n: "01", b: "Analyse deines Projekts", t: "Ich schaue mir deine Angaben an und bereite konkrete Ideen vor." },
@@ -787,6 +816,21 @@ export default function Konfigurator() {
                       </div>
                     </div>
                   ))}
+                  <button
+                    onClick={() => { setModalOpen(false); setStatus("idle"); reset(); }}
+                    style={{
+                      marginTop: "1.75rem", width: "100%",
+                      background: "none", cursor: "pointer",
+                      border: "1px solid rgba(139,111,247,0.3)", color: "rgba(251,251,244,0.7)",
+                      borderRadius: "0.75rem", padding: "0.75rem 1.5rem",
+                      fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.08em",
+                      textTransform: "uppercase", transition: "border-color 0.2s, color 0.2s",
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(139,111,247,0.7)"; (e.currentTarget as HTMLButtonElement).style.color = "#fbfbf4"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(139,111,247,0.3)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(251,251,244,0.7)"; }}
+                  >
+                    Schließen
+                  </button>
                 </div>
               ) : (
                 /* ── Form ── */
@@ -822,14 +866,25 @@ export default function Konfigurator() {
                       {estStr}
                     </div>
                     {selectedItems.length > 0 && (
-                      <p style={{ fontSize: 12, color: "rgba(251,251,244,0.35)", lineHeight: 1.6 }}>
+                      <p style={{ fontSize: 12, color: "rgba(251,251,244,0.35)", lineHeight: 1.6, marginBottom: 6 }}>
                         {selectedItems.join(" · ")}
                       </p>
                     )}
+                    <p style={{ fontSize: 11, color: "rgba(251,251,244,0.25)", lineHeight: 1.5 }}>
+                      Unverbindlicher Richtwert — das finale Angebot entsteht im kostenlosen Erstgespräch.
+                    </p>
                   </div>
 
                   <form onSubmit={handleSubmit} autoComplete="on">
                     <div style={{ display: "flex", flexDirection: "column", gap: "2rem", marginBottom: "2rem" }}>
+
+                      {/* Honeypot — hidden from real users */}
+                      <div aria-hidden style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+                        <label htmlFor="k-website">Website</label>
+                        <input type="text" id="k-website" name="website" tabIndex={-1} autoComplete="off"
+                          value={formData.website}
+                          onChange={(e) => setFormData((f) => ({ ...f, website: e.target.value }))} />
+                      </div>
 
                       <div className="contact-field">
                         <input type="text" name="name" value={formData.name} required placeholder=" " autoComplete="name"
@@ -865,7 +920,10 @@ export default function Konfigurator() {
 
                     {status === "error" && (
                       <p style={{ color: "#f87171", fontSize: "0.875rem", marginBottom: "1rem" }}>
-                        Etwas ist schiefgelaufen. Bitte versuche es nochmal.
+                        Etwas ist schiefgelaufen. Schreib mir gerne direkt:{" "}
+                        <a href="mailto:nico@websight-design.de" style={{ color: "#f87171" }}>nico@websight-design.de</a>
+                        {" "}oder{" "}
+                        <a href="tel:+491729249820" style={{ color: "#f87171" }}>+49 172 9249820</a>.
                       </p>
                     )}
 

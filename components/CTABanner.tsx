@@ -35,8 +35,8 @@ export default function CTABanner() {
       ref={sectionRef}
       style={{
         position: "relative",
-        minHeight: "100vh",
-        padding: "clamp(12rem, 22vh, 22rem) clamp(2rem, 8vw, 8rem)",
+        minHeight: "40vh",
+        padding: "clamp(4rem, 9vh, 7rem) clamp(2rem, 8vw, 8rem)",
         borderTop: "1px solid rgba(251,251,244,0.07)",
         borderBottom: "1px solid rgba(251,251,244,0.07)",
         background: "#080808",
@@ -81,7 +81,7 @@ export default function CTABanner() {
           fontSize: "clamp(0.9rem, 1.1vw, 1rem)",
           lineHeight: 1.75,
         }}>
-          Wir melden uns innerhalb von 24 Stunden.
+          Ich melde mich innerhalb von 24 Stunden.
         </p>
       </div>
 

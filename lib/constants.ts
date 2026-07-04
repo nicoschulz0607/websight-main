@@ -8,8 +8,10 @@ export const PROJECTS = [
     bgColor: "#0d0d0d",
     accentColor: "#60a5fa",
     image: "/oimmo-preview.jpg",
-    bgImage: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1600",
-    href: "https://o-immo.vercel.app",
+    bgImage: "/images/featuredwork-fallback-bg.jpg",
+    bgVideo: "/videos/oimmo-scroll.webm",
+    bgVideoMp4: "/videos/oimmo-scroll.mp4",
+    href: "https://oimmo.de",
   },
 ];
 
@@ -26,19 +28,19 @@ export const TESTIMONIALS = [
 
 export const FAQ_ITEMS = [
   {
-    question: "Welche Art von Projekten übernehmt ihr?",
+    question: "Für wen baut ihr Websites?",
     answer:
-      "Wir arbeiten an Markenstrategie, Webdesign, App-Design, digitalen Erlebnissen und Motion-Projekten. Ob Produkt-Launch oder Rebranding einer etablierten Marke – wir sind dabei.",
+      "Für Handwerksbetriebe, Praxen, Friseure und lokale Dienstleister – also für Unternehmen, die über ihre Website neue Kunden gewinnen wollen. Ob neue Website oder Relaunch einer bestehenden Seite – wir sind dabei.",
   },
   {
     question: "Mit welchen Branchen arbeitet ihr zusammen?",
     answer:
-      "Wir sind branchenunabhängig – wir arbeiten mit Tech-Startups, Kreativagenturen, Retail-Marken und allem dazwischen. Entscheidend ist die Qualität der Zusammenarbeit und der Anspruch des Projekts.",
+      "Vor allem mit lokalen Unternehmen: Handwerker, Praxen, Friseure, Berater und Coaches. Entscheidend ist nicht die Branche, sondern dass wir gemeinsam eine Website bauen, die wirklich Anfragen bringt.",
   },
   {
-    question: "Wie funktioniert eure Preisgestaltung?",
+    question: "Was kostet eine Website?",
     answer:
-      "Jedes Projekt wird individuell nach Komplexität, Zeitplan und Umfang kalkuliert. Nach einem ersten Discovery Call erstellen wir ein detailliertes Angebot. Keine Pauschalpreise.",
+      "Kompakte Websites starten ab 499 €, umfangreichere Projekte ab 799 € oder 1.199 €. Im Projekt-Konfigurator kannst du dir in 2 Minuten eine unverbindliche Schätzung zusammenstellen – transparente Startpreise als Orientierung, den finalen Umfang klären wir im kostenlosen Erstgespräch.",
   },
   {
     question: "Übernehmt ihr auch die Entwicklung?",
@@ -48,12 +50,12 @@ export const FAQ_ITEMS = [
   {
     question: "Wie sieht euer Designprozess aus?",
     answer:
-      "Wir folgen einem Vier-Phasen-Prozess: Discovery, Strategie, Design und Delivery. Wir halten euch in jeder Phase eingebunden – keine Überraschungen, nur Ergebnisse, die übertreffen.",
+      "Vom ersten Gespräch über Strategie und Design bis zum Launch begleiten wir jeden Schritt – wir halten dich durchgehend eingebunden, keine Überraschungen, nur Ergebnisse, die deine Erwartungen übertreffen.",
   },
   {
     question: "Wie lange dauert ein typisches Projekt?",
     answer:
-      "Markenprojekte dauern in der Regel 4–8 Wochen. Web- und Digitalprojekte 6–12 Wochen je nach Umfang. Wir vereinbaren Zeitpläne im Voraus und halten sie konsequent ein.",
+      "Kompakte Websites (1–3 Seiten) sind meist in 2–3 Wochen online. Größere Projekte mit vielen Inhalten oder individuellen Animationen dauern 4–8 Wochen. Den genauen Zeitplan bekommst du im Erstgespräch.",
   },
 ];
 
@@ -62,7 +64,7 @@ export const SERVICES = [
     title: "Webdesign & Entwicklung",
     accentColor: "#60a5fa",
     description:
-      "Ästhetik verschmilzt mit funktionaler Exzellenz. Jeder Pixel kalkuliert, um Vertrauen zu schaffen und Handlung auszulösen. React & Next.js – blitzschnell, rechtssicher, voller Leben.",
+      "Eine Website, die für dich arbeitet: schnell geladen, auf dem Handy perfekt, und so gebaut, dass aus Besuchern Anfragen werden. React & Next.js – blitzschnell, DSGVO-konform, voller Leben.",
     details: [
       "Individuelles Design – kein Template, alles maßgeschneidert",
       "React & Next.js mit GSAP-Animationen und Scroll-Effekten",

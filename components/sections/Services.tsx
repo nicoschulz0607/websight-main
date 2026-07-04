@@ -1,21 +1,22 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { gsap } from "@/lib/gsap";
 import { SERVICES } from "@/lib/constants";
 import ServiceModal from "@/components/ServiceModal";
 
-// Thematisch passende Pexels-Bilder (dunkel, professionell)
+// Thematisch passende Bilder (dunkel, professionell) — lokal gehostet
 const BG_IMAGES = [
-  "https://images.pexels.com/photos/574077/pexels-photo-574077.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1",  // Code/Laptop – Webdesign
-  "https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1",  // Analytics-Dashboard – SEO
-  "https://images.pexels.com/photos/325111/pexels-photo-325111.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1",   // Schaltkreis – Automatisierung
-  "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1440&h=800&dpr=1", // Team/Creative – Marke
+  "/images/services-webdesign.jpg",       // Code/Laptop – Webdesign
+  "/images/services-seo.jpg",             // Analytics-Dashboard – SEO
+  "/images/services-automatisierung.jpg", // Schaltkreis – Automatisierung
+  "/images/services-marke.jpg",           // Team/Creative – Marke
 ];
 
 const TRUST_TAGS = [
-  ["Blitzschnell", "Rechtssicher", "Mobile-First", "React & Next.js"],
-  ["Messbar", "Lokal optimiert", "Nachhaltig", "Google-zertifiziert"],
+  ["Blitzschnell", "DSGVO-konform", "Mobile-First", "React & Next.js"],
+  ["Messbar", "Lokal optimiert", "Nachhaltig", "Google-Richtlinien-konform"],
   ["24/7 aktiv", "Vollautomatisch", "ROI-optimiert", "CRM-Ready"],
   ["Einzigartig", "Vertrauensstark", "Markenkonform", "Strategisch"],
 ];
@@ -110,10 +111,9 @@ export default function Services() {
 
   /* ── Layouts ─────────────────────────────────────── */
   return (
-    <>
+    <section id="services">
       {/* ── Mobile layout ── */}
-      <div className="block md:hidden">
-        <section id="services" style={{ position: "relative" }}>
+      <div className="block md:hidden" style={{ position: "relative" }}>
 
           {/* Shared header */}
           <div style={{ padding: "4rem 1.5rem 2rem" }}>
@@ -142,8 +142,8 @@ export default function Services() {
             >
               {SERVICES.map((service, i) => (
                 <div key={i} style={{ minWidth: "78vw", height: "62vh", flexShrink: 0, borderRadius: "16px", position: "relative", overflow: "hidden", scrollSnapAlign: "start" }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={BG_IMAGES[i]} alt="" aria-hidden style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                  <Image src={BG_IMAGES[i]} alt="" aria-hidden fill sizes="78vw"
+                    loading={i === 0 ? "eager" : "lazy"} style={{ objectFit: "cover" }} />
                   <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.93) 45%, rgba(0,0,0,0.3) 100%)" }} />
                   <div style={{ position: "absolute", top: "1.25rem", left: "1.25rem", fontSize: "0.6rem", color: service.accentColor, letterSpacing: "0.18em", fontWeight: 700, background: `${service.accentColor}18`, border: `1px solid ${service.accentColor}35`, borderRadius: "100px", padding: "0.2rem 0.6rem" }}>
                     {String(i + 1).padStart(2, "0")} / {String(SERVICES.length).padStart(2, "0")}
@@ -170,14 +170,11 @@ export default function Services() {
             </div>
           </div>
 
-        </section>
-
         <ServiceModal service={selectedService} onClose={() => setSelectedIndex(null)} />
       </div>
 
       {/* ── Desktop layout ── */}
-      <div className="hidden md:block">
-        <section id="services-desktop" style={{ position: "relative" }}>
+      <div className="hidden md:block" style={{ position: "relative" }}>
 
         {/* ── Header ── */}
         <div style={{ padding: "5rem clamp(2rem, 8vw, 8rem) 3rem" }}>
@@ -218,7 +215,6 @@ export default function Services() {
                 height: `${100 / SERVICES.length}%`,
                 flexShrink: 0, minHeight: 0,
                 position: "relative", overflow: "hidden",
-                willChange: "height",
                 // Overlap: each card covers bottom of previous by OVERLAP_PX
                 marginTop: i === 0 ? 0 : `-${OVERLAP_PX}px`,
                 // Cards further down stack on top of earlier ones
@@ -235,13 +231,14 @@ export default function Services() {
                 ref={(el) => { imgRefs.current[i] = el; }}
                 style={{
                   position: "absolute", inset: 0,
-                  backgroundImage: `url(${BG_IMAGES[i]})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
+                  overflow: "hidden",
                   transform: "scale(1.05)",
                   willChange: "transform",
                 }}
-              />
+              >
+                <Image src={BG_IMAGES[i]} alt="" aria-hidden fill sizes="100vw"
+                  loading={i === 0 ? "eager" : "lazy"} style={{ objectFit: "cover", objectPosition: "center" }} />
+              </div>
 
               {/* Dark gradient — adjusts on hover */}
               <div style={{
@@ -382,13 +379,11 @@ export default function Services() {
           ))}
         </div>
 
-      </section>
-
         <ServiceModal
           service={selectedService}
           onClose={() => setSelectedIndex(null)}
         />
       </div>
-    </>
+    </section>
   );
 }

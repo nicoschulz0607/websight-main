@@ -21,7 +21,7 @@ export default function Datenschutz() {
         Datenschutz&shy;erklärung
       </h1>
       <p style={{ color: "rgba(251,251,244,0.3)", fontSize: "0.8rem", marginBottom: "3rem" }}>
-        Stand: März 2026
+        Stand: Juli 2026
       </p>
 
       <Section title="1. Verantwortlicher">
@@ -61,15 +61,21 @@ export default function Datenschutz() {
         </p>
       </Section>
 
-      <Section title="5. Cookies & Tracking">
+      <Section title="5. Cookies & Analyse">
         <p>
-          Diese Website setzt keine Tracking-Cookies und verwendet keine Analyse- oder Werbe-Tools (z. B. Google Analytics). Es werden ausschließlich technisch notwendige Cookies verwendet, die für den Betrieb der Website erforderlich sind und keiner Einwilligung bedürfen.
+          Diese Website setzt keine Tracking-Cookies und keine Werbe-Tools. Es werden ausschließlich technisch notwendige Cookies verwendet, die für den Betrieb der Website erforderlich sind und keiner Einwilligung bedürfen.
+        </p>
+        <p style={{ marginTop: "0.75rem" }}>
+          Zur anonymisierten, aggregierten Reichweiten- und Performance-Messung setzen wir Vercel Analytics und Vercel Speed Insights ein (Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA). Beide Dienste arbeiten cookie-los und ohne individuelle Nutzer-Profile — es werden keine personenbezogenen Kennungen (z. B. IP-Adresse dauerhaft, Fingerprinting) gespeichert.
+        </p>
+        <p style={{ marginTop: "0.75rem" }}>
+          Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Analyse und Absicherung des Website-Betriebs).
         </p>
       </Section>
 
       <Section title="6. Externe Schriften">
         <p>
-          Diese Website verwendet die Schriftart „Geist" von Vercel, die über die Next.js Font-Optimierung lokal eingebunden wird. Es findet keine externe Anfrage an Drittserver statt.
+          Diese Website verwendet die Schriftart &bdquo;Geist&ldquo; von Vercel, die über die Next.js Font-Optimierung lokal eingebunden wird. Es findet keine externe Anfrage an Drittserver statt.
         </p>
       </Section>
 
@@ -97,13 +103,13 @@ export default function Datenschutz() {
 
       <Section title="8. Datensicherheit">
         <p>
-          Wir setzen technische und organisatorische Sicherheitsmaßnahmen ein, um Ihre Daten gegen zufällige oder vorsätzliche Manipulationen, Verlust, Zerstörung oder den Zugriff unberechtigter Personen zu schützen. Die Verbindung zu unserer Website ist stets SSL/TLS-verschlüsselt (erkennbar am „https" in der Adresszeile).
+          Wir setzen technische und organisatorische Sicherheitsmaßnahmen ein, um Ihre Daten gegen zufällige oder vorsätzliche Manipulationen, Verlust, Zerstörung oder den Zugriff unberechtigter Personen zu schützen. Die Verbindung zu unserer Website ist stets SSL/TLS-verschlüsselt (erkennbar am &bdquo;https&ldquo; in der Adresszeile).
         </p>
       </Section>
 
       <Section title="9. Aktualität dieser Datenschutzerklärung">
         <p>
-          Diese Datenschutzerklärung ist aktuell gültig und hat den Stand März 2026. Durch die Weiterentwicklung unserer Website oder aufgrund geänderter gesetzlicher Vorgaben kann es notwendig werden, diese Datenschutzerklärung zu ändern.
+          Diese Datenschutzerklärung ist aktuell gültig und hat den Stand Juli 2026. Durch die Weiterentwicklung unserer Website oder aufgrund geänderter gesetzlicher Vorgaben kann es notwendig werden, diese Datenschutzerklärung zu ändern.
         </p>
       </Section>
 

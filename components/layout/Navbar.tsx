@@ -14,20 +14,26 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
   return (
     <>
       <nav
         ref={navRef}
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-6 transition-all duration-500"
+        className="fixed top-0 left-0 right-0 z-50 grid items-center px-8 py-6 transition-all duration-500"
         style={{
+          gridTemplateColumns: "1fr auto 1fr",
           background: scrolled ? "rgba(0,0,0,0.7)" : "transparent",
           backdropFilter: scrolled ? "blur(12px)" : "none",
         }}
       >
-        {/* Logo */}
+        {/* Logo — left column */}
         <a
           href="#"
-          className="font-bold text-xl tracking-tight"
+          className="font-bold text-xl tracking-tight justify-self-start"
           style={{
             background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
             WebkitBackgroundClip: "text",
@@ -38,8 +44,8 @@ export default function Navbar() {
           Websight
         </a>
 
-        {/* Desktop nav */}
-        <ul className="hidden md:flex items-center gap-8">
+        {/* Desktop nav — middle column, truly centered on the viewport (equal 1fr tracks on both sides) */}
+        <ul className="hidden md:flex items-center gap-8 justify-self-center">
           {NAV_LINKS.map((link, i) => {
             const total = NAV_LINKS.length - 1;
             const t = total === 0 ? 0 : i / total;
@@ -64,43 +70,50 @@ export default function Navbar() {
           })}
         </ul>
 
-        {/* CTA */}
-        <span className="nav-cta-wrap hidden md:inline-flex">
-          <a href="#kontakt" className="nav-cta-inner">
-            Gespräch aufnehmen
-          </a>
-        </span>
+        {/* Right column — CTA (desktop) + hamburger (mobile) */}
+        <div className="flex items-center justify-self-end">
+          <span className="nav-cta-wrap hidden md:inline-flex">
+            <a href="#kontakt" className="nav-cta-inner">
+              Gespräch aufnehmen
+            </a>
+          </span>
 
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden flex flex-col gap-1.5 p-1"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
-          <span
-            className="block w-6 h-px bg-cream transition-all duration-300"
-            style={{
-              transform: menuOpen ? "rotate(45deg) translate(2px, 2px)" : "none",
-            }}
-          />
-          <span
-            className="block w-6 h-px bg-cream transition-all duration-300"
-            style={{ opacity: menuOpen ? 0 : 1 }}
-          />
-          <span
-            className="block w-6 h-px bg-cream transition-all duration-300"
-            style={{
-              transform: menuOpen ? "rotate(-45deg) translate(2px, -2px)" : "none",
-            }}
-          />
-        </button>
+          <button
+            className="md:hidden flex flex-col items-center justify-center gap-1.5 p-2.5"
+            style={{ minWidth: 44, minHeight: 44 }}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Menü umschalten"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+          >
+            <span
+              className="block w-6 h-px bg-cream transition-all duration-300"
+              style={{
+                transform: menuOpen ? "rotate(45deg) translate(2px, 2px)" : "none",
+              }}
+            />
+            <span
+              className="block w-6 h-px bg-cream transition-all duration-300"
+              style={{ opacity: menuOpen ? 0 : 1 }}
+            />
+            <span
+              className="block w-6 h-px bg-cream transition-all duration-300"
+              style={{
+                transform: menuOpen ? "rotate(-45deg) translate(2px, -2px)" : "none",
+              }}
+            />
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu overlay */}
       <div
+        id="mobile-menu"
+        aria-hidden={!menuOpen}
         className="fixed inset-0 z-40 bg-black flex flex-col items-center justify-center md:hidden transition-all duration-500"
         style={{
           opacity: menuOpen ? 1 : 0,
+          visibility: menuOpen ? "visible" : "hidden",
           pointerEvents: menuOpen ? "all" : "none",
         }}
       >
@@ -109,6 +122,7 @@ export default function Navbar() {
             <li key={link.label}>
               <a
                 href={link.href}
+                tabIndex={menuOpen ? 0 : -1}
                 className="text-cream text-4xl font-bold tracking-tight hover:text-primary-blue transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
@@ -117,6 +131,11 @@ export default function Navbar() {
             </li>
           ))}
         </ul>
+        <span className="nav-cta-wrap mt-10">
+          <a href="#kontakt" tabIndex={menuOpen ? 0 : -1} className="nav-cta-inner" onClick={() => setMenuOpen(false)}>
+            Gespräch aufnehmen
+          </a>
+        </span>
       </div>
     </>
   );

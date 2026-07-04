@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap } from "@/lib/gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useIsMobile } from "@/lib/useIsMobile";
 
 const STEPS = [
@@ -12,7 +12,7 @@ const STEPS = [
     description:
       "30 Minuten, kostenlos. Wir lernen uns kennen, besprechen deine Ziele, dein Budget und deine Timeline. Kein Verkaufsgespräch – ein ehrliches Gespräch auf Augenhöhe.",
     accent: "#60a5fa",
-    image: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1440&h=900&dpr=1",
+    image: "/images/process-01-erstgespraech.jpg",
   },
   {
     number: "02",
@@ -20,7 +20,7 @@ const STEPS = [
     description:
       "Wir analysieren deine Zielgruppe und Mitbewerber, entwickeln eine Sitemap und erste Konzepte. Die strategische Basis für alles, was danach kommt.",
     accent: "#8b6ff7",
-    image: "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1440&h=900&dpr=1",
+    image: "/images/process-02-strategie.jpg",
   },
   {
     number: "03",
@@ -28,7 +28,7 @@ const STEPS = [
     description:
       "Moodboard, UI Design, Feedback-Runden. Du siehst das Ergebnis bevor eine Zeile Code geschrieben wird – und kannst aktiv mitgestalten.",
     accent: "#ad2bee",
-    image: "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=1440&h=900&dpr=1",
+    image: "/images/process-03-design.jpg",
   },
   {
     number: "04",
@@ -36,7 +36,7 @@ const STEPS = [
     description:
       "React & Next.js, GSAP-Animationen, vollständig responsiv. Wir bauen nicht nur schön – wir bauen schnell, sauber und rechtssicher.",
     accent: "#60a5fa",
-    image: "https://images.pexels.com/photos/574077/pexels-photo-574077.jpeg?auto=compress&cs=tinysrgb&w=1440&h=900&dpr=1",
+    image: "/images/process-04-entwicklung.jpg",
   },
   {
     number: "05",
@@ -44,7 +44,7 @@ const STEPS = [
     description:
       "Browser-Tests auf allen Geräten, Performance-Optimierung, technische SEO. Alles wird gründlich geprüft bevor du es siehst.",
     accent: "#8b6ff7",
-    image: "https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1440&h=900&dpr=1",
+    image: "/images/process-05-testing.jpg",
   },
   {
     number: "06",
@@ -52,7 +52,7 @@ const STEPS = [
     description:
       "Go-live auf Vercel, Domain-Konfiguration, alles eingerichtet. Du musst dich um nichts kümmern – wir übernehmen den gesamten Launch.",
     accent: "#ad2bee",
-    image: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1440&h=900&dpr=1",
+    image: "/images/process-06-launch.jpg",
   },
   {
     number: "07",
@@ -60,7 +60,7 @@ const STEPS = [
     description:
       "Support, Updates, laufende Optimierung. Wir sind auch nach dem Launch für dich da – dein verlässlicher Partner für digitales Wachstum.",
     accent: "#60a5fa",
-    image: "https://images.pexels.com/photos/3182746/pexels-photo-3182746.jpeg?auto=compress&cs=tinysrgb&w=1440&h=900&dpr=1",
+    image: "/images/process-07-betreuung.jpg",
   },
 ];
 
@@ -73,8 +73,6 @@ export default function Process() {
   const btnRefs   = useRef<(HTMLAnchorElement | null)[]>([]);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
     const ctx = gsap.context(() => {
       panelRefs.current.forEach((panel, i) => {
         gsap.set(panel, { autoAlpha: i === 0 ? 1 : 0, y: i === 0 ? 0 : 70 });
@@ -113,15 +111,10 @@ export default function Process() {
       });
     }, stepsRef);
 
-    // Refresh ScrollTrigger to ensure correct top positions after dynamic component loading
-    const t1 = setTimeout(() => ScrollTrigger.refresh(), 500);
-    const t2 = setTimeout(() => ScrollTrigger.refresh(), 1500);
-
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      ctx.revert();
-    };
+    // ScrollTrigger positions are refreshed centrally in GSAPInit.tsx after
+    // window "load" — no per-section refresh hack needed now that sections
+    // render with SSR instead of loading in late via client-only chunks.
+    return () => ctx.revert();
   }, []);
 
   return (
@@ -164,14 +157,15 @@ export default function Process() {
               }}
             >
               {/* Background image */}
-              <div style={{
-                position: "absolute", inset: 0,
-                backgroundImage: `url(${step.image})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                opacity: 0.3,
-                pointerEvents: "none",
-              }} />
+              <Image
+                src={step.image}
+                alt=""
+                aria-hidden
+                fill
+                sizes="100vw"
+                loading={i === 0 ? "eager" : "lazy"}
+                style={{ objectFit: "cover", objectPosition: "center", opacity: 0.3, pointerEvents: "none" }}
+              />
 
               {/* Dark overlay — lighter so image is visible in the middle */}
               <div style={{

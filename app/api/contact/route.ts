@@ -6,6 +6,76 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 interface ConfigItem { label: string; price: string; }
 interface Config { items: ConfigItem[]; totalOnce: number; totalMo: number; estimation: string; company?: string; phone?: string; }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function clampString(value: unknown, maxLength: number): string {
+  if (typeof value !== "string") return "";
+  return value.slice(0, maxLength).trim();
+}
+
+/**
+ * Validates and sanitizes the raw request payload. Returns null if the
+ * payload is malformed so the caller can respond with a generic 400 —
+ * this is the boundary where untrusted user input enters the system.
+ */
+function parsePayload(body: unknown): { name: string; email: string; message: string; config?: Config } | null {
+  if (!body || typeof body !== "object") return null;
+  const b = body as Record<string, unknown>;
+
+  const name = clampString(b.name, 100);
+  const email = clampString(b.email, 200);
+  const message = clampString(b.message, 5000);
+
+  if (!name || !email || !EMAIL_RE.test(email)) return null;
+
+  let config: Config | undefined;
+  if (b.config && typeof b.config === "object") {
+    const c = b.config as Record<string, unknown>;
+    const rawItems = Array.isArray(c.items) ? c.items.slice(0, 20) : [];
+    const items: ConfigItem[] = rawItems
+      .filter((item): item is Record<string, unknown> => !!item && typeof item === "object")
+      .map((item) => ({
+        label: clampString(item.label, 120),
+        price: clampString(item.price, 60),
+      }));
+
+    config = {
+      items,
+      totalOnce: typeof c.totalOnce === "number" ? c.totalOnce : 0,
+      totalMo: typeof c.totalMo === "number" ? c.totalMo : 0,
+      estimation: clampString(c.estimation, 100),
+      company: c.company ? clampString(c.company, 150) : undefined,
+      phone: c.phone ? clampString(c.phone, 40) : undefined,
+    };
+  }
+
+  return { name, email, message, config };
+}
+
+// Best-effort in-memory rate limit. Serverless instances are ephemeral, so
+// this doesn't guarantee a hard cap across all traffic, but it stops rapid
+// bursts from a single warm instance (e.g. a naive script hammering the route).
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 5;
+const requestLog = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = (requestLog.get(ip) ?? []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  timestamps.push(now);
+  requestLog.set(ip, timestamps);
+  return timestamps.length > RATE_LIMIT_MAX;
+}
+
 function confirmationHtml(name: string, email: string, projekt: string, config?: Config): string {
   const F = `-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif`;
   const MONO = `'Courier New', Courier, monospace`;
@@ -21,21 +91,27 @@ function confirmationHtml(name: string, email: string, projekt: string, config?:
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               ${config.items.map((item, i) => `
               <tr>
-                <td style="padding:10px 0;${i < config.items.length - 1 ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#888888;">${item.label}</td>
-                <td style="padding:10px 0;${i < config.items.length - 1 ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#cccccc;text-align:right;white-space:nowrap;">${item.price}</td>
+                <td style="padding:10px 0;${i < config.items.length - 1 ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#888888;">${escapeHtml(item.label)}</td>
+                <td style="padding:10px 0;${i < config.items.length - 1 ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#cccccc;text-align:right;white-space:nowrap;">${escapeHtml(item.price)}</td>
               </tr>`).join("")}
             </table>
             <!-- Total -->
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:16px;border-top:1px solid #2a2a2a;">
               <tr>
-                <td style="padding-top:14px;font-family:${MONO};font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#555555;">Gesch&auml;tzter Rahmen</td>
+                <td style="padding-top:14px;font-family:${MONO};font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#555555;">Richtwert</td>
                 <td style="padding-top:14px;text-align:right;">
-                  <span style="font-family:${F};font-size:16px;font-weight:700;color:#8b6ff7;">${config.estimation}</span>
+                  <span style="font-family:${F};font-size:16px;font-weight:700;color:#8b6ff7;">${escapeHtml(config.estimation)}</span>
                 </td>
               </tr>
             </table>
           </td>
         </tr>` : "";
+
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeProjekt = escapeHtml(projekt);
+  const safeCompany = config?.company ? escapeHtml(config.company) : undefined;
+  const safePhone = config?.phone ? escapeHtml(config.phone) : undefined;
 
   return `<!DOCTYPE html>
 <html lang="de" xmlns="http://www.w3.org/1999/xhtml">
@@ -89,12 +165,12 @@ function confirmationHtml(name: string, email: string, projekt: string, config?:
             </div>
             <!-- Headline -->
             <h1 style="margin:0 0 18px 0;font-family:${F};font-size:38px;font-weight:800;line-height:1.05;letter-spacing:-0.03em;color:#fbfbf4;">
-              Dein Potenzial<br>
-              <span style="color:#8b6ff7;">wird analysiert.</span>
+              Deine Anfrage<br>
+              <span style="color:#8b6ff7;">ist angekommen.</span>
             </h1>
             <!-- Sub -->
             <p style="margin:0;font-family:${F};font-size:15px;line-height:1.75;color:#888888;max-width:380px;display:inline-block;">
-              Wir haben deine Anfrage erhalten und melden uns innerhalb von 24&nbsp;Stunden pers&ouml;nlich bei dir.
+              Ich melde mich innerhalb von 24&nbsp;Stunden pers&ouml;nlich bei dir.
             </p>
           </td>
         </tr>
@@ -117,23 +193,23 @@ function confirmationHtml(name: string, email: string, projekt: string, config?:
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td style="padding:11px 0;border-bottom:1px solid #1e1e1e;font-family:${F};font-size:13px;color:#666666;width:80px;">Name</td>
-                <td style="padding:11px 0;border-bottom:1px solid #1e1e1e;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${name}</td>
+                <td style="padding:11px 0;border-bottom:1px solid #1e1e1e;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${safeName}</td>
               </tr>
               <tr>
-                <td style="padding:11px 0;${config?.company || config?.phone ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#666666;">E-Mail</td>
-                <td style="padding:11px 0;${config?.company || config?.phone ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${email}</td>
+                <td style="padding:11px 0;${safeCompany || safePhone ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#666666;">E-Mail</td>
+                <td style="padding:11px 0;${safeCompany || safePhone ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${safeEmail}</td>
               </tr>
-              ${config?.company ? `<tr>
-                <td style="padding:11px 0;${config?.phone ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#666666;">Unternehmen</td>
-                <td style="padding:11px 0;${config?.phone ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${config.company}</td>
+              ${safeCompany ? `<tr>
+                <td style="padding:11px 0;${safePhone ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#666666;">Unternehmen</td>
+                <td style="padding:11px 0;${safePhone ? "border-bottom:1px solid #1e1e1e;" : ""}font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${safeCompany}</td>
               </tr>` : ""}
-              ${config?.phone ? `<tr>
+              ${safePhone ? `<tr>
                 <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#666666;">Telefon</td>
-                <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${config.phone}</td>
+                <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${safePhone}</td>
               </tr>` : ""}
               ${!config ? `<tr>
                 <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#666666;vertical-align:top;">Nachricht</td>
-                <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${projekt}</td>
+                <td style="padding:11px 0 0 0;font-family:${F};font-size:13px;color:#cccccc;text-align:right;">${safeProjekt}</td>
               </tr>` : ""}
             </table>
           </td>
@@ -155,8 +231,8 @@ function confirmationHtml(name: string, email: string, projekt: string, config?:
                   <span style="font-family:${MONO};font-size:10px;font-weight:700;letter-spacing:0.18em;color:#60a5fa;">01</span>
                 </td>
                 <td style="border-bottom:1px solid #1e1e1e;padding-bottom:14px;">
-                  <p style="margin:0 0 4px 0;font-family:${F};font-size:14px;font-weight:600;color:#cccccc;">Analyse deines Projekts</p>
-                  <p style="margin:0;font-family:${F};font-size:13px;color:#666666;line-height:1.6;">Wir schauen uns deine Anfrage an und bereiten konkrete Ideen vor.</p>
+                  <p style="margin:0 0 4px 0;font-family:${F};font-size:14px;font-weight:600;color:#cccccc;">Ich schaue mir deine Anfrage an</p>
+                  <p style="margin:0;font-family:${F};font-size:13px;color:#666666;line-height:1.6;">Und bereite konkrete Ideen für dein Projekt vor.</p>
                 </td>
               </tr>
               <!-- Spacer row -->
@@ -168,7 +244,7 @@ function confirmationHtml(name: string, email: string, projekt: string, config?:
                 </td>
                 <td style="border-bottom:1px solid #1e1e1e;padding-bottom:14px;">
                   <p style="margin:0 0 4px 0;font-family:${F};font-size:14px;font-weight:600;color:#cccccc;">Pers&ouml;nliche R&uuml;ckmeldung</p>
-                  <p style="margin:0;font-family:${F};font-size:13px;color:#666666;line-height:1.6;">Du h&ouml;rst innerhalb von 24 Stunden von uns &ndash; mit einem konkreten Plan, keinem Standardangebot.</p>
+                  <p style="margin:0;font-family:${F};font-size:13px;color:#666666;line-height:1.6;">Du h&ouml;rst innerhalb von 24 Stunden von mir &ndash; mit einem konkreten Plan, keinem Standardangebot.</p>
                 </td>
               </tr>
               <!-- Spacer row -->
@@ -199,7 +275,7 @@ function confirmationHtml(name: string, email: string, projekt: string, config?:
         <!-- SIGNATURE -->
         <tr>
           <td style="background-color:#000000;border-left:2px solid #3a2060;padding:20px 0 20px 24px;">
-            <p style="margin:0 0 10px 0;font-family:${F};font-size:15px;font-style:italic;line-height:1.7;color:#666666;">&bdquo;Wir freuen uns auf dein Projekt &ndash; lass uns was Gutes bauen.&ldquo;</p>
+            <p style="margin:0 0 10px 0;font-family:${F};font-size:15px;font-style:italic;line-height:1.7;color:#666666;">&bdquo;Ich freue mich auf dein Projekt &ndash; lass uns was Gutes bauen.&ldquo;</p>
             <span style="font-family:${MONO};font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8b6ff7;">Nico Schulz &mdash; Websight</span>
           </td>
         </tr>
@@ -230,7 +306,27 @@ function confirmationHtml(name: string, email: string, projekt: string, config?:
 
 export async function POST(req: Request) {
   try {
-    const { name, email, message, config } = await req.json();
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (isRateLimited(ip)) {
+      return NextResponse.json({ error: "Zu viele Anfragen. Bitte versuche es später erneut." }, { status: 429 });
+    }
+
+    const rawBody = await req.json().catch(() => null);
+    if (!rawBody || typeof rawBody !== "object") {
+      return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
+    }
+
+    // Honeypot: a hidden field real users never fill in. Bots that
+    // auto-fill every field will trip it — silently accept and drop.
+    if (typeof (rawBody as Record<string, unknown>).website === "string" && (rawBody as Record<string, unknown>).website) {
+      return NextResponse.json({ ok: true });
+    }
+
+    const parsed = parsePayload(rawBody);
+    if (!parsed) {
+      return NextResponse.json({ error: "Bitte gib einen gültigen Namen und eine gültige E-Mail-Adresse an." }, { status: 400 });
+    }
+    const { name, email, message, config } = parsed;
 
     // 1. Benachrichtigung an Nico
     const { data, error } = await resend.emails.send({
@@ -243,23 +339,28 @@ export async function POST(req: Request) {
 
     if (error) {
       console.error("[Contact] Resend error:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: "Deine Anfrage konnte nicht gesendet werden. Schreib mir gerne direkt an nico@websight-design.de." }, { status: 500 });
     }
 
-    // 2. Bestätigungsmail an den Absender
-    await resend.emails.send({
-      from: "Websight <noreply@websight-design.de>",
-      to: [email],
-      subject: "Deine Anfrage bei Websight – wir haben sie erhalten",
-      html: confirmationHtml(name, email, message, config as Config | undefined),
-    });
+    // 2. Bestätigungsmail an den Absender — Fehler hier sind nicht fatal,
+    // die Anfrage selbst ist bereits bei Nico angekommen.
+    try {
+      await resend.emails.send({
+        from: "Websight <noreply@websight-design.de>",
+        to: [email],
+        subject: "Deine Anfrage bei Websight – wir haben sie erhalten",
+        html: confirmationHtml(name, email, message, config),
+      });
+    } catch (confirmationError) {
+      console.error("[Contact] Bestätigungsmail fehlgeschlagen:", confirmationError);
+    }
 
     console.log("[Contact] E-Mails gesendet:", data?.id);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[Contact] Unexpected error:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Unbekannter Fehler" },
+      { error: "Unerwarteter Fehler. Bitte versuche es später erneut." },
       { status: 500 }
     );
   }

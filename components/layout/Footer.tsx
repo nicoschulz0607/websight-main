@@ -120,8 +120,7 @@ export default function Footer() {
               {[
                 { label: "Arbeiten",   href: "#work" },
                 { label: "Leistungen", href: "#services" },
-                { label: "Über uns",   href: "#about" },
-                { label: "Kontakt",    href: "#contact" },
+                { label: "Kontakt",    href: "#kontakt" },
               ].map(({ label, href }) => (
                 <a key={label} href={href} style={{
                   color: "rgba(251,251,244,0.45)",
@@ -196,7 +195,7 @@ export default function Footer() {
                 </span>
                 +49 172 9249820
               </a>
-              <a href="#contact"
+              <a href="#kontakt"
                 style={{
                   marginTop: "0.5rem", display: "inline-flex", alignItems: "center",
                   justifyContent: "center", borderRadius: "999px", padding: "0.5rem 1.25rem",

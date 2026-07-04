@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { gsap } from "@/lib/gsap";
 import { useCursor } from "@/components/providers/CursorContext";
 import { PROJECTS } from "@/lib/constants";
 
-const TOTAL = 3;
+// Total desktop tiles = info panel + one per project + CTA tile
+const TOTAL = PROJECTS.length + 2;
+const CTA_INDEX = PROJECTS.length + 1;
 const DEFAULT_W = 100 / TOTAL;
 const EXPANDED_W = 52;
 const COLLAPSED_W = (100 - EXPANDED_W) / (TOTAL - 1);
@@ -31,9 +34,8 @@ export default function FeaturedWork() {
   }, [hoveredIndex]);
 
   return (
-    <>
+    <section id="work">
       <div className="block md:hidden">
-        <section id="work">
           {/* Heading */}
           <div style={{ padding: "2.5rem 1.5rem 1.5rem", background: "#000", display: "flex", alignItems: "center", gap: "1rem" }}>
             <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, rgba(251,251,244,0.06), transparent)" }} />
@@ -64,8 +66,8 @@ export default function FeaturedWork() {
           {PROJECTS.map((project) => (
             <a key={project.id} href={project.href} target="_blank" rel="noopener noreferrer"
               style={{ display: "block", textDecoration: "none", height: 280, position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(251,251,244,0.05)" }}>
-              <img src={project.bgImage} alt={project.title}
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+              <Image src={project.bgImage} alt={project.title} fill sizes="100vw"
+                style={{ objectFit: "cover", objectPosition: "center" }} />
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.1) 100%)" }} />
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "1px", background: `linear-gradient(90deg, transparent, ${project.accentColor}70, transparent)` }} />
               <span style={{ position: "absolute", top: "1rem", left: "1.25rem", fontSize: "0.62rem", fontFamily: "monospace", letterSpacing: "0.2em", color: "rgba(251,251,244,0.55)", zIndex: 2 }}>{project.number}</span>
@@ -107,11 +109,9 @@ export default function FeaturedWork() {
               </a>
             </div>
           </div>
-        </section>
       </div>
 
       <div className="hidden md:block">
-        <section id="work-desktop">
       {/* Section heading */}
       <div style={{
         padding: "4rem clamp(2rem, 8vw, 8rem) 2rem",
@@ -129,7 +129,7 @@ export default function FeaturedWork() {
       </div>
 
       <div
-        className="flex w-full overflow-hidden cursor-none"
+        className="flex w-full overflow-hidden"
         style={{ height: "80vh" }}
         onMouseLeave={() => { setCursorMode("default"); setHoveredIndex(null); }}
       >
@@ -137,7 +137,7 @@ export default function FeaturedWork() {
         <div
           ref={(el) => { cardRefs.current[0] = el; }}
           className="relative h-full flex-shrink-0 overflow-hidden border-r border-cream/[0.06]"
-          style={{ width: `${DEFAULT_W}%`, minWidth: 0, willChange: "width", background: "#080808" }}
+          style={{ width: `${DEFAULT_W}%`, minWidth: 0, background: "#080808" }}
           onMouseEnter={() => setHoveredIndex(0)}
         >
           {/* Background glow */}
@@ -194,7 +194,7 @@ export default function FeaturedWork() {
               ))}
               {/* Placeholder row */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.875rem", padding: "0.5rem 0" }}>
-                <span style={{ fontSize: "0.6rem", fontFamily: "monospace", color: "rgba(251,251,244,0.15)", minWidth: "1.5rem" }}>02</span>
+                <span style={{ fontSize: "0.6rem", fontFamily: "monospace", color: "rgba(251,251,244,0.15)", minWidth: "1.5rem" }}>{String(PROJECTS.length + 1).padStart(2, "0")}</span>
                 <span style={{ fontSize: "clamp(0.78rem, 1vw, 0.9rem)", color: "rgba(251,251,244,0.18)", fontStyle: "italic" }}>Dein Projekt?</span>
               </div>
 
@@ -213,21 +213,43 @@ export default function FeaturedWork() {
               rel="noopener noreferrer"
               ref={(el) => { cardRefs.current[i + 1] = el as HTMLDivElement | null; }}
               className="relative h-full flex-shrink-0 overflow-hidden border-r border-cream/[0.06]"
-              style={{ width: `${DEFAULT_W}%`, minWidth: 0, willChange: "width", cursor: "none", display: "block", textDecoration: "none" }}
+              style={{ width: `${DEFAULT_W}%`, minWidth: 0, cursor: "none", display: "block", textDecoration: "none" }}
               onMouseEnter={() => { setCursorMode("view-project"); setHoveredIndex(i + 1); }}
             >
-              {/* Full-bleed atmospheric background photo */}
-              <img
-                src={project.bgImage}
-                alt=""
-                aria-hidden
-                style={{
-                  position: "absolute", inset: 0, width: "100%", height: "100%",
-                  objectFit: "cover", objectPosition: "center",
-                  transform: isHovered ? "scale(1.06)" : "scale(1.0)",
-                  transition: "transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94)",
-                }}
-              />
+              {/* Full-bleed atmospheric background — live scroll capture of the project, falls back to a still photo */}
+              {project.bgVideo ? (
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  poster={project.bgImage}
+                  aria-hidden
+                  className="absolute inset-0 w-full h-full"
+                  style={{
+                    objectFit: "cover", objectPosition: "center top",
+                    transform: isHovered ? "scale(1.06)" : "scale(1.0)",
+                    transition: "transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94)",
+                  }}
+                >
+                  <source src={project.bgVideo} type="video/webm" />
+                  {project.bgVideoMp4 && <source src={project.bgVideoMp4} type="video/mp4" />}
+                </video>
+              ) : (
+                <Image
+                  src={project.bgImage}
+                  alt=""
+                  aria-hidden
+                  fill
+                  sizes="(max-width: 768px) 100vw, 40vw"
+                  style={{
+                    objectFit: "cover", objectPosition: "center",
+                    transform: isHovered ? "scale(1.06)" : "scale(1.0)",
+                    transition: "transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94)",
+                  }}
+                />
+              )}
 
               {/* Dark gradient overlay */}
               <div className="absolute inset-0" style={{
@@ -270,7 +292,7 @@ export default function FeaturedWork() {
                       <span style={{ fontSize: "0.52rem", color: "rgba(251,251,244,0.25)", letterSpacing: "0.03em" }}>{project.href?.replace("https://", "")}</span>
                     </div>
                   </div>
-                  <img src={project.image} alt={project.title}
+                  <Image src={project.image} alt={project.title} width={260} height={130}
                     style={{ width: "100%", height: 130, objectFit: "cover", objectPosition: "top", display: "block" }} />
                 </div>
               </div>
@@ -314,20 +336,20 @@ export default function FeaturedWork() {
           );
         })}
 
-        {/* ── Tile 2: CTA ──────────────────────────────────── */}
+        {/* ── Final tile: CTA ──────────────────────────────────── */}
         <div
-          ref={(el) => { cardRefs.current[2] = el; }}
+          ref={(el) => { cardRefs.current[CTA_INDEX] = el; }}
           className="relative h-full flex-shrink-0 overflow-hidden"
-          style={{ width: `${DEFAULT_W}%`, minWidth: 0, willChange: "width", background: "#080808" }}
-          onMouseEnter={() => setHoveredIndex(2)}
+          style={{ width: `${DEFAULT_W}%`, minWidth: 0, background: "#080808" }}
+          onMouseEnter={() => setHoveredIndex(CTA_INDEX)}
         >
           <div className="absolute inset-0 pointer-events-none" style={{
             background: "radial-gradient(ellipse 80% 60% at 70% 80%, rgba(173,43,238,0.12) 0%, transparent 65%)",
-            opacity: hoveredIndex === 2 ? 1 : 0.4, transition: "opacity 0.5s ease",
+            opacity: hoveredIndex === CTA_INDEX ? 1 : 0.4, transition: "opacity 0.5s ease",
           }} />
           <div className="absolute top-0 left-0 right-0 h-px" style={{
             background: "linear-gradient(90deg, transparent, rgba(173,43,238,0.5), rgba(96,165,250,0.5), transparent)",
-            opacity: hoveredIndex === 2 ? 1 : 0, transition: "opacity 0.4s ease",
+            opacity: hoveredIndex === CTA_INDEX ? 1 : 0, transition: "opacity 0.4s ease",
           }} />
 
           <div className="absolute inset-0 flex flex-col justify-between p-8 md:p-10">
@@ -363,7 +385,7 @@ export default function FeaturedWork() {
                 borderRadius: "0.75rem", padding: "0.875rem 1.5rem",
                 fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
                 width: "fit-content",
-                opacity: hoveredIndex === 2 ? 1 : 0.65,
+                opacity: hoveredIndex === CTA_INDEX ? 1 : 0.65,
                 transition: "opacity 0.35s ease",
               }}
             >
@@ -375,8 +397,7 @@ export default function FeaturedWork() {
           </div>
         </div>
       </div>
+      </div>
     </section>
-  </div>
-</>
   );
 }

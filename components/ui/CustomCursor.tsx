@@ -26,18 +26,10 @@ export default function CustomCursor() {
       yToPill(e.clientY);
     };
 
-    const onScroll = () => {
-      // If we scroll, optionally clear the cursor if we left the section
-      // The easiest way to fix the stuck cursor is to force it to re-evaluate or just hide it
-      // if the hovered element is no longer a project card.
-      // But simply checking document.elementFromPoint can be expensive. 
-      // Let's just let the normal mouseleave events handle it, or we can force cursorMode to default 
-      // when scrolling heavily.
-    };
-
     window.addEventListener("mousemove", onMouseMove);
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
+      gsap.killTweensOf(pill);
     };
   }, [isMobile]);
 

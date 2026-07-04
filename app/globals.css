@@ -9,7 +9,7 @@ html {
   --color-primary-purple: #ad2bee;
   --color-brand-bg: #000000;
   --color-cream: #fbfbf4;
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
 }
 
 :root {
@@ -18,10 +18,37 @@ html {
 }
 
 * {
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(251,251,244,0.15) transparent;
 }
 *::-webkit-scrollbar {
-  display: none;
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(251,251,244,0.15);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(251,251,244,0.28);
+}
+
+/* ── Reduced motion: kill infinite/scroll-jacking animations ── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 html,
@@ -202,6 +229,7 @@ body {
   border-radius: 9999px;
   background: conic-gradient(from var(--spin-angle), #60a5fa, #8b6ff7, #ad2bee, #60a5fa);
   animation: nav-border-spin 2s linear infinite;
+  animation-play-state: paused;
   filter: blur(7px);
   opacity: 0;
   transition: opacity 0.35s ease;
@@ -216,6 +244,7 @@ body {
   border-radius: 9999px;
   background: conic-gradient(from var(--spin-angle), #60a5fa, #8b6ff7, #ad2bee, #60a5fa);
   animation: nav-border-spin 2s linear infinite;
+  animation-play-state: paused;
   opacity: 0;
   transition: opacity 0.35s ease;
   z-index: -1;
@@ -233,6 +262,7 @@ body {
 .nav-cta-wrap:hover::before,
 .nav-cta-wrap:hover::after {
   opacity: 1;
+  animation-play-state: running;
 }
 
 .nav-cta-inner {
