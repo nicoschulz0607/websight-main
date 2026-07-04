@@ -230,30 +230,6 @@ export default function FeaturedWork() {
                 </span>
               </div>
 
-              {/* Browser mockup — top-right, visible on hover */}
-              <div className="absolute top-7 right-7" style={{
-                zIndex: 2, width: "min(260px, 42%)",
-                opacity: isHovered ? 1 : 0,
-                transform: isHovered ? "translateY(0)" : "translateY(10px)",
-                transition: "opacity 0.45s ease, transform 0.45s ease",
-              }}>
-                <div style={{
-                  borderRadius: 7, overflow: "hidden",
-                  boxShadow: "0 12px 40px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.1)",
-                }}>
-                  <div style={{ background: "#1c1c1c", borderBottom: "1px solid #2a2a2a", padding: "0 8px", height: 22, display: "flex", alignItems: "center", gap: 4 }}>
-                    {["#ff5f57", "#ffbd2e", "#28c840"].map((c) => (
-                      <span key={c} style={{ width: 7, height: 7, borderRadius: "50%", background: c, display: "inline-block", flexShrink: 0 }} />
-                    ))}
-                    <div style={{ flex: 1, margin: "0 6px", background: "#111", borderRadius: 3, height: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ fontSize: "0.52rem", color: "rgba(251,251,244,0.25)", letterSpacing: "0.03em" }}>{project.href ? project.href.replace("https://", "") : "Bald online"}</span>
-                    </div>
-                  </div>
-                  <Image src={project.image} alt={project.title} width={260} height={130}
-                    style={{ width: "100%", height: 130, objectFit: "cover", objectPosition: "top", display: "block" }} />
-                </div>
-              </div>
-
               {/* Bottom info */}
               <div className="absolute bottom-0 left-0 right-0 p-7 md:p-8" style={{ zIndex: 2 }}>
                 <div style={{

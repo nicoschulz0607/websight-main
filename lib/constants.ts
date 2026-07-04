@@ -8,7 +8,7 @@ export const PROJECTS = [
     bgColor: "#0d0d0d",
     accentColor: "#60a5fa",
     image: "/oimmo-preview.jpg",
-    bgImage: "/images/featuredwork-fallback-bg.jpg",
+    bgImage: "/images/oimmo-brand.webp",
     bgVideo: "/videos/oimmo-scroll.webm",
     bgVideoMp4: "/videos/oimmo-scroll.mp4",
     href: "https://oimmo.de",
@@ -22,10 +22,11 @@ export const PROJECTS = [
     tags: ["Webdesign", "Entwicklung"],
     bgColor: "#0d0d0d",
     accentColor: "#ad2bee",
-    // Platzhalter-Bilder — durch echte Screenshots ersetzen, sobald verfügbar
-    // (Seite liegt aktuell hinter einem Cloudflare-Tunnel, kein Zugriff von außen).
+    // Komponiertes Brand-Bild (Estrela-Stil, hell) als Hintergrund.
+    // `image` (Browser-Mockup on Hover) noch Platzhalter — echter Screenshot liegt
+    // hinter einem Cloudflare-Tunnel, kein Zugriff von außen.
     image: "/images/featuredwork-fallback-bg.jpg",
-    bgImage: "/images/featuredwork-fallback-bg.jpg",
+    bgImage: "/images/dubistdermakler-brand.webp",
     // Kein href -> Kachel ist noch nicht verlinkt/klickbar.
   },
 ];
