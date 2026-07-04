@@ -13,6 +13,21 @@ export const PROJECTS = [
     bgVideoMp4: "/videos/oimmo-scroll.mp4",
     href: "https://oimmo.de",
   },
+  {
+    id: 2,
+    number: "02",
+    title: "Du bist der Makler",
+    // Platzhalter-Text — bitte anpassen, sobald der finale Claim feststeht.
+    subtitle: "Aktuell in Entwicklung.",
+    tags: ["Webdesign", "Entwicklung"],
+    bgColor: "#0d0d0d",
+    accentColor: "#ad2bee",
+    // Platzhalter-Bilder — durch echte Screenshots ersetzen, sobald verfügbar
+    // (Seite liegt aktuell hinter einem Cloudflare-Tunnel, kein Zugriff von außen).
+    image: "/images/featuredwork-fallback-bg.jpg",
+    bgImage: "/images/featuredwork-fallback-bg.jpg",
+    // Kein href -> Kachel ist noch nicht verlinkt/klickbar.
+  },
 ];
 
 export const TESTIMONIALS = [

@@ -6,9 +6,8 @@ import { gsap } from "@/lib/gsap";
 import { useCursor } from "@/components/providers/CursorContext";
 import { PROJECTS } from "@/lib/constants";
 
-// Total desktop tiles = info panel + one per project + CTA tile
-const TOTAL = PROJECTS.length + 2;
-const CTA_INDEX = PROJECTS.length + 1;
+// Total desktop tiles = info panel + one per project
+const TOTAL = PROJECTS.length + 1;
 const DEFAULT_W = 100 / TOTAL;
 const EXPANDED_W = 52;
 const COLLAPSED_W = (100 - EXPANDED_W) / (TOTAL - 1);
@@ -63,8 +62,10 @@ export default function FeaturedWork() {
           </div>
 
           {/* Project cards — atmospheric full-bleed */}
-          {PROJECTS.map((project) => (
-            <a key={project.id} href={project.href} target="_blank" rel="noopener noreferrer"
+          {PROJECTS.map((project) => {
+            const MobileTag = project.href ? "a" : "div";
+            return (
+            <MobileTag key={project.id} {...(project.href ? { href: project.href, target: "_blank", rel: "noopener noreferrer" } : {})}
               style={{ display: "block", textDecoration: "none", height: 280, position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(251,251,244,0.05)" }}>
               <Image src={project.bgImage} alt={project.title} fill sizes="100vw"
                 style={{ objectFit: "cover", objectPosition: "center" }} />
@@ -80,35 +81,10 @@ export default function FeaturedWork() {
                 <h3 style={{ fontSize: "1.35rem", fontWeight: 700, color: "#fbfbf4", lineHeight: 1.15, textShadow: "0 2px 10px rgba(0,0,0,0.8)" }}>{project.title}</h3>
                 <p style={{ fontSize: "0.78rem", color: "rgba(251,251,244,0.55)", marginTop: "0.3rem" }}>{project.subtitle}</p>
               </div>
-            </a>
-          ))}
+            </MobileTag>
+            );
+          })}
 
-          {/* CTA card */}
-          <div style={{ background: "#080808", padding: "2.25rem 1.5rem", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 60% at 70% 80%, rgba(173,43,238,0.12) 0%, transparent 65%)", pointerEvents: "none" }} />
-            <div style={{ position: "relative" }}>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", background: "rgba(173,43,238,0.1)", border: "1px solid rgba(173,43,238,0.25)", borderRadius: "2rem", padding: "0.3rem 0.75rem", marginBottom: "1.25rem" }}>
-                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#ad2bee", display: "inline-block" }} />
-                <span style={{ fontSize: "0.62rem", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: "#ad2bee" }}>Nächstes Projekt</span>
-              </div>
-              <p style={{ fontSize: "0.65rem", color: "rgba(251,251,244,0.3)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "0.6rem" }}>Zusammenarbeiten</p>
-              <h3 style={{ fontSize: "1.45rem", fontWeight: 800, lineHeight: 1.15, letterSpacing: "-0.02em", color: "#fbfbf4", marginBottom: "0.75rem" }}>
-                Hier könnte dein Projekt stehen.
-              </h3>
-              <p style={{ fontSize: "0.82rem", color: "rgba(251,251,244,0.38)", lineHeight: 1.7, marginBottom: "1.5rem" }}>
-                Lass uns gemeinsam etwas Außergewöhnliches schaffen.
-              </p>
-              <a
-                href="#kontakt"
-                style={{ display: "inline-flex", alignItems: "center", gap: "0.6rem", background: "linear-gradient(135deg, #60a5fa, #ad2bee)", color: "#fbfbf4", textDecoration: "none", borderRadius: "0.75rem", padding: "0.9rem 1.6rem", fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}
-              >
-                Gespräch starten
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M7 17 17 7M7 7h10v10"/>
-                </svg>
-              </a>
-            </div>
-          </div>
       </div>
 
       <div className="hidden md:block">
@@ -205,51 +181,32 @@ export default function FeaturedWork() {
         {/* ── Tiles 1 & 2: Real projects with image ────────── */}
         {PROJECTS.map((project, i) => {
           const isHovered = hoveredIndex === i + 1;
+          const DesktopTag = project.href ? "a" : "div";
           return (
-            <a
+            <DesktopTag
               key={project.id}
-              href={project.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              ref={(el) => { cardRefs.current[i + 1] = el as HTMLDivElement | null; }}
+              {...(project.href ? { href: project.href, target: "_blank", rel: "noopener noreferrer" } : {})}
+              ref={(el: HTMLAnchorElement | HTMLDivElement | null) => { cardRefs.current[i + 1] = el as HTMLDivElement | null; }}
               className="relative h-full flex-shrink-0 overflow-hidden border-r border-cream/[0.06]"
-              style={{ width: `${DEFAULT_W}%`, minWidth: 0, cursor: "none", display: "block", textDecoration: "none" }}
-              onMouseEnter={() => { setCursorMode("view-project"); setHoveredIndex(i + 1); }}
+              style={{ width: `${DEFAULT_W}%`, minWidth: 0, cursor: project.href ? "none" : "default", display: "block", textDecoration: "none" }}
+              onMouseEnter={() => { if (project.href) setCursorMode("view-project"); setHoveredIndex(i + 1); }}
             >
-              {/* Full-bleed atmospheric background — live scroll capture of the project, falls back to a still photo */}
-              {project.bgVideo ? (
-                <video
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  poster={project.bgImage}
-                  aria-hidden
-                  className="absolute inset-0 w-full h-full"
-                  style={{
-                    objectFit: "cover", objectPosition: "center top",
-                    transform: isHovered ? "scale(1.06)" : "scale(1.0)",
-                    transition: "transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94)",
-                  }}
-                >
-                  <source src={project.bgVideo} type="video/webm" />
-                  {project.bgVideoMp4 && <source src={project.bgVideoMp4} type="video/mp4" />}
-                </video>
-              ) : (
-                <Image
-                  src={project.bgImage}
-                  alt=""
-                  aria-hidden
-                  fill
-                  sizes="(max-width: 768px) 100vw, 40vw"
-                  style={{
-                    objectFit: "cover", objectPosition: "center",
-                    transform: isHovered ? "scale(1.06)" : "scale(1.0)",
-                    transition: "transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94)",
-                  }}
-                />
-              )}
+              {/* Full-bleed atmospheric background photo.
+                  NOTE: project.bgVideo / project.bgVideoMp4 exist (recorded + compressed) but are
+                  temporarily unused — a raw landscape scroll-capture crops very badly ("cover") into
+                  this narrow tile at rest. See chat for alternative approaches before re-enabling. */}
+              <Image
+                src={project.bgImage}
+                alt=""
+                aria-hidden
+                fill
+                sizes="(max-width: 768px) 100vw, 40vw"
+                style={{
+                  objectFit: "cover", objectPosition: "center",
+                  transform: isHovered ? "scale(1.06)" : "scale(1.0)",
+                  transition: "transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94)",
+                }}
+              />
 
               {/* Dark gradient overlay */}
               <div className="absolute inset-0" style={{
@@ -289,7 +246,7 @@ export default function FeaturedWork() {
                       <span key={c} style={{ width: 7, height: 7, borderRadius: "50%", background: c, display: "inline-block", flexShrink: 0 }} />
                     ))}
                     <div style={{ flex: 1, margin: "0 6px", background: "#111", borderRadius: 3, height: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ fontSize: "0.52rem", color: "rgba(251,251,244,0.25)", letterSpacing: "0.03em" }}>{project.href?.replace("https://", "")}</span>
+                      <span style={{ fontSize: "0.52rem", color: "rgba(251,251,244,0.25)", letterSpacing: "0.03em" }}>{project.href ? project.href.replace("https://", "") : "Bald online"}</span>
                     </div>
                   </div>
                   <Image src={project.image} alt={project.title} width={260} height={130}
@@ -332,70 +289,10 @@ export default function FeaturedWork() {
                   {project.subtitle}
                 </p>
               </div>
-            </a>
+            </DesktopTag>
           );
         })}
 
-        {/* ── Final tile: CTA ──────────────────────────────────── */}
-        <div
-          ref={(el) => { cardRefs.current[CTA_INDEX] = el; }}
-          className="relative h-full flex-shrink-0 overflow-hidden"
-          style={{ width: `${DEFAULT_W}%`, minWidth: 0, background: "#080808" }}
-          onMouseEnter={() => setHoveredIndex(CTA_INDEX)}
-        >
-          <div className="absolute inset-0 pointer-events-none" style={{
-            background: "radial-gradient(ellipse 80% 60% at 70% 80%, rgba(173,43,238,0.12) 0%, transparent 65%)",
-            opacity: hoveredIndex === CTA_INDEX ? 1 : 0.4, transition: "opacity 0.5s ease",
-          }} />
-          <div className="absolute top-0 left-0 right-0 h-px" style={{
-            background: "linear-gradient(90deg, transparent, rgba(173,43,238,0.5), rgba(96,165,250,0.5), transparent)",
-            opacity: hoveredIndex === CTA_INDEX ? 1 : 0, transition: "opacity 0.4s ease",
-          }} />
-
-          <div className="absolute inset-0 flex flex-col justify-between p-8 md:p-10">
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: "0.4rem",
-              background: "rgba(173,43,238,0.1)", border: "1px solid rgba(173,43,238,0.25)",
-              borderRadius: "2rem", padding: "0.3rem 0.75rem", width: "fit-content",
-            }}>
-              <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#ad2bee", display: "inline-block" }} />
-              <span style={{ fontSize: "0.62rem", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: "#ad2bee" }}>
-                Nächstes Projekt
-              </span>
-            </div>
-
-            <div>
-              <p style={{ fontSize: "0.65rem", color: "rgba(251,251,244,0.3)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "1rem" }}>
-                Zusammenarbeiten
-              </p>
-              <h3 style={{ fontSize: "1.35rem", fontWeight: 800, lineHeight: 1.2, letterSpacing: "-0.02em", color: "#fbfbf4", marginBottom: "0.75rem" }}>
-                Hier könnte dein Projekt stehen.
-              </h3>
-              <p style={{ fontSize: "0.78rem", color: "rgba(251,251,244,0.38)", lineHeight: 1.7 }}>
-                Lass uns gemeinsam etwas Außergewöhnliches schaffen.
-              </p>
-            </div>
-
-            <a
-              href="#kontakt"
-              style={{
-                display: "inline-flex", alignItems: "center", gap: "0.6rem",
-                background: "linear-gradient(135deg, #60a5fa, #ad2bee)",
-                color: "#fbfbf4", textDecoration: "none",
-                borderRadius: "0.75rem", padding: "0.875rem 1.5rem",
-                fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
-                width: "fit-content",
-                opacity: hoveredIndex === CTA_INDEX ? 1 : 0.65,
-                transition: "opacity 0.35s ease",
-              }}
-            >
-              Gespräch starten
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 17 17 7M7 7h10v10"/>
-              </svg>
-            </a>
-          </div>
-        </div>
       </div>
       </div>
     </section>
