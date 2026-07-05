@@ -18,9 +18,11 @@ export default function HeroCinemagraph({ className }: { className?: string }) {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
+    if (!canvasRef.current) return;
+    const canvas: HTMLCanvasElement = canvasRef.current;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    const ctx: CanvasRenderingContext2D = context;
 
     const rand = (a: number, b: number) => a + Math.random() * (b - a);
     let W = 0, H = 0, raf = 0, last = 0;
