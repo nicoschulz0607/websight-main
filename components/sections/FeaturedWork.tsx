@@ -9,7 +9,7 @@ import { PROJECTS } from "@/lib/constants";
 // Total desktop tiles = info panel + one per project
 const TOTAL = PROJECTS.length + 1;
 const DEFAULT_W = 100 / TOTAL;
-const EXPANDED_W = 52;
+const EXPANDED_W = 45;
 const COLLAPSED_W = (100 - EXPANDED_W) / (TOTAL - 1);
 
 
@@ -203,7 +203,7 @@ export default function FeaturedWork() {
                 sizes="(max-width: 768px) 100vw, 40vw"
                 style={{
                   objectFit: "cover", objectPosition: "center",
-                  transform: isHovered ? "scale(1.06)" : "scale(1.0)",
+                  transform: isHovered ? "scale(1.02)" : "scale(1.0)",
                   transition: "transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94)",
                 }}
               />

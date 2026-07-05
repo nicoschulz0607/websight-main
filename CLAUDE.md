@@ -28,7 +28,8 @@ websight/                   ← Next.js-Root (hier npm run dev ausführen)
 │   │   ├── GSAPInit.tsx    ← Registriert ScrollTrigger global, einmalig
 │   │   └── CursorContext.tsx
 │   ├── sections/           ← Eine Datei pro Seitenbereich
-│   │   ├── Hero.tsx
+│   │   ├── Hero.tsx        ← BG = /hero-still.jpg + HeroCinemagraph-Overlay
+│   │   ├── HeroCinemagraph.tsx ← Canvas: funkelnde Sterne, Sternschnuppen, Wasser-Schimmern (nahtloser rAF-Loop, respektiert reduced-motion)
 │   │   ├── BlurText.tsx    ← Wiederverwendbar, nimmt `lines`-Prop
 │   │   ├── FeaturedWork.tsx
 │   │   ├── Services.tsx

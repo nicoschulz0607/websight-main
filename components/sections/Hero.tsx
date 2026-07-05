@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "@/lib/gsap";
 import { useIsMobile } from "@/lib/useIsMobile";
+import HeroCinemagraph from "@/components/sections/HeroCinemagraph";
 
 export default function Hero() {
   const isMobile = useIsMobile();
@@ -14,10 +15,6 @@ export default function Hero() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set([headlineRef.current, descRef.current, ctaRef.current], {
-        opacity: 0, y: 28,
-      });
-
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
       tl.to(headlineRef.current, { opacity: 1, y: 0, duration: 0.85 }, 0.3);
       tl.to(descRef.current,     { opacity: 1, y: 0, duration: 0.65 }, 0.75);
@@ -33,9 +30,9 @@ export default function Hero() {
       className="relative w-full h-screen overflow-hidden"
       style={{ background: "#000" }}
     >
-      {/* ── Background image — Ken Burns slow scale ──────────────────────── */}
+      {/* ── Background still — sharp poster + LCP paint, Ken Burns slow scale ── */}
       <Image
-        src="/hero-bg-optimized.jpg"
+        src="/hero-still.jpg"
         alt=""
         aria-hidden
         fill
@@ -44,6 +41,9 @@ export default function Hero() {
         className="object-cover"
         style={{ animation: "heroBgScale 22s ease-in-out infinite alternate" }}
       />
+
+      {/* ── Cinemagraph — twinkling stars, shooting stars, calm water shimmer ── */}
+      <HeroCinemagraph className="absolute inset-0 h-full w-full" />
 
       {/* ── Gradient overlay — dark left (text), open right (image) ──────── */}
       <div
@@ -83,6 +83,8 @@ export default function Hero() {
           style={{
             fontSize: "clamp(2.6rem, 5.5vw, 5.8rem)",
             letterSpacing: "-0.03em",
+            opacity: 0,
+            transform: "translateY(28px)",
           }}
         >
           Wir gestalten<br />
@@ -102,14 +104,19 @@ export default function Hero() {
         <p
           ref={descRef}
           className="text-cream/55 leading-relaxed mt-5"
-          style={{ fontSize: isMobile ? "0.9rem" : "clamp(0.9rem, 1.4vw, 1.1rem)", maxWidth: isMobile ? "320px" : "420px" }}
+          style={{
+            fontSize: isMobile ? "0.9rem" : "clamp(0.9rem, 1.4vw, 1.1rem)",
+            maxWidth: isMobile ? "320px" : "420px",
+            opacity: 0,
+            transform: "translateY(28px)",
+          }}
         >
           Websites & Marken, die nicht nur schön aussehen —
           sondern auch performen.
         </p>
 
         {/* CTA button */}
-        <div ref={ctaRef} className="flex items-center mt-7">
+        <div ref={ctaRef} className="flex items-center mt-7" style={{ opacity: 0, transform: "translateY(28px)" }}>
           <a
             href="#kontakt"
             className="hero-cta flex items-center justify-center rounded-full font-bold tracking-widest uppercase"

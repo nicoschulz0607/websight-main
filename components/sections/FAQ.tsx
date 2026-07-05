@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { FAQ_ITEMS } from "@/lib/constants";
 
-const ACCENTS = ["#60a5fa", "#8b6ff7", "#ad2bee", "#60a5fa", "#8b6ff7", "#ad2bee"];
-
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const sectionRef      = useRef<HTMLElement>(null);
@@ -44,7 +42,7 @@ export default function FAQ() {
 
       const isOpen = openIndex === i;
       gsap.to(wrap,   { height: isOpen ? inner.scrollHeight : 0, duration: 0.55, ease: "power3.out" });
-      gsap.to(number, { opacity: isOpen ? 0.85 : 0.28, duration: 0.4 });
+      gsap.to(number, { color: isOpen ? "rgba(251,251,244,0.9)" : "rgba(251,251,244,0.55)", duration: 0.4 });
       // Vertical bar of "+" disappears on open
       if (bar) gsap.to(bar, { scaleY: isOpen ? 0 : 1, duration: 0.35, ease: "power2.inOut" });
     });
@@ -60,7 +58,7 @@ export default function FAQ() {
       const mouseY = e.clientY - cRect.top;
       const mouseX = e.clientX - cRect.left;
 
-      container.style.background = `radial-gradient(circle 220px at ${mouseX}px ${mouseY}px, rgba(173,43,238,0.06) 0%, transparent 70%)`;
+      container.style.background = `radial-gradient(circle 220px at ${mouseX}px ${mouseY}px, rgba(173,43,238,0.045) 0%, transparent 70%)`;
 
       itemRefs.current.forEach((item) => {
         if (!item) return;
@@ -72,15 +70,15 @@ export default function FAQ() {
 
         if (isInside) {
           item.style.background = [
-            `radial-gradient(ellipse 280px 2px at ${localX}px 0.5px, rgba(173,43,238,0.75) 0%, transparent 100%)`,
-            `radial-gradient(ellipse 280px 2px at ${localX}px calc(100% - 0.5px), rgba(173,43,238,0.75) 0%, transparent 100%)`,
+            `radial-gradient(ellipse 280px 2px at ${localX}px 0.5px, rgba(173,43,238,0.55) 0%, transparent 100%)`,
+            `radial-gradient(ellipse 280px 2px at ${localX}px calc(100% - 0.5px), rgba(173,43,238,0.55) 0%, transparent 100%)`,
           ].join(", ");
           item.style.borderTopColor = "rgba(251,251,244,0.02)";
         } else {
           const distY    = Math.min(Math.abs(mouseY - topY), Math.abs(mouseY - bottomY));
           const strength = Math.max(0, 1 - distY / 60);
           if (strength > 0.01) {
-            item.style.background     = `radial-gradient(ellipse 300px 2px at ${localX}px 0.5px, rgba(173,43,238,${(strength * 0.9).toFixed(3)}) 0%, transparent 100%)`;
+            item.style.background     = `radial-gradient(ellipse 300px 2px at ${localX}px 0.5px, rgba(173,43,238,${(strength * 0.65).toFixed(3)}) 0%, transparent 100%)`;
             item.style.borderTopColor = `rgba(251,251,244,${(0.08 * (1 - strength * 0.8)).toFixed(3)})`;
           } else {
             item.style.background     = "none";
@@ -150,7 +148,6 @@ export default function FAQ() {
       {/* Items */}
       <div ref={containerRef} style={{ borderBottom: "1px solid rgba(251,251,244,0.08)" }}>
         {FAQ_ITEMS.map((item, i) => {
-          const accent = ACCENTS[i];
           const isOpen = openIndex === i;
 
           return (
@@ -170,12 +167,10 @@ export default function FAQ() {
               }}
               style={{
                 borderTop: "1px solid rgba(251,251,244,0.08)",
-                borderLeft: isOpen ? `2px solid ${accent}` : "2px solid transparent",
                 paddingLeft: "clamp(1rem, 3vw, 2.5rem)",
                 paddingTop: "2rem",
                 paddingBottom: "2rem",
                 cursor: "pointer",
-                transition: "border-left-color 0.35s ease",
                 position: "relative",
               }}
             >
@@ -185,12 +180,11 @@ export default function FAQ() {
                   ref={(el) => { numberRefs.current[i] = el; }}
                   style={{
                     flexShrink: 0,
-                    fontFamily: "monospace",
-                    fontSize: "clamp(0.7rem, 1.1vw, 0.9rem)",
-                    fontWeight: 700,
-                    letterSpacing: "0.08em",
-                    color: accent,
-                    opacity: 0.28,
+                    fontFamily: "inherit",
+                    fontSize: "clamp(0.85rem, 1.2vw, 1rem)",
+                    fontWeight: 600,
+                    letterSpacing: "-0.01em",
+                    color: "rgba(251,251,244,0.55)",
                     marginTop: "0.35rem",
                     minWidth: "2rem",
                     userSelect: "none",
@@ -216,18 +210,15 @@ export default function FAQ() {
                     <div style={{
                       flexShrink: 0,
                       width: 32, height: 32,
-                      borderRadius: "50%",
-                      border: `1px solid ${isOpen ? accent : "rgba(251,251,244,0.12)"}`,
                       display: "flex", alignItems: "center", justifyContent: "center",
                       position: "relative",
-                      transition: "border-color 0.35s ease",
                     }}>
                       {/* Horizontal bar — always visible */}
                       <span style={{
                         position: "absolute",
-                        width: 12, height: 1.5,
+                        width: 14, height: 1.5,
                         borderRadius: 2,
-                        background: isOpen ? accent : "rgba(251,251,244,0.5)",
+                        background: isOpen ? "rgba(251,251,244,0.9)" : "rgba(251,251,244,0.4)",
                         transition: "background 0.35s ease",
                       }} />
                       {/* Vertical bar — disappears on open */}
@@ -235,9 +226,9 @@ export default function FAQ() {
                         ref={(el) => { barRefs.current[i] = el; }}
                         style={{
                           position: "absolute",
-                          width: 1.5, height: 12,
+                          width: 1.5, height: 14,
                           borderRadius: 2,
-                          background: isOpen ? accent : "rgba(251,251,244,0.5)",
+                          background: isOpen ? "rgba(251,251,244,0.9)" : "rgba(251,251,244,0.4)",
                           transition: "background 0.35s ease",
                           transformOrigin: "center",
                         }}
