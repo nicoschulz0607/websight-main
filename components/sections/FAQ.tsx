@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
-import { FAQ_ITEMS } from "@/lib/constants";
+import { FAQ_INTRO, FAQ_ITEMS } from "@/lib/constants";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -114,8 +114,9 @@ export default function FAQ() {
         position: "relative",
       }}
     >
-      {/* Header */}
-      <div style={{ marginBottom: "5rem" }}>
+      <div className="faq-grid">
+      {/* Links: Text (am Desktop sticky) */}
+      <div className="faq-intro">
         <p style={{
           fontFamily: "monospace",
           fontSize: "0.65rem",
@@ -124,7 +125,7 @@ export default function FAQ() {
           color: "rgba(251,251,244,0.25)",
           marginBottom: "1.25rem",
         }}>
-          Häufige Fragen
+          {FAQ_INTRO.overline}
         </p>
         <h2 style={{
           fontSize: "clamp(2.5rem, 4vw, 4.5rem)",
@@ -133,16 +134,30 @@ export default function FAQ() {
           letterSpacing: "-0.03em",
           color: "#fbfbf4",
         }}>
-          Häufig gestellte{" "}
+          {FAQ_INTRO.title}{" "}
           <span style={{
             background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
           }}>
-            Fragen.
+            {FAQ_INTRO.titleAccent}
           </span>
         </h2>
+        <p style={{
+          marginTop: "1.75rem",
+          fontSize: "clamp(1rem, 1.25vw, 1.15rem)",
+          lineHeight: 1.85,
+          color: "rgba(251,251,244,0.5)",
+          maxWidth: "26rem",
+          textWrap: "pretty",
+        }}>
+          {FAQ_INTRO.text}
+        </p>
+        <a href={FAQ_INTRO.cta.href} className="link-quiet" style={{ marginTop: "1.75rem", display: "inline-flex" }}>
+          {FAQ_INTRO.cta.label}
+          <span aria-hidden>→</span>
+        </a>
       </div>
 
       {/* Items */}
@@ -262,6 +277,7 @@ export default function FAQ() {
             </div>
           );
         })}
+      </div>
       </div>
     </section>
   );

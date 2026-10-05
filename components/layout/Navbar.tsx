@@ -16,7 +16,12 @@ export default function Navbar() {
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    // Hero-Wortmarke (fixed, über der Navbar) blendet sich bei offenem Menü aus
+    document.documentElement.classList.toggle("menu-open", menuOpen);
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.classList.remove("menu-open");
+    };
   }, [menuOpen]);
 
   return (
@@ -33,15 +38,11 @@ export default function Navbar() {
         {/* Logo — left column */}
         <a
           href="#"
-          className="font-bold text-xl tracking-tight justify-self-start"
-          style={{
-            background: "linear-gradient(135deg, #60a5fa 0%, #8b6ff7 50%, #ad2bee 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
+          data-nav-logo
+          className="font-bold text-xl justify-self-start"
         >
-          Websight
+          {/* gleiche Metrik wie die Hero-Wortmarke (globals.css) → nahtloses Andocken */}
+          <span data-nav-logo-text className="nav-logo-text">Websight</span>
         </a>
 
         {/* Desktop nav — middle column, truly centered on the viewport (equal 1fr tracks on both sides) */}
@@ -71,7 +72,7 @@ export default function Navbar() {
         </ul>
 
         {/* Right column — CTA (desktop) + hamburger (mobile) */}
-        <div className="flex items-center justify-self-end">
+        <div className="col-start-3 flex items-center justify-self-end">
           <span className="nav-cta-wrap hidden md:inline-flex">
             <a href="#kontakt" className="nav-cta-inner">
               Gespräch aufnehmen

@@ -1,17 +1,67 @@
-export const PROJECTS = [
+/* ── Referenzen ────────────────────────────────────────────────────────────
+   Nur echte Arbeit. Neue Einträge einfach unten anhängen:
+   - status "live"     → große Case-Study (braucht media.video ODER media.desktop)
+   - status "in-arbeit" → schlichte typografische Karte, kein Bild
+   - optional vorher/nachher → Vorher/Nachher-Vergleich (z. B. Pitch-Kunden)
+   ───────────────────────────────────────────────────────────────────────── */
+export type Project = {
+  id: number;
+  number: string;
+  title: string;
+  subtitle: string;
+  industry?: string;
+  tags: string[];
+  accentColor: string;
+  status: "live" | "in-arbeit";
+  href?: string;
+  /** Anzeige-URL in der Browser-Leiste, z. B. "oimmo.de" */
+  displayUrl?: string;
+  media?: {
+    /** echtes Scroll-Video der Live-Seite */
+    video?: { webm?: string; mp4?: string; poster: string };
+    /** echter Desktop-Screenshot (Fallback ohne Video) */
+    desktop?: string;
+    /** echter Handy-Screenshot */
+    mobile?: string;
+  };
+  /** Vorher/Nachher (optional) — echte Screenshots der alten und neuen Seite */
+  vorher?: string;
+  nachher?: string;
+  /** Name aus TESTIMONIALS — Zitat wird direkt an der Case-Study gezeigt */
+  quoteBy?: string;
+};
+
+export const WORK_SECTION = {
+  overline: "Ausgewählte Arbeiten",
+  title: "Unsere",
+  titleAccent: "Projekte.",
+  intro: "Design ohne Kompromisse — durchdacht, präzise, wirkungsvoll.",
+  liveLabel: "Live ansehen",
+  statusLabels: { live: "Live", "in-arbeit": "In Arbeit" },
+  nextTitle: "Dein Projekt?",
+  nextCta: "Kostenloses Erstgespräch",
+  nextHref: "#kontakt",
+};
+
+export const PROJECTS: Project[] = [
   {
     id: 1,
     number: "01",
     title: "Oimmo",
     subtitle: "Immobilien geschmackvoll verkaufen.",
+    industry: "Digitaler Immobilienmakler",
     tags: ["Webdesign", "Entwicklung"],
-    bgColor: "#0d0d0d",
     accentColor: "#60a5fa",
-    image: "/oimmo-preview.jpg",
-    bgImage: "/images/oimmo-brand.webp",
-    bgVideo: "/videos/oimmo-scroll.webm",
-    bgVideoMp4: "/videos/oimmo-scroll.mp4",
+    status: "live",
     href: "https://oimmo.de",
+    displayUrl: "oimmo.de",
+    media: {
+      // Echter Screenshot von oimmo.de (statisch, ohne Video)
+      desktop: "/images/oimmo-case-poster.jpg",
+      // Echter Screenshot von oimmo.de bei 390 px Breite
+      mobile: "/images/oimmo-mobile.jpg",
+    },
+    quoteBy: "Maximilian Konz",
   },
   {
     id: 2,
@@ -20,14 +70,9 @@ export const PROJECTS = [
     // Platzhalter-Text — bitte anpassen, sobald der finale Claim feststeht.
     subtitle: "Aktuell in Entwicklung.",
     tags: ["Webdesign", "Entwicklung"],
-    bgColor: "#0d0d0d",
     accentColor: "#ad2bee",
-    // Komponiertes Brand-Bild (Estrela-Stil, hell) als Hintergrund.
-    // `image` (Browser-Mockup on Hover) noch Platzhalter — echter Screenshot liegt
-    // hinter einem Cloudflare-Tunnel, kein Zugriff von außen.
-    image: "/images/featuredwork-fallback-bg.jpg",
-    bgImage: "/images/dubistdermakler-brand.webp",
-    // Kein href -> Kachel ist noch nicht verlinkt/klickbar.
+    status: "in-arbeit",
+    // Kein href, kein Bild — wird erst gezeigt, wenn es echt online ist.
   },
 ];
 
@@ -41,6 +86,14 @@ export const TESTIMONIALS = [
     image: "/maxi.jpeg",
   },
 ];
+
+export const FAQ_INTRO = {
+  overline: "Häufige Fragen",
+  title: "Häufig gestellte",
+  titleAccent: "Fragen.",
+  text: "Die wichtigsten Antworten zu Ablauf, Kosten und Zusammenarbeit. Deine Frage ist nicht dabei? Im kostenlosen Erstgespräch klären wir alles persönlich.",
+  cta: { label: "Frage stellen", href: "#kontakt" },
+};
 
 export const FAQ_ITEMS = [
   {
@@ -164,3 +217,21 @@ export const NAV_LINKS = [
   { label: "FAQ", href: "#faq" },
   { label: "Kontakt", href: "#kontakt" },
 ];
+
+/* ── Hero ─────────────────────────────────────────────────────────────── */
+export const HERO = {
+  wordmark: "Websight",
+  /** Headline: "<prefix> <wechselndes Wort>" */
+  prefix: "Wir bauen",
+  /** Wechselnde Wörter — erstes Wort ist auch der statische Zustand (reduced motion) */
+  words: ["Websites", "Erlebnisse", "Anfragen", "Vertrauen"],
+  /** Sekunden pro Wort */
+  wordInterval: 2.4,
+  sub: "Individuell gebaut für Handwerker und lokale Betriebe aus Balingen und der Region – am Handy perfekt, ab 499 €.",
+  ctaPrimary: { label: "Kostenloses Erstgespräch", href: "#kontakt" },
+  ctaSecondary: { label: "Arbeiten ansehen", href: "#work" },
+  /** Leiste unten im Hero (nur belegte Aussagen aus SERVICES) */
+  facts: ["Kein Template", "Mobile-first", "Core Web Vitals optimiert", "DSGVO-konform"],
+};
+
+
