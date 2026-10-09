@@ -3,42 +3,43 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
+import {
+  CONFIG_MODULES, CONFIG_EXTRAS, CONFIG_BUNDLES, CONFIG_DISCOUNT_STEPS,
+  type ModuleKey, type ExtraKey,
+} from "@/lib/constants";
 
 /* ── Types ──────────────────────────────────────────────────── */
-type MainKey = "web" | "buch" | "auto" | "seo" | "ber";
 type Status = "idle" | "loading" | "success" | "error";
 
-interface Pkg {
-  label: string;
-  once: number;
-  mo: number;
-}
+const fmtEuro = (n: number) =>
+  n.toLocaleString("de-DE", { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 });
 
-interface UpsellDef {
-  name: string;
-  desc: string;
-  price: string;
-  once: number;
-  mo: number;
-  badge: string | null;
-  triggers: MainKey[];
-}
-
-type UpsellKey =
-  | "bew_auto" | "qr" | "gbiz" | "impressum"
-  | "social" | "sprachen" | "email_seq" | "pflege";
-
-/* ── Static data ─────────────────────────────────────────────── */
-const UPSELLS: Record<UpsellKey, UpsellDef> = {
-  bew_auto:  { name: "Bewertungsanfrage-Automation",  desc: "Nach jedem Termin automatisch Google-Bewertung anfragen", price: "149 € einmalig", once: 149, mo: 0,  badge: "Empfohlen", triggers: ["web","buch"] },
-  qr:        { name: "QR-Bewertungsaufsteller",        desc: "Print-ready Design — Tischaufsteller oder Aufkleber",     price: "199 € einmalig", once: 199, mo: 0,  badge: "Empfohlen", triggers: ["web","buch"] },
-  gbiz:      { name: "Google Business Optimierung",    desc: "Fotos, Kategorien, Bewertungsmanagement-Setup",           price: "199 € einmalig", once: 199, mo: 0,  badge: null,        triggers: ["web","seo"]  },
-  impressum: { name: "Rechtssicheres Impressum",       desc: "e-recht24 API — automatisch aktuell gehalten",            price: "19 €/Mo",        once: 0,   mo: 19, badge: null,        triggers: ["web"]        },
-  social:    { name: "Social Media Templates",          desc: "5–10 Canva-Vorlagen im Branding: Post, Story, Cover",    price: "179 € einmalig", once: 179, mo: 0,  badge: null,        triggers: ["web","seo"]  },
-  sprachen:  { name: "Mehrsprachigkeit (DE + EN)",      desc: "Vollständige i18n-Implementierung",                       price: "350 € einmalig", once: 350, mo: 0,  badge: null,        triggers: ["web"]        },
-  email_seq: { name: "E-Mail-Sequenz Setup",            desc: "Welcome, Nachfass, Erinnerung — fertig in Brevo",        price: "199 € einmalig", once: 199, mo: 0,  badge: null,        triggers: ["buch","auto"]},
-  pflege:    { name: "Monatliche Inhaltspflege",        desc: "1h/Mo — Texte, Bilder, Öffnungszeiten aktuell",          price: "29 €/Mo",        once: 0,   mo: 29, badge: null,        triggers: ["web"]        },
+const tierPrice = (t: { once: number; mo: number }) => {
+  if (t.once > 0 && t.mo > 0) return `${fmtEuro(t.once)} € · ${fmtEuro(t.mo)} €/Mo`;
+  if (t.once > 0) return `${fmtEuro(t.once)} € einmalig`;
+  if (t.mo > 0) return `${fmtEuro(t.mo)} €/Mo`;
+  return "kostenlos";
 };
+
+/** Bündelvorteil: Nachlass in % auf die monatlichen Modulpreise. */
+const discountPct = (count: number) =>
+  CONFIG_DISCOUNT_STEPS.find((d) => count >= d.min)?.pct ?? 0;
+
+type Picks = Partial<Record<ModuleKey, number>>;
+
+function sumPicks(picks: Picks) {
+  let once = 0, mo = 0, count = 0;
+  for (const m of CONFIG_MODULES) {
+    const i = picks[m.key];
+    if (i === undefined) continue;
+    once += m.tiers[i].once;
+    mo += m.tiers[i].mo;
+    count++;
+  }
+  const pct = discountPct(count);
+  const save = Math.round(mo * pct) / 100;
+  return { once, mo, count, pct, save };
+}
 
 const LOADING_TEXTS = ["Wird gesendet…"];
 
@@ -47,8 +48,8 @@ const LOADING_TEXTS = ["Wird gesendet…"];
 function formatEstimate(totalOnce: number, totalMo: number): string {
   if (totalOnce === 0 && totalMo === 0) return "Im Gespräch klären";
   const parts: string[] = [];
-  if (totalOnce > 0) parts.push(`ab ${totalOnce.toLocaleString("de-DE")} €`);
-  if (totalMo > 0) parts.push(`${totalMo.toLocaleString("de-DE")} €/Mo`);
+  if (totalOnce > 0) parts.push(`ab ${fmtEuro(totalOnce)} €`);
+  if (totalMo > 0) parts.push(`${fmtEuro(totalMo)} €/Mo`);
   return `Richtwert: ${parts.join(" · ")}`;
 }
 
@@ -220,13 +221,8 @@ export default function Konfigurator() {
   const pageRef = useRef<HTMLDivElement>(null);
 
   /* ── State ── */
-  const [main, setMain] = useState<MainKey[]>([]);
-  const [web,  setWeb]  = useState<Pkg | null>(null);
-  const [buch, setBuch] = useState<Pkg | null>(null);
-  const [auto, setAuto] = useState<Pkg | null>(null);
-  const [seo,  setSeo]  = useState<Pkg | null>(null);
-  const [bers, setBers] = useState<Pkg[]>([]);
-  const [upsells, setUpsells] = useState<Partial<Record<UpsellKey, Pkg & { name: string }>>>({});
+  const [picks, setPicks] = useState<Picks>({});
+  const [extras, setExtras] = useState<Partial<Record<ExtraKey, true>>>({});
 
   /* ── Modal ── */
   const [modalOpen, setModalOpen] = useState(false);
@@ -274,65 +270,54 @@ export default function Konfigurator() {
   }, [modalOpen]);
 
   /* ── Calculations ── */
-  const totalOnce =
-    (web?.once ?? 0) + (buch?.once ?? 0) + (auto?.once ?? 0) + (seo?.once ?? 0) +
-    bers.reduce((s, b) => s + b.once, 0) +
-    Object.values(upsells).reduce((s, u) => s + (u?.once ?? 0), 0);
+  const base = sumPicks(picks);
+  const extraKeys = Object.keys(extras) as ExtraKey[];
+  const extraOnce = extraKeys.reduce((n, k) => n + CONFIG_EXTRAS[k].once, 0);
+  const extraMo   = extraKeys.reduce((n, k) => n + CONFIG_EXTRAS[k].mo, 0);
 
-  const totalMo =
-    (web?.mo ?? 0) + (buch?.mo ?? 0) + (auto?.mo ?? 0) + (seo?.mo ?? 0) +
-    bers.reduce((s, b) => s + b.mo, 0) +
-    Object.values(upsells).reduce((s, u) => s + (u?.mo ?? 0), 0);
+  const totalOnce = base.once + extraOnce;
+  const totalMo   = Math.round((base.mo - base.save + extraMo) * 100) / 100;
 
   const selectedItems = [
-    web?.label, buch?.label, auto?.label, seo?.label,
-    ...bers.map((b) => b.label),
-    ...Object.values(upsells).map((u) => u?.name),
-  ].filter(Boolean) as string[];
-
-  const visibleUpsells = (Object.keys(UPSELLS) as UpsellKey[])
-    .filter((k) => UPSELLS[k].triggers.some((t) => main.includes(t)));
+    ...CONFIG_MODULES.filter((m) => picks[m.key] !== undefined)
+      .map((m) => `${m.name}: ${m.tiers[picks[m.key]!].label}`),
+    ...extraKeys.map((k) => CONFIG_EXTRAS[k].name),
+  ];
 
   /* ── Handlers ── */
-  const toggleMain = (key: MainKey) => {
-    setMain((prev) => {
-      if (prev.includes(key)) {
-        if (key === "web")  setWeb(null);
-        if (key === "buch") setBuch(null);
-        if (key === "auto") setAuto(null);
-        if (key === "seo")  setSeo(null);
-        if (key === "ber")  setBers([]);
-        return prev.filter((k) => k !== key);
-      }
-      return [...prev, key];
-    });
-  };
-
-  const toggleUpsell = (key: UpsellKey) => {
-    setUpsells((prev) => {
+  const toggleModule = (key: ModuleKey) => {
+    setPicks((prev) => {
       const next = { ...prev };
-      if (next[key]) { delete next[key]; }
-      else { const u = UPSELLS[key]; next[key] = { label: u.name, once: u.once, mo: u.mo, name: u.name }; }
+      if (next[key] !== undefined) delete next[key]; else next[key] = 0;
       return next;
     });
   };
 
-  const reset = () => {
-    setMain([]); setWeb(null); setBuch(null); setAuto(null); setSeo(null); setBers([]); setUpsells({});
+  const setTier = (key: ModuleKey, i: number) => setPicks((prev) => ({ ...prev, [key]: i }));
+
+  const toggleExtra = (key: ExtraKey) => {
+    setExtras((prev) => {
+      const next = { ...prev };
+      if (next[key]) delete next[key]; else next[key] = true;
+      return next;
+    });
   };
+
+  const applyBundle = (i: number) => { setPicks({ ...CONFIG_BUNDLES[i].picks }); };
+
+  const reset = () => { setPicks({}); setExtras({}); };
 
   /* ── Build message ── */
   const buildMessage = () => {
     const est = formatEstimate(totalOnce, totalMo);
 
     let b = "=== KONFIGURIERTES PROJEKT ===\n\n";
-    if (web)  b += `WEBSITE: ${web.label}\n`;
-    if (buch) b += `BUCHUNGSSYSTEM: ${buch.label}\n`;
-    if (auto) b += `AUTOMATISIERUNG: ${auto.label}\n`;
-    if (seo)  b += `SEO: ${seo.label}\n`;
-    if (bers.length) b += `BERATUNG: ${bers.map((b) => b.label).join(", ")}\n`;
-    const uk = Object.keys(upsells) as UpsellKey[];
-    if (uk.length) b += `\nEXTRAS: ${uk.map((k) => upsells[k]?.name).join(", ")}\n`;
+    CONFIG_MODULES.forEach((m) => {
+      const i = picks[m.key];
+      if (i !== undefined) b += `${m.name.toUpperCase()}: ${m.tiers[i].label} (${tierPrice(m.tiers[i])})\n`;
+    });
+    if (extraKeys.length) b += `\nEXTRAS: ${extraKeys.map((k) => CONFIG_EXTRAS[k].name).join(", ")}\n`;
+    if (base.pct > 0) b += `\nBÜNDELVORTEIL: ${base.pct} % auf die Monatspreise (−${fmtEuro(base.save)} €/Mo)\n`;
     b += `\nKOSTENSCHÄTZUNG: ${est}\n`;
     if (formData.company) b += `\nUNTERNEHMEN: ${formData.company}`;
     if (formData.phone)   b += `\nTELEFON: ${formData.phone}`;
@@ -343,28 +328,18 @@ export default function Konfigurator() {
 
   /* ── Build config (structured data for email template) ── */
   const buildConfig = () => {
-    const fmtPrice = (once: number, mo: number) => {
-      if (once > 0 && mo > 0) return `${once.toLocaleString("de-DE")} € + ${mo} €/Mo`;
-      if (once > 0) return `${once.toLocaleString("de-DE")} €`;
-      if (mo > 0) return `${mo} €/Mo`;
-      return "";
-    };
     const items: { label: string; price: string }[] = [];
-    if (web)  items.push({ label: `Website: ${web.label}`,           price: fmtPrice(web.once, web.mo) });
-    if (buch) items.push({ label: `Buchungssystem: ${buch.label}`,   price: fmtPrice(buch.once, buch.mo) });
-    if (auto) items.push({ label: `Automatisierung: ${auto.label}`,  price: fmtPrice(auto.once, auto.mo) });
-    if (seo)  items.push({ label: `SEO: ${seo.label}`,               price: fmtPrice(seo.once, seo.mo) });
-    bers.forEach((b) => items.push({ label: `Beratung: ${b.label}`,  price: fmtPrice(b.once, b.mo) }));
-    (Object.keys(upsells) as UpsellKey[]).forEach((k) => {
-      const u = upsells[k];
-      if (u) items.push({ label: u.name, price: fmtPrice(u.once, u.mo) });
+    CONFIG_MODULES.forEach((m) => {
+      const i = picks[m.key];
+      if (i !== undefined) items.push({ label: `${m.name}: ${m.tiers[i].label}`, price: tierPrice(m.tiers[i]) });
     });
-    const estimation = formatEstimate(totalOnce, totalMo);
+    extraKeys.forEach((k) => items.push({ label: CONFIG_EXTRAS[k].name, price: tierPrice(CONFIG_EXTRAS[k]) }));
+    if (base.pct > 0) items.push({ label: `Bündelvorteil ${base.pct} %`, price: `−${fmtEuro(base.save)} €/Mo` });
     return {
       items,
       totalOnce,
       totalMo,
-      estimation,
+      estimation: formatEstimate(totalOnce, totalMo),
       company: formData.company || undefined,
       phone: formData.phone || undefined,
     };
@@ -492,130 +467,89 @@ export default function Konfigurator() {
             Keine versteckten Kosten, kein Paket-Denken.
           </p>
 
-          {/* ── 01 Hauptleistungen ── */}
+          {/* ── Fertige Pakete ── */}
           <div className="k-reveal">
-            <SecLabel label="Was brauchst du?" />
+            <SecLabel label="Fertige Pakete — oder darunter selbst zusammenstellen" />
             <div style={grid3}>
-              {([
-                { key: "web",  name: "Website",            desc: "Responsive, modern, schnell" },
-                { key: "buch", name: "Buchungssystem",      desc: "Kalender, Termine, Auto-Mails" },
-                { key: "auto", name: "Automatisierung",     desc: "Workflows, CRM, Prozesse" },
-                { key: "seo",  name: "SEO & Sichtbarkeit",  desc: "Google, Rankings, lokale Suche" },
-                { key: "ber",  name: "Beratung / Audit",    desc: "Einmalige Analyse, kein Abo" },
-              ] as { key: MainKey; name: string; desc: string }[]).map((item) => (
-                <Tile
-                  key={item.key}
-                  name={item.name}
-                  desc={item.desc}
-                  selected={main.includes(item.key)}
-                  onClick={() => toggleMain(item.key)}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* ── Detail-Blöcke ── */}
-
-          <Collapsible open={main.includes("web")}>
-            <SecLabel label="Website — Paket wählen" />
-            <div style={grid2}>
-              {([
-                { label: "1–3 Seiten",       once: 499,  mo: 29, desc: "Start, Leistungen, Kontakt — kompakt und fertig",           price: "ab 499 € · 29 €/Mo" },
-                { label: "4–7 Seiten",       once: 799,  mo: 39, desc: "+ Galerie, Über uns, Preise, Blog-Grundstruktur",           price: "ab 799 € · 39 €/Mo" },
-                { label: "8–12 Seiten",      once: 1199, mo: 59, desc: "Vollständige Unternehmensseite, viele Inhalte",             price: "ab 1.199 € · 59 €/Mo" },
-                { label: "Premium / Custom", once: 2500, mo: 89, desc: "Kein Template — GSAP, Storytelling, individuelles Konzept", price: "ab 2.500 € · 89 €/Mo" },
-              ] as (Pkg & { desc: string; price: string })[]).map((pkg) => (
-                <Tile key={pkg.label} name={pkg.label} desc={pkg.desc} price={pkg.price}
-                  selected={web?.label === pkg.label}
-                  onClick={() => setWeb(web?.label === pkg.label ? null : pkg)} />
-              ))}
-            </div>
-          </Collapsible>
-
-          <Collapsible open={main.includes("buch")}>
-            <SecLabel label="Buchungssystem" />
-            <div style={grid2}>
-              {([
-                { label: "Buchung Basis", once: 299, mo: 19, desc: "1 Kalender, Echtzeit-Slots, Bestätigungs-Mail",    price: "ab 299 € · 19 €/Mo" },
-                { label: "Buchung Pro",   once: 499, mo: 29, desc: "+ Serviceauswahl, Erinnerungen, Multi-Mitarbeiter", price: "ab 499 € · 29 €/Mo" },
-              ] as (Pkg & { desc: string; price: string })[]).map((pkg) => (
-                <Tile key={pkg.label} name={pkg.label} desc={pkg.desc} price={pkg.price}
-                  selected={buch?.label === pkg.label}
-                  onClick={() => setBuch(buch?.label === pkg.label ? null : pkg)} />
-              ))}
-            </div>
-          </Collapsible>
-
-          <Collapsible open={main.includes("auto")}>
-            <SecLabel label="Automatisierung" />
-            <div style={grid2}>
-              {([
-                { label: "1 Workflow",    once: 349, mo: 29, desc: "z.B. Lead-Routing, Auto-Rechnung, CRM-Eintrag", price: "ab 349 € · 29 €/Mo Hosting" },
-                { label: "2–3 Workflows", once: 599, mo: 49, desc: "Verkettete Prozesse, mehrere Auslöser",          price: "ab 599 € · 49 €/Mo Hosting" },
-              ] as (Pkg & { desc: string; price: string })[]).map((pkg) => (
-                <Tile key={pkg.label} name={pkg.label} desc={pkg.desc} price={pkg.price}
-                  selected={auto?.label === pkg.label}
-                  onClick={() => setAuto(auto?.label === pkg.label ? null : pkg)} />
-              ))}
-            </div>
-          </Collapsible>
-
-          <Collapsible open={main.includes("seo")}>
-            <SecLabel label="SEO" />
-            <div style={grid2}>
-              {([
-                { label: "Basis-SEO",       once: 0, mo: 29, desc: "Meta, Schema.org, Google Business, Search Console",    price: "inklusive · 29 €/Mo" },
-                { label: "Erweitertes SEO", once: 0, mo: 79, desc: "+ Keyword-Tracking, monatlicher Report, Content-Tipps", price: "inklusive · 79 €/Mo" },
-              ] as (Pkg & { desc: string; price: string })[]).map((pkg) => (
-                <Tile key={pkg.label} name={pkg.label} desc={pkg.desc} price={pkg.price}
-                  selected={seo?.label === pkg.label}
-                  onClick={() => setSeo(seo?.label === pkg.label ? null : pkg)} />
-              ))}
-            </div>
-          </Collapsible>
-
-          <Collapsible open={main.includes("ber")}>
-            <SecLabel label="Beratung — Mehrfachauswahl möglich" />
-            <div style={grid2}>
-              {([
-                { label: "SEO-Audit",                once: 149, mo: 0, desc: "Vollanalyse mit PDF-Report und Prio-Liste",   price: "149 € einmalig" },
-                { label: "Website-Check",            once: 149, mo: 0, desc: "Design, Performance, Mobile, Rechtliches",    price: "149 € einmalig" },
-                { label: "Prozess-Audit",            once: 249, mo: 0, desc: "Welche Abläufe lassen sich automatisieren?",  price: "249 € einmalig" },
-                { label: "Erstgespräch (kostenlos)", once: 0,   mo: 0, desc: "Kostenlos — schauen was wirklich Sinn macht", price: "kostenlos" },
-              ] as (Pkg & { desc: string; price: string })[]).map((pkg) => {
-                const isSel = bers.some((b) => b.label === pkg.label);
+              {CONFIG_BUNDLES.map((b, i) => {
+                const t = sumPicks(b.picks);
+                const mo = Math.round((t.mo - t.save) * 100) / 100;
+                const active = JSON.stringify(picks) === JSON.stringify(b.picks);
                 return (
-                  <Tile key={pkg.label} name={pkg.label} desc={pkg.desc} price={pkg.price}
-                    selected={isSel}
-                    onClick={() => setBers((prev) =>
-                      isSel ? prev.filter((b) => b.label !== pkg.label) : [...prev, pkg]
-                    )} />
+                  <Tile key={b.name} name={b.name} desc={b.desc}
+                    price={`${fmtEuro(t.once)} € einmalig · ${fmtEuro(mo)} €/Mo`}
+                    badge={i === 1 ? "Beliebt" : null}
+                    selected={active}
+                    onClick={() => (active ? setPicks({}) : applyBundle(i))} />
                 );
               })}
             </div>
-          </Collapsible>
+          </div>
 
-          {/* ── Upsells ── */}
-          {main.length > 0 && visibleUpsells.length > 0 && (
+          {/* ── Baukasten ── */}
+          <div className="k-reveal">
+            <SecLabel label="Dein Baukasten" />
+            <div style={grid3}>
+              {CONFIG_MODULES.map((m) => {
+                const i = picks[m.key];
+                return (
+                  <Tile key={m.key} name={m.name} desc={m.desc}
+                    price={i !== undefined ? tierPrice(m.tiers[i]) : `ab ${tierPrice(m.tiers[0])}`}
+                    badge={m.badge ?? null}
+                    selected={i !== undefined}
+                    onClick={() => toggleModule(m.key)} />
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ── Stufen je Baustein ── */}
+          {CONFIG_MODULES.filter((m) => m.tiers.length > 1).map((m) => (
+            <Collapsible key={m.key} open={picks[m.key] !== undefined}>
+              <SecLabel label={`${m.name} — Umfang wählen`} />
+              <div style={grid2}>
+                {m.tiers.map((t, i) => (
+                  <Tile key={t.label} name={t.label} desc={t.desc} price={tierPrice(t)}
+                    selected={picks[m.key] === i}
+                    onClick={() => setTier(m.key, i)} />
+                ))}
+              </div>
+            </Collapsible>
+          ))}
+
+          {/* ── Bündelvorteil ── */}
+          <div style={{ marginBottom: "3rem", fontSize: 13, color: "rgba(251,251,244,0.4)", lineHeight: 1.7 }}>
+            {base.pct > 0 ? (
+              <span style={{ color: "#8b6ff7" }}>
+                Bündelvorteil aktiv: {base.pct} % auf die Monatspreise der Bausteine (−{fmtEuro(base.save)} €/Mo).
+              </span>
+            ) : (
+              <>
+                Ab 3 Bausteinen {CONFIG_DISCOUNT_STEPS.find((d) => d.min === 3)?.pct} % Nachlass auf die Monatspreise,
+                ab 5 Bausteinen {CONFIG_DISCOUNT_STEPS.find((d) => d.min === 5)?.pct} %.
+              </>
+            )}
+          </div>
+
+          {/* ── Extras ── */}
+          {base.count > 0 && (
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
                 <span style={{
                   fontFamily: "monospace", fontSize: "0.6rem",
                   letterSpacing: "0.22em", textTransform: "uppercase",
-                  color: "rgba(139,111,247,0.6)",
-                  flexShrink: 0,
+                  color: "rgba(139,111,247,0.6)", flexShrink: 0,
                 }}>
-                  Vielleicht auch interessant
+                  Extras
                 </span>
                 <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg,rgba(139,111,247,0.2),transparent)" }} />
               </div>
               <div style={grid3}>
-                {visibleUpsells.map((k) => {
-                  const u = UPSELLS[k];
+                {(Object.keys(CONFIG_EXTRAS) as ExtraKey[]).map((k) => {
+                  const e = CONFIG_EXTRAS[k];
                   return (
-                    <Tile key={k} name={u.name} desc={u.desc} price={u.price}
-                      badge={u.badge ?? undefined} selected={!!upsells[k]}
-                      onClick={() => toggleUpsell(k)} />
+                    <Tile key={k} name={e.name} desc={e.desc} price={tierPrice(e)}
+                      selected={!!extras[k]} onClick={() => toggleExtra(k)} />
                   );
                 })}
               </div>
@@ -656,14 +590,14 @@ export default function Konfigurator() {
                       background: "linear-gradient(90deg,#60a5fa,#8b6ff7,#ad2bee)",
                       WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                     }}>
-                      {totalMo.toLocaleString("de-DE")}&thinsp;€/Mo
+                      {fmtEuro(totalMo)}&thinsp;€/Mo
                     </span>
                   )}
                   {totalOnce > 0 && (
                     <span style={totalMo > 0
                       ? { fontSize: 14, color: "rgba(251,251,244,0.55)", letterSpacing: "0.01em" }
                       : { fontSize: "1.6rem", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, background: "linear-gradient(90deg,#60a5fa,#8b6ff7,#ad2bee)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                      {totalMo > 0 ? "+ " : "ab "}{totalOnce.toLocaleString("de-DE")}&thinsp;€ einmalig
+                      {totalMo > 0 ? "+ " : "ab "}{fmtEuro(totalOnce)}&thinsp;€ einmalig
                     </span>
                   )}
                 </div>
@@ -680,7 +614,7 @@ export default function Konfigurator() {
 
             {/* Right — Aktionen */}
             <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexShrink: 0 }}>
-              {(main.length > 0 || selectedItems.length > 0) && (
+              {selectedItems.length > 0 && (
                 <button
                   onClick={reset}
                   style={{

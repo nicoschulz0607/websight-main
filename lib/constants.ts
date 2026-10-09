@@ -235,3 +235,84 @@ export const HERO = {
 };
 
 
+
+/* ── Konfigurator (Baukasten) ─────────────────────────────────── */
+export type ModuleKey = "web" | "seo" | "recht" | "crm" | "bew" | "buch";
+export type ExtraKey = "audit" | "gbiz" | "qr" | "social" | "sprachen" | "pflege";
+
+export type ModuleTier = { label: string; desc: string; once: number; mo: number };
+export type ConfigModule = {
+  key: ModuleKey;
+  name: string;
+  desc: string;
+  badge?: string;
+  tiers: ModuleTier[];
+};
+
+// Preise sind Richtwerte — hier zentral anpassen.
+export const CONFIG_MODULES: ConfigModule[] = [
+  {
+    key: "web", name: "Website", desc: "Schnell, modern, mobil — die Basis für alles andere",
+    tiers: [
+      { label: "1–3 Seiten",       desc: "Start, Leistungen, Kontakt — kompakt und fertig",           once: 399,  mo: 24.99 },
+      { label: "4–7 Seiten",       desc: "+ Galerie, Über uns, Preise, Blog-Grundstruktur",           once: 799,  mo: 39 },
+      { label: "8–12 Seiten",      desc: "Vollständige Unternehmensseite, viele Inhalte",             once: 1199, mo: 59 },
+      { label: "Premium / Custom", desc: "Kein Template — Animation, Storytelling, eigenes Konzept",  once: 2500, mo: 89 },
+    ],
+  },
+  {
+    key: "seo", name: "SEO & Sichtbarkeit", desc: "Monatliche Auswertung und Anpassung für Google",
+    tiers: [
+      { label: "Basis-SEO",       desc: "Meta, Schema.org, Google Business, Search Console",     once: 0, mo: 29 },
+      { label: "Erweitertes SEO", desc: "+ Keyword-Tracking, Monatsreport, Content-Tipps",        once: 0, mo: 79 },
+    ],
+  },
+  {
+    key: "recht", name: "Impressum & Datenschutz", desc: "Rechtstexte über die e-recht24 API — automatisch aktuell",
+    tiers: [
+      { label: "Rechtstexte aktuell halten", desc: "Impressum und Datenschutzerklärung, bei Gesetzesänderung automatisch angepasst", once: 0, mo: 10 },
+    ],
+  },
+  {
+    key: "crm", name: "Anfragen & CRM", desc: "Anfragen sammeln, sortieren, Kunden verwalten", badge: "Pilotphase",
+    tiers: [
+      { label: "Anfragen-Eingang", desc: "Alle Anfragen aus Formular und Kontakt an einem Ort, mit Status", once: 199, mo: 29 },
+      { label: "CRM Plus",         desc: "+ Kundenverlauf, Absprung-Auswertung der Website, Wochenbericht", once: 349, mo: 49 },
+    ],
+  },
+  {
+    key: "bew", name: "Google-Bewertungen", desc: "Mehr und bessere Bewertungen, automatisch angefragt",
+    tiers: [
+      { label: "Bewertungs-Boost", desc: "Nach jedem Auftrag automatisch um eine Bewertung bitten", once: 149, mo: 19 },
+      { label: "Boost Plus",       desc: "+ QR-Aufsteller, Antwortvorschläge, Monatsübersicht",       once: 249, mo: 39 },
+    ],
+  },
+  {
+    key: "buch", name: "Kalender & Buchung", desc: "Termine online buchen, mit Bestätigung und Erinnerung",
+    tiers: [
+      { label: "Buchung Basis", desc: "1 Kalender, Echtzeit-Slots, Bestätigungs-Mail",                   once: 299, mo: 19 },
+      { label: "Buchung Pro",   desc: "+ Serviceauswahl, Erinnerungen, mehrere Mitarbeiter",             once: 499, mo: 29 },
+    ],
+  },
+];
+
+export const CONFIG_EXTRAS: Record<ExtraKey, { name: string; desc: string; once: number; mo: number }> = {
+  audit:    { name: "SEO- & Website-Audit",     desc: "Vollanalyse mit PDF-Report und Prioritätenliste",  once: 149, mo: 0 },
+  gbiz:     { name: "Google-Business-Optimierung", desc: "Fotos, Kategorien, Profil sauber aufgesetzt",     once: 199, mo: 0 },
+  qr:       { name: "QR-Bewertungsaufsteller",  desc: "Druckfertiges Design für Tisch oder Tresen",       once: 199, mo: 0 },
+  social:   { name: "Social-Media-Vorlagen",    desc: "5–10 Vorlagen im Branding: Post, Story, Cover",    once: 179, mo: 0 },
+  sprachen: { name: "Mehrsprachigkeit (DE + EN)", desc: "Vollständige zweite Sprachversion",              once: 350, mo: 0 },
+  pflege:   { name: "Monatliche Inhaltspflege", desc: "1 Std/Monat — Texte, Bilder, Öffnungszeiten",      once: 0,   mo: 29 },
+};
+
+export const CONFIG_BUNDLES: { name: string; desc: string; picks: Partial<Record<ModuleKey, number>> }[] = [
+  { name: "Sichtbar",      desc: "Website, Rechtstexte und Basis-SEO",                    picks: { web: 0, recht: 0, seo: 0 } },
+  { name: "Mehr Anfragen", desc: "Dazu Anfragen-Eingang und Bewertungs-Boost",            picks: { web: 0, recht: 0, seo: 0, crm: 0, bew: 0 } },
+  { name: "Komplett",      desc: "Alles verbunden, mit CRM Plus und Online-Buchung",      picks: { web: 1, recht: 0, seo: 1, crm: 1, bew: 1, buch: 1 } },
+];
+
+// Bündelvorteil auf die monatlichen Modulpreise: ab n Bausteinen x % Nachlass.
+export const CONFIG_DISCOUNT_STEPS: { min: number; pct: number }[] = [
+  { min: 5, pct: 15 },
+  { min: 3, pct: 10 },
+];
